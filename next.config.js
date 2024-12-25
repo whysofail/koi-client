@@ -12,6 +12,10 @@ const nextConfig = {
       fullUrl: true,
     },
   },
+  experimental: {
+    webpackMemoryOptimizations: true,
+    typedEnv: true,
+  },
   output: "standalone",
 };
 
