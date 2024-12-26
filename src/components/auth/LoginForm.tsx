@@ -19,9 +19,12 @@ import {
 } from "@/components/ui/card";
 import { LogIn } from "lucide-react";
 import LoginFormViewModel from "./LoginForm.viewModel";
+import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 
 const LoginForm = () => {
-  const { form, onSubmit } = LoginFormViewModel();
+  const { form, onSubmit, showPassword, togglePasswordVisibility } =
+    LoginFormViewModel();
 
   return (
     <div className="w-full p-8 md:w-1/2">
@@ -59,11 +62,28 @@ const LoginForm = () => {
                   <FormItem className="space-y-2">
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        {...field}
-                        placeholder="••••••••"
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={togglePasswordVisibility}
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="text-muted-foreground h-4 w-4" />
+                          ) : (
+                            <Eye className="text-muted-foreground h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -86,8 +106,8 @@ const LoginForm = () => {
               </Button>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <Button variant="link" className="px-1 font-semibold">
-                  Sign up
+                <Button variant="link" className="px-1 font-semibold" asChild>
+                  <Link href="/register">Sign up</Link>
                 </Button>
               </div>
             </form>

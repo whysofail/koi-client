@@ -4,7 +4,7 @@ import { z } from "zod";
 import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "rememberedUser";
 
@@ -17,6 +17,11 @@ const LoginFormSchema = z.object({
 });
 
 const LoginFormViewModel = () => {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
@@ -25,21 +30,23 @@ const LoginFormViewModel = () => {
       rememberMe: false,
     },
   });
+
   useEffect(() => {
-    const remembered = localStorage.getItem(STORAGE_KEY);
-    if (remembered) {
-      const { email, rememberMe } = JSON.parse(remembered);
-      form.reset({
-        email,
-        password: "",
-        rememberMe,
-      });
+    try {
+      const remembered = localStorage.getItem(STORAGE_KEY);
+      if (remembered) {
+        const { email, rememberMe } = JSON.parse(remembered);
+        form.reset({
+          email,
+          password: "",
+          rememberMe,
+        });
+      }
+    } catch (error) {
+      localStorage.removeItem(STORAGE_KEY);
+      console.error("Error loading remembered user:", error);
     }
   }, [form]);
-
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
-  const router = useRouter();
 
   const onSubmit: SubmitHandler<z.infer<typeof LoginFormSchema>> = async (
     data,
@@ -109,6 +116,8 @@ const LoginFormViewModel = () => {
     form,
     onSubmit,
     clearRememberedUser,
+    showPassword,
+    togglePasswordVisibility: () => setShowPassword((prev) => !prev),
   };
 };
 

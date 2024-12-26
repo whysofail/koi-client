@@ -1,11 +1,10 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { hash } from "bcrypt-ts";
+import { useState } from "react";
 
 const RegisterFormSchema = z
   .object({
@@ -32,6 +31,9 @@ const RegisterFormSchema = z
   });
 
 const RegisterFormViewModel = () => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
@@ -81,6 +83,11 @@ const RegisterFormViewModel = () => {
   return {
     form,
     onSubmit,
+    showPassword,
+    togglePasswordVisibility: () => setShowPassword((prev) => !prev),
+    showConfirmPassword,
+    toggleConfirmPasswordVisibility: () =>
+      setShowConfirmPassword((prev) => !prev),
   };
 };
 

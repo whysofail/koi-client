@@ -21,9 +21,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { UserPlus } from "lucide-react";
 import Link from "next/link";
 import RegisterFormViewModel from "./RegisterFormViewModel";
+import { EyeOff, Eye } from "lucide-react";
 
 const RegisterForm = () => {
-  const { form, onSubmit } = RegisterFormViewModel();
+  const {
+    form,
+    onSubmit,
+    showPassword,
+    togglePasswordVisibility,
+    showConfirmPassword,
+    toggleConfirmPasswordVisibility,
+  } = RegisterFormViewModel();
+
   return (
     <div className="w-full p-8 md:w-1/2">
       <Card className="border-0 shadow-none">
@@ -71,11 +80,28 @@ const RegisterForm = () => {
                   <FormItem className="space-y-2">
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={togglePasswordVisibility}
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="text-muted-foreground h-4 w-4" />
+                          ) : (
+                            <Eye className="text-muted-foreground h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -88,11 +114,30 @@ const RegisterForm = () => {
                   <FormItem className="space-y-2">
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={toggleConfirmPasswordVisibility}
+                          aria-label={
+                            showConfirmPassword
+                              ? "Hide password"
+                              : "Show password"
+                          }
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="text-muted-foreground h-4 w-4" />
+                          ) : (
+                            <Eye className="text-muted-foreground h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
