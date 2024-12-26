@@ -5,7 +5,7 @@ import roleAccessMap from "./utils/roleAccessMap";
 
 type Role = keyof typeof roleAccessMap;
 
-export default withAuth(function middleware(req) {
+export default withAuth((req) => {
   if (!req.nextauth.token) {
     return NextResponse.redirect("/login");
   }
@@ -28,6 +28,6 @@ export const config = {
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      * - /login, /register, and /forbidden (auth and error pages)
      */
-    "/((?!login|register|403|api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!login|register|403|api/login|api/register|api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

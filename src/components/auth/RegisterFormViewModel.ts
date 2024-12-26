@@ -3,12 +3,13 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { hash } from "bcrypt-ts";
 import { useState } from "react";
 
 const RegisterFormSchema = z
   .object({
-    name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+    username: z
+      .string()
+      .min(2, { message: "Name must be at least 2 characters" }),
     email: z.string().email({ message: "Invalid email address" }),
     password: z
       .string()
@@ -39,7 +40,7 @@ const RegisterFormViewModel = () => {
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -51,14 +52,16 @@ const RegisterFormViewModel = () => {
     data,
   ) => {
     try {
-      const { name, email, password } = data;
-      const res = await fetch(`${process.env.BACKEND_URL}/api/register`, {
+      const { username, email, password } = data;
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register`;
+
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
           email,
-          password: await hash(password, 10),
+          username,
+          password,
         }),
       });
 
