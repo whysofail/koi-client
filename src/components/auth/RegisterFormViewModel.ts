@@ -53,7 +53,7 @@ const RegisterFormViewModel = () => {
   ) => {
     try {
       const { username, email, password } = data;
-      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/register`;
+      const url = `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/user-registration`;
 
       const res = await fetch(url, {
         method: "POST",
@@ -65,13 +65,13 @@ const RegisterFormViewModel = () => {
         }),
       });
 
-      if (!res.ok) {
-        toast.error("An error occurred during registration");
-      }
+      const responseData = await res.text();
 
-      toast.success(
-        "Registration successful! Please wait while admin approves your account",
-      );
+      if (!res.ok) {
+        toast.error(responseData);
+        return;
+      }
+      toast.success(responseData);
       router.push("/login");
     } catch (error: unknown) {
       if (error instanceof Error) {

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import { getServerSession } from "next-auth";
-import authOptions from "@/server/authOptions";
+import authOptions from "@/lib/authOptions";
 import SessionProvider from "@/lib/SessionProvider";
 
 const inter = Inter({ subsets: ["latin"] });

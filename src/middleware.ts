@@ -1,13 +1,13 @@
 import withAuth from "next-auth/middleware";
 import { NextResponse } from "next/server";
-import doesRoleHaveAccessToURL from "./utils/doesRoleHaveAccessToURL";
-import roleAccessMap from "./utils/roleAccessMap";
+import doesRoleHaveAccessToURL from "./lib/doesRoleHaveAccessToURL";
+import roleAccessMap from "./lib/roleAccessMap";
 
 type Role = keyof typeof roleAccessMap;
 
 export default withAuth((req) => {
   if (!req.nextauth.token) {
-    return NextResponse.redirect("/login");
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   const role = req.nextauth.token.role as Role;

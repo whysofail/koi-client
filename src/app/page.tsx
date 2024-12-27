@@ -4,7 +4,7 @@ import AuctionStatsCards from "@/components/user-dashboard/AuctionStatsCards";
 import ActiveAuctionsTable from "@/components/user-dashboard/ActiveAuctionsTable";
 import Watchlist from "@/components/user-dashboard/Watchlist";
 import { getServerSession } from "next-auth";
-import authOptions from "@/server/authOptions";
+import authOptions from "@/lib/authOptions";
 
 const Home = async () => {
   const session = await getServerSession(authOptions);
