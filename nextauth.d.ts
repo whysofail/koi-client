@@ -1,4 +1,5 @@
 import { DefaultSession } from "next-auth";
+import { DefaultJWT } from "next-auth/jwt";
 
 export enum Role {
   ADMIN = "admin",
@@ -7,12 +8,33 @@ export enum Role {
 
 declare module "next-auth" {
   interface User {
+    id: string;
     email: string;
     name: string;
     role: Role;
+    accessToken: string;
+    refreshToken: string;
   }
 
   interface Session extends DefaultSession {
-    user?: User;
+    user: {
+      id: string;
+      role: Role;
+      accessToken: string;
+      error?: "RefreshTokenError";
+    } & DefaultSession["user"];
+  }
+
+  declare module "next-auth/jwt" {
+    interface JWT extends DefaultJWT {
+      id: string;
+      role: Role;
+      accessToken: string;
+      refreshToken: string;
+      accessTokenExpires: number;
+      exp?: number;
+      iat?: number;
+      error?: "RefreshTokenError";
+    }
   }
 }

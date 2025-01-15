@@ -2,9 +2,9 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
-import { getServerSession } from "next-auth";
-import authOptions from "@/lib/authOptions";
 import SessionProvider from "@/lib/SessionProvider";
+import ReactQueryProvider from "@/lib/ReactQueryProvider";
+import { auth } from "@/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,13 +14,15 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
-  const serverSession = await getServerSession(authOptions);
+  const session = await auth();
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={serverSession}>
-          <main>{children}</main>
-          <Toaster richColors position="top-right" />
+        <SessionProvider session={session}>
+          <ReactQueryProvider>
+            <main>{children}</main>
+            <Toaster richColors position="top-right" />
+          </ReactQueryProvider>
         </SessionProvider>
       </body>
     </html>

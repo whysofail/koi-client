@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import LoginForm from "@/components/auth/LoginForm";
 
 const LoginPage: React.FC = () => (
@@ -18,7 +18,9 @@ const LoginPage: React.FC = () => (
           </div>
         </div>
       </div>
-      <LoginForm />
+      <Suspense>
+        <LoginForm />
+      </Suspense>
     </div>
   </main>
 );

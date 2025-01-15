@@ -1,54 +1,76 @@
 import React from "react";
 import Header from "@/components/dashboard/Header";
-import AuctionStatsCards from "@/components/user-dashboard/AuctionStatsCards";
-import ActiveAuctionsTable from "@/components/user-dashboard/ActiveAuctionsTable";
-import Watchlist from "@/components/user-dashboard/Watchlist";
-import { getServerSession } from "next-auth";
-import authOptions from "@/lib/authOptions";
+import StatsCards from "@/components/dashboard/StatsCards";
+import ActiveAuctionsTable from "@/components/dashboard/ActiveAuctionsTable";
+import SidebarNav from "@/components/dashboard/sidebar-nav";
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import FeaturedAuctions from "@/components/dashboard/FeaturedAuctions";
+import { getServerSession } from "@/lib/ServerSession";
 
 const Home = async () => {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
+  const isAdmin = session?.user?.role === "admin";
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
-            {session?.user?.role === "admin" ? "Admin Dashboard" : "Dashboard"}
-          </h2>
-        </div>
-        <div className="space-y-4">
-          <AuctionStatsCards />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <div className="col-span-4">
-              <div className="bg-card rounded-xl border">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold">Active Auctions</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Your current bids and watched items
-                  </p>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <SidebarNav />
+        <SidebarInset className="flex w-0 flex-1 flex-col">
+          <header className="flex h-14 items-center gap-4 border-b px-6">
+            <SidebarTrigger />
+            <div className="ml-auto">
+              <Header />
+            </div>
+          </header>
+          <main className="flex-1 overflow-auto">
+            <div className="container mx-auto p-6">
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  {isAdmin ? "Admin Dashboard" : "Dashboard"}
+                </h1>
+              </div>
+              <div className="mt-6">
+                <StatsCards isAdmin={isAdmin} />
+              </div>
+              <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+                <div className="col-span-4">
+                  <div>
+                    <div className="mb-4">
+                      <h2 className="text-lg font-semibold">Active Auctions</h2>
+                      <p className="text-muted-foreground text-sm">
+                        Monitor and manage ongoing auctions
+                      </p>
+                    </div>
+                    <div className="rounded-lg border">
+                      <ActiveAuctionsTable isAdmin={isAdmin} />
+                    </div>
+                  </div>
                 </div>
-                <ActiveAuctionsTable />
+                <div className="col-span-3">
+                  <div>
+                    <div className="mb-4">
+                      <h2 className="text-lg font-semibold">
+                        Featured Auctions
+                      </h2>
+                      <p className="text-muted-foreground text-sm">
+                        Premium and highlighted listings
+                      </p>
+                    </div>
+                    <div className="rounded-lg border">
+                      <FeaturedAuctions isAdmin={isAdmin} />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="col-span-3">
-              <div className="bg-card rounded-xl border">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold">Watchlist</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Items you&apos;re interested in
-                  </p>
-                </div>
-                <div className="p-6 pt-0">
-                  <Watchlist />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          </main>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 

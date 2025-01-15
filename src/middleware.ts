@@ -1,16 +1,16 @@
-import withAuth from "next-auth/middleware";
+import { auth } from "./auth";
 import { NextResponse } from "next/server";
 import doesRoleHaveAccessToURL from "./lib/doesRoleHaveAccessToURL";
 import roleAccessMap from "./lib/roleAccessMap";
 
 type Role = keyof typeof roleAccessMap;
 
-export default withAuth((req) => {
-  if (!req.nextauth.token) {
+export default auth((req) => {
+  if (!req.auth) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  const role = req.nextauth.token.role as Role;
+  const role = req.auth.user.role as Role;
   const haveAccess = doesRoleHaveAccessToURL(role, req.nextUrl.pathname);
 
   if (!haveAccess) {
@@ -28,6 +28,6 @@ export const config = {
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      * - /login, /register, and /forbidden (auth and error pages)
      */
-    "/((?!login|register|403|api/login|api/register|api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!login|register|403|api/auth/login|api/auth/register|api/auth/refresh-token|api/auth/revoke-token|api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

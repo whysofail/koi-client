@@ -1,15 +1,18 @@
 export const POST = async (req: Request) => {
   const { email, username, password } = await req.json();
   try {
-    const backendRes = await fetch(`${process.env.BACKEND_URL}/api/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        username,
-        password,
-      }),
-    });
+    const backendRes = await fetch(
+      `${process.env.BACKEND_URL}/api/auth/register`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          username,
+          password,
+        }),
+      },
+    );
 
     const responseData = await backendRes.json();
 
