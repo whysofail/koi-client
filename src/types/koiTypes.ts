@@ -52,7 +52,7 @@ interface Koi {
   buyer_name: string | null;
   death_date: string | null;
   death_note: string | null;
-  status: "Available" | string; // You might want to add other possible status values
+  status: "Available" | string;
   created_at: string;
   updated_at: string;
   breeder: Breeder;
@@ -61,7 +61,24 @@ interface Koi {
   history: any[];
 }
 
-// For the data array
-export interface KoiData {
+export interface PaginatedResponse {
+  current_page: number;
   data: Koi[];
+  first_page_url: string;
+  from: number;
+  last_page: number;
+  last_page_url: string;
+  links: {
+    url: string | null;
+    label: string;
+    active: boolean;
+  }[];
+  next_page_url: string | null;
+  path: string;
+  per_page: string;
+  prev_page_url: string | null;
+  to: number;
+  total: number;
 }
+
+export type { Koi };

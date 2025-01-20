@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import doesRoleHaveAccessToURL from "./lib/doesRoleHaveAccessToURL";
 import roleAccessMap from "./lib/roleAccessMap";
 
+const BUFFER_TIME = 30;
+
 type Role = keyof typeof roleAccessMap;
 
 export default auth((req) => {
@@ -16,6 +18,15 @@ export default auth((req) => {
   if (!haveAccess) {
     return NextResponse.redirect(new URL("/403", req.url));
   }
+
+  const tokenExpiry = req.auth.user.accessTokenExpires;
+  const currentTime = Math.floor(Date.now() / 1000);
+
+  if (tokenExpiry && currentTime >= tokenExpiry - BUFFER_TIME) {
+    return NextResponse.redirect(new URL("/session-expired", req.url));
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
@@ -28,6 +39,6 @@ export const config = {
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      * - /login, /register, and /forbidden (auth and error pages)
      */
-    "/((?!login|register|403|api/auth/login|api/auth/register|api/auth/refresh-token|api/auth/revoke-token|api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!login|register|403|session-expired|api/auth/login|api/auth/register|api|api/kois|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

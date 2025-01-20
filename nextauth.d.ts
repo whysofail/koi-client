@@ -13,7 +13,6 @@ declare module "next-auth" {
     name: string;
     role: Role;
     accessToken: string;
-    refreshToken: string;
   }
 
   interface Session extends DefaultSession {
@@ -21,7 +20,7 @@ declare module "next-auth" {
       id: string;
       role: Role;
       accessToken: string;
-      error?: "RefreshTokenError";
+      accessTokenExpires: number;
     } & DefaultSession["user"];
   }
 
@@ -30,11 +29,9 @@ declare module "next-auth" {
       id: string;
       role: Role;
       accessToken: string;
-      refreshToken: string;
       accessTokenExpires: number;
       exp?: number;
       iat?: number;
-      error?: "RefreshTokenError";
     }
   }
 }

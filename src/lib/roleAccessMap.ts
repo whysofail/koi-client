@@ -1,5 +1,5 @@
 const roleAccessMap = {
-  admin: ["/", "/user-management", "/api/auth/refresh-token"],
+  admin: ["/", "/user-management", "/koi-inventory", "/auction/add/[koiID]"],
   user: ["/", "/profile-settings", "/api/auth/refresh-token"],
 };
 
