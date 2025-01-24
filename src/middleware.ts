@@ -8,10 +8,17 @@ const BUFFER_TIME = 30;
 type Role = keyof typeof roleAccessMap;
 
 export default auth((req) => {
+  // Check authentication first
   if (!req.auth) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
+  // Allow all authenticated API requests to pass through
+  if (req.nextUrl.pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
+
+  // Continue with role-based access checks for non-API routes
   const role = req.auth.user.role as Role;
   const haveAccess = doesRoleHaveAccessToURL(role, req.nextUrl.pathname);
 
@@ -39,6 +46,6 @@ export const config = {
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      * - /login, /register, and /forbidden (auth and error pages)
      */
-    "/((?!login|register|403|session-expired|api/auth/login|api/auth/register|api|api/kois|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!login|register|403|api|session-expired|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

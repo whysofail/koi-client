@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { GetUserResponse } from "@/types/usersTypes";
-import axios from "axios";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const fetchUserData = async (token: string): Promise<GetUserResponse> => {
-  const { data } = await axios.get(`${process.env.BACKEND_URL}/api/users`, {
+  const { data } = await fetchWithAuth.get(`/users`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

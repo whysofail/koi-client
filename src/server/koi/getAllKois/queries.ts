@@ -12,7 +12,7 @@ const fetchKoiData = async ({
   per_page = 10,
 }: FetchKoiParams = {}): Promise<PaginatedResponse> => {
   const { data } = await axios.get(
-    `http://localhost:8000/api/kois?page=${page}&per_page=${per_page}&status=auction`,
+    `${process.env.NEXT_PUBLIC_LARAVEL_URL}/api/kois?page=${page}&per_page=${per_page}&status=auction`,
     {
       headers: {
         "x-api-key": process.env.KOI_HEADERS,

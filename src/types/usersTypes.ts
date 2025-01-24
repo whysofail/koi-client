@@ -22,3 +22,12 @@ export interface GetUserResponse {
   message: string;
   data: UserData;
 }
+
+export interface PaginatedUsersResponse {
+  status: string;
+  message: string;
+  data: UserData[];
+  count: number;
+  page: number;
+  limit: number;
+}

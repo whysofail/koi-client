@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 type CreateAuctionParams = {
   title: string;
@@ -12,16 +12,11 @@ type CreateAuctionParams = {
 };
 
 const createAuction = async (token: string, data: CreateAuctionParams) => {
-  const { data: response } = await axios.post(
-    `${process.env.BACKEND_URL}/api/auctions`,
-    data,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+  const { data: response } = await fetchWithAuth.post("/auctions", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
   return response;
 };
 

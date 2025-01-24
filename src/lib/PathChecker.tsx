@@ -34,7 +34,7 @@ const PathChecker: React.FC<PathCheckerProps> = ({ children }) => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <SidebarNav isAdmin={isAdmin} />
-        <SidebarInset className="flex w-0 flex-1 flex-col">
+        <SidebarInset>
           <header className="flex h-14 items-center gap-4 border-b px-6">
             <SidebarTrigger />
             <div className="ml-auto">

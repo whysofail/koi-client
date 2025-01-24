@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { PaginatedUsersResponse } from "@/types/usersTypes";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 enum UserRole {
   ADMIN = "admin",
@@ -27,8 +27,8 @@ const fetchAllUsers = async ({
   registrationDateFrom = dateNow,
   registrationDateTo = nextWeek,
 }: FetchAllUsersParams): Promise<PaginatedUsersResponse> => {
-  const { data } = await axios.get(
-    `${process.env.BACKEND_URL}/api/users?page=${page}&limit=${limit}&role=${role}&registration_date_from=${registrationDateFrom}&registration_date_to=${registrationDateTo}`,
+  const { data } = await fetchWithAuth.get(
+    `/users?page=${page}&limit=${limit}&role=${role}&registration_date_from=${registrationDateFrom}&registration_date_to=${registrationDateTo}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

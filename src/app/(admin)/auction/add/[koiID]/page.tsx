@@ -11,11 +11,13 @@ const AddAuctionPage = async ({
   const koiID = (await params).koiID;
   const session = await getServerSession();
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Add to Auction</h1>
+    <div className="container mx-auto space-y-6 p-4 md:p-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+          Add to Auction
+        </h1>
       </div>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 md:min-h-[36rem] md:gap-6 lg:grid-cols-2">
         <KoiDetails koiID={koiID} />
         <KoiAuctionForm koiID={koiID} token={session?.user.accessToken ?? ""} />
       </div>

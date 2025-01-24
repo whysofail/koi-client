@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { PaginatedAuctionsResponse } from "@/types/auctionTypes";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 enum AuctionStatus {
   DRAFT = "DRAFT",
@@ -32,8 +32,8 @@ const fetchAllAuctions = async ({
   startDateFrom = dateNow,
   startDateTo = nextWeek,
 }: FetchAllAuctionsParams): Promise<PaginatedAuctionsResponse> => {
-  const { data } = await axios.get(
-    `${process.env.BACKEND_URL}/api/auctions?page=${page}&limit=${limit}&status=${status}&startDateFrom=${startDateFrom}&startDateTo=${startDateTo}`,
+  const { data } = await fetchWithAuth.get(
+    `/auctions?page=${page}&limit=${limit}&status=${status}&startDateFrom=${startDateFrom}&startDateTo=${startDateTo}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
