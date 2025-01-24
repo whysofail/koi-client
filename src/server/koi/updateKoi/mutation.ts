@@ -21,6 +21,9 @@ const useUpdateKoi = () =>
   useMutation({
     mutationFn: ({ koiId, koiStatus }: { koiId: string; koiStatus: string }) =>
       updateKoi(koiId, koiStatus),
+    onError: (error) => {
+      console.error("Failed to update koi:", error);
+    },
   });
 
 export default useUpdateKoi;

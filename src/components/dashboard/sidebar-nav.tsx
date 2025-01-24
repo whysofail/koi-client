@@ -9,7 +9,6 @@ import {
   Settings,
   Shield,
   AlertCircle,
-  BarChart,
   Heart,
   Gavel,
   History,
@@ -38,12 +37,7 @@ const adminNavigation = [
       {
         title: "Dashboard",
         icon: LayoutDashboard,
-        href: "/admin",
-      },
-      {
-        title: "Analytics",
-        icon: BarChart,
-        href: "/admin/analytics",
+        href: "/",
       },
     ],
   },
@@ -56,9 +50,14 @@ const adminNavigation = [
         href: "/admin/users",
       },
       {
+        title: "Inventory",
+        icon: Package,
+        href: "/koi-inventory",
+      },
+      {
         title: "Auctions",
         icon: Package,
-        href: "/admin/auctions",
+        href: "/auctions",
       },
       {
         title: "Reports",
@@ -91,7 +90,7 @@ const userNavigation = [
       {
         title: "Dashboard",
         icon: LayoutDashboard,
-        href: "/dashboard",
+        href: "/",
       },
       {
         title: "My Bids",

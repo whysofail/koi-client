@@ -39,7 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useGetKoiData from "@/server/getKoi/queries";
+import useGetKoiData from "@/server/koi/getAllKois/queries";
 import { Koi } from "@/types/koiTypes";
 
 export function KoiManagementTable() {
