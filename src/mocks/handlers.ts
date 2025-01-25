@@ -28,26 +28,32 @@ const mockSession = {
 };
 
 export const nextAuthHandlers = [
-  http.post(`${process.env.BACKEND_URL}/api/login`, async ({ request }) => {
-    const body = (await request.json()) as { email: string; password: string };
+  http.post(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login`,
+    async ({ request }) => {
+      const body = (await request.json()) as {
+        email: string;
+        password: string;
+      };
 
-    // Mock credentials check
-    if (body?.email === "test@example.com" && body?.password === "password") {
-      return HttpResponse.json({
-        token: "mock-jwt-token",
-        user: {
-          user_id: mockUser.id,
-          name: mockUser.name,
-          email: mockUser.email,
-          role: mockUser.role,
-        },
-      });
-    }
+      // Mock credentials check
+      if (body?.email === "test@example.com" && body?.password === "password") {
+        return HttpResponse.json({
+          token: "mock-jwt-token",
+          user: {
+            user_id: mockUser.id,
+            name: mockUser.name,
+            email: mockUser.email,
+            role: mockUser.role,
+          },
+        });
+      }
 
-    return new HttpResponse(null, { status: 401 });
-  }),
+      return new HttpResponse(null, { status: 401 });
+    },
+  ),
 
-  http.get(`${process.env.BACKEND_URL}/api/auth/session`, () => {
+  http.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/session`, () => {
     return HttpResponse.json(mockSession);
   }),
 

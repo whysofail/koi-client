@@ -28,10 +28,12 @@ const LoginForm = () => {
 
   return (
     <div className="w-full p-8 md:w-1/2">
-      <Card className="border-0 shadow-none">
+      <Card className="border-0 bg-zinc-100 shadow-none dark:bg-zinc-800">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Login</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+            Login
+          </CardTitle>
+          <CardDescription className="text-zinc-600 dark:text-zinc-400">
             Enter your email and password to access your account
           </CardDescription>
         </CardHeader>
@@ -43,12 +45,15 @@ const LoginForm = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-zinc-900 dark:text-zinc-50">
+                      Email
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="user@mail.com"
                         {...field}
+                        className="border-zinc-200 bg-zinc-50 text-zinc-900 placeholder-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-50 dark:placeholder-zinc-400"
                       />
                     </FormControl>
                     <FormMessage />
@@ -60,27 +65,30 @@ const LoginForm = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-zinc-900 dark:text-zinc-50">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showPassword ? "text" : "password"}
                           {...field}
+                          className="border-zinc-200 bg-zinc-50 text-zinc-900 placeholder-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-50 dark:placeholder-zinc-400"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent dark:hover:bg-transparent"
                           onClick={togglePasswordVisibility}
                           aria-label={
                             showPassword ? "Hide password" : "Show password"
                           }
                         >
                           {showPassword ? (
-                            <EyeOff className="text-muted-foreground h-4 w-4" />
+                            <EyeOff className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                           ) : (
-                            <Eye className="text-muted-foreground h-4 w-4" />
+                            <Eye className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                           )}
                         </Button>
                       </div>
@@ -90,23 +98,33 @@ const LoginForm = () => {
                 )}
               />
               <div className="flex items-center justify-between">
-                <label className="flex items-center space-x-2 text-sm">
+                <label className="flex items-center space-x-2 text-sm text-zinc-900 dark:text-zinc-50">
                   <input
                     type="checkbox"
-                    className="form-checkbox rounded border-gray-300"
+                    className="form-checkbox rounded border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700"
                   />
                   <span>Remember me</span>
                 </label>
-                <Button variant="link" className="px-0 font-semibold">
+                <Button
+                  variant="link"
+                  className="px-0 font-semibold text-zinc-900 dark:text-zinc-50"
+                >
                   Forgot password?
                 </Button>
               </div>
-              <Button className="w-full" type="submit">
+              <Button
+                className="w-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-100"
+                type="submit"
+              >
                 <LogIn className="mr-2 h-4 w-4" /> Sign In
               </Button>
-              <div className="text-center text-sm">
+              <div className="text-center text-sm text-zinc-600 dark:text-zinc-400">
                 Don&apos;t have an account?{" "}
-                <Button variant="link" className="px-1 font-semibold" asChild>
+                <Button
+                  variant="link"
+                  className="px-1 font-semibold text-zinc-900 dark:text-zinc-50"
+                  asChild
+                >
                   <Link href="/register">Sign up</Link>
                 </Button>
               </div>

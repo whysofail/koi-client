@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useCreateAuction } from "@/server/auction/createAuction/mutation";
+import { useCreateAuction } from "@/server/auction/createAuction/mutations";
 import { toast } from "sonner";
 
 const formSchema = z.object({

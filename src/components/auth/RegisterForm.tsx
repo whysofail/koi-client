@@ -35,10 +35,14 @@ const RegisterForm = () => {
 
   return (
     <div className="w-full p-8 md:w-1/2">
-      <Card className="border-0 shadow-none">
+      <Card className="border-0 bg-zinc-100 shadow-none dark:bg-zinc-800">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
-          <CardDescription>Create an account to get started</CardDescription>
+          <CardTitle className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+            Sign Up
+          </CardTitle>
+          <CardDescription className="text-zinc-600 dark:text-zinc-400">
+            Create an account to get started
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -48,9 +52,15 @@ const RegisterForm = () => {
                 name="username"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel className="text-zinc-900 dark:text-zinc-50">
+                      Username
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Your name" {...field} />
+                      <Input
+                        placeholder="Your name"
+                        {...field}
+                        className="border-zinc-200 bg-zinc-50 text-zinc-900 placeholder-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-50 dark:placeholder-zinc-400"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -61,12 +71,15 @@ const RegisterForm = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-zinc-900 dark:text-zinc-50">
+                      Email
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="john@example.com"
                         {...field}
+                        className="border-zinc-200 bg-zinc-50 text-zinc-900 placeholder-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-50 dark:placeholder-zinc-400"
                       />
                     </FormControl>
                     <FormMessage />
@@ -78,27 +91,30 @@ const RegisterForm = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-zinc-900 dark:text-zinc-50">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showPassword ? "text" : "password"}
                           {...field}
+                          className="border-zinc-200 bg-zinc-50 text-zinc-900 placeholder-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-50 dark:placeholder-zinc-400"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent dark:hover:bg-transparent"
                           onClick={togglePasswordVisibility}
                           aria-label={
                             showPassword ? "Hide password" : "Show password"
                           }
                         >
                           {showPassword ? (
-                            <EyeOff className="text-muted-foreground h-4 w-4" />
+                            <EyeOff className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                           ) : (
-                            <Eye className="text-muted-foreground h-4 w-4" />
+                            <Eye className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                           )}
                         </Button>
                       </div>
@@ -112,18 +128,21 @@ const RegisterForm = () => {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel className="text-zinc-900 dark:text-zinc-50">
+                      Confirm Password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showConfirmPassword ? "text" : "password"}
                           {...field}
+                          className="border-zinc-200 bg-zinc-50 text-zinc-900 placeholder-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-50 dark:placeholder-zinc-400"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent dark:hover:bg-transparent"
                           onClick={toggleConfirmPasswordVisibility}
                           aria-label={
                             showConfirmPassword
@@ -132,9 +151,9 @@ const RegisterForm = () => {
                           }
                         >
                           {showConfirmPassword ? (
-                            <EyeOff className="text-muted-foreground h-4 w-4" />
+                            <EyeOff className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                           ) : (
-                            <Eye className="text-muted-foreground h-4 w-4" />
+                            <Eye className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                           )}
                         </Button>
                       </div>
@@ -152,14 +171,15 @@ const RegisterForm = () => {
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        className="border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700"
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>
+                      <FormLabel className="text-zinc-900 dark:text-zinc-50">
                         I accept the{" "}
                         <Button
                           variant="link"
-                          className="text-primary h-auto p-0"
+                          className="h-auto p-0 text-zinc-900 dark:text-zinc-50"
                         >
                           terms and conditions
                         </Button>
@@ -169,12 +189,18 @@ const RegisterForm = () => {
                   </FormItem>
                 )}
               />
-              <Button className="w-full" type="submit">
+              <Button
+                className="w-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-100"
+                type="submit"
+              >
                 <UserPlus className="mr-2 h-4 w-4" /> Create Account
               </Button>
-              <div className="text-center text-sm">
+              <div className="text-center text-sm text-zinc-600 dark:text-zinc-400">
                 Already have an account?{" "}
-                <Link href="/login" className="text-primary hover:underline">
+                <Link
+                  href="/login"
+                  className="text-zinc-900 hover:underline dark:text-zinc-50"
+                >
                   Sign in
                 </Link>
               </div>

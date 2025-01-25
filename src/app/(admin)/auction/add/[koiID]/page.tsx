@@ -1,7 +1,7 @@
 import React from "react";
 import KoiAuctionForm from "@/components/admin/koi-auction-form/KoiAuctionForm";
 import KoiDetails from "@/components/admin/koi-details/KoiDetails";
-import { getServerSession } from "@/lib/ServerSession";
+import { getServerSession } from "@/lib/serverSession";
 
 const AddAuctionPage = async ({
   params,

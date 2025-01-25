@@ -1,17 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { AuctionBody } from "@/types/auctionTypes";
 
-type CreateAuctionParams = {
-  title: string;
-  description: string;
-  item: number;
-  start_datetime: Date;
-  end_datetime: Date;
-  reserve_price: number;
-  bid_increment: number;
-};
-
-const createAuction = async (token: string, data: CreateAuctionParams) => {
+const createAuction = async (token: string, data: AuctionBody) => {
   const { data: response } = await fetchWithAuth.post("/auctions", data, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -22,7 +13,7 @@ const createAuction = async (token: string, data: CreateAuctionParams) => {
 
 export const useCreateAuction = (token: string) => {
   return useMutation({
-    mutationFn: (data: CreateAuctionParams) => createAuction(token, data),
+    mutationFn: (data: AuctionBody) => createAuction(token, data),
     onError: (error) => {
       console.error("Failed to create auction:", error);
     },

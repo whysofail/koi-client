@@ -2,14 +2,14 @@ import React from "react";
 import StatsCards from "@/components/dashboard/StatsCards";
 import ActiveAuctionsTable from "@/components/dashboard/ActiveAuctionsTable";
 import FeaturedAuctions from "@/components/dashboard/FeaturedAuctions";
-import { getServerSession } from "@/lib/ServerSession";
+import { getServerSession } from "@/lib/serverSession";
 
 const Home = async () => {
   const session = await getServerSession();
   const isAdmin = session?.user?.role === "admin";
 
   return (
-    <div className="container mx-auto p-6">
+    <main className="container mx-auto p-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
           {isAdmin ? "Admin Dashboard" : "Dashboard"}
@@ -46,7 +46,7 @@ const Home = async () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

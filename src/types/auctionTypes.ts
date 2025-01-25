@@ -21,6 +21,16 @@ interface PaginatedResponse<T> {
   limit: number;
 }
 
+export type AuctionBody = {
+  title: string;
+  description: string;
+  item: number;
+  start_datetime: Date;
+  end_datetime: Date;
+  reserve_price: number;
+  bid_increment: number;
+};
+
 export type PaginatedAuctionsResponse = PaginatedResponse<User>;
 
 export type GetAuctionByIDResponse = Omit<
