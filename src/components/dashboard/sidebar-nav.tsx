@@ -8,7 +8,6 @@ import {
   Package,
   Settings,
   Shield,
-  AlertCircle,
   Heart,
   Gavel,
   History,
@@ -47,22 +46,17 @@ const adminNavigation = [
       {
         title: "Users",
         icon: Users,
-        href: "/admin/users",
+        href: "/users",
       },
       {
         title: "Inventory",
         icon: Package,
-        href: "/koi-inventory",
+        href: "/inventory",
       },
       {
         title: "Auctions",
         icon: Package,
         href: "/auctions",
-      },
-      {
-        title: "Reports",
-        icon: AlertCircle,
-        href: "/admin/reports",
       },
     ],
   },

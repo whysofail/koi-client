@@ -19,6 +19,21 @@ interface FetchAllAuctionsParams {
   status?: AuctionStatus;
   startDateFrom?: Date;
   startDateTo?: Date;
+  orderBy?:
+    | "auction_id"
+    | "title"
+    | "description"
+    | "item"
+    | "start_datetime"
+    | "end_datetime"
+    | "status"
+    | "current_highest_bid"
+    | "reserve_price"
+    | "bid_increment"
+    | "created_at"
+    | "updated_at"
+    | "created_by_id";
+  order?: "ASC" | "DESC";
 }
 
 const dateNow = new Date();
@@ -31,9 +46,13 @@ const fetchAllAuctions = async ({
   status = AuctionStatus.ACTIVE,
   startDateFrom = dateNow,
   startDateTo = nextWeek,
+  orderBy = "created_at",
+  order = "DESC",
 }: FetchAllAuctionsParams): Promise<PaginatedAuctionsResponse> => {
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
   const { data } = await fetchWithAuth.get(
-    `/auctions?page=${page}&limit=${limit}&status=${status}&startDateFrom=${startDateFrom}&startDateTo=${startDateTo}`,
+    `/auctions?page=${page}&limit=${limit}&status=${status}&startDateFrom=${formatDate(startDateFrom)}&startDateTo=${formatDate(startDateTo)}&orderBy=${orderBy}&order=${order}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

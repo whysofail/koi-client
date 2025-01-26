@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { GetAuctionByIDResponse } from "@/types/auctionTypes";
+import { AuctionByIDResponse } from "@/types/auctionTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const fetchAuctionByID = async (
   id: string,
   token: string,
-): Promise<GetAuctionByIDResponse> => {
+): Promise<AuctionByIDResponse> => {
   const { data } = await fetchWithAuth.get(`/auctions/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,

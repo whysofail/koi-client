@@ -8,17 +8,14 @@ const BUFFER_TIME = 30;
 type Role = keyof typeof roleAccessMap;
 
 export default auth((req) => {
-  // Check authentication first
   if (!req.auth) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // Allow all authenticated API requests to pass through
   if (req.nextUrl.pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  // Continue with role-based access checks for non-API routes
   const role = req.auth.user.role as Role;
   const haveAccess = doesRoleHaveAccessToURL(role, req.nextUrl.pathname);
 

@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 
 export const fetchWithAuth: AxiosInstance = axios.create({
-  baseURL: `${process.env.NEXT_BACKEND_URL}/api`,
+  baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

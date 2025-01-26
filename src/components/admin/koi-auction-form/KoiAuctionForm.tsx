@@ -45,7 +45,7 @@ const KoiAuctionForm: FC<{ token: string; koiID: string }> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="rounded-lg border p-4">
+        <div className="rounded-xl border p-4 dark:border-neutral-700">
           <h2 className="font-semibold">Auction Details</h2>
           <div className="mt-4 space-y-4">
             <FormField
@@ -107,7 +107,7 @@ const KoiAuctionForm: FC<{ token: string; koiID: string }> = ({
                     <Input
                       type="text"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => field.onChange(e.target.value)}
                       disabled
                     />
                   </FormControl>
@@ -169,9 +169,17 @@ const KoiAuctionForm: FC<{ token: string; koiID: string }> = ({
                               field.onChange,
                             )
                           }
-                          disabled={(date) =>
-                            date < new Date() || date < new Date("1900-01-01")
-                          }
+                          disabled={(date) => {
+                            const now = new Date();
+                            const today = new Date(
+                              now.getFullYear(),
+                              now.getMonth(),
+                              now.getDate(),
+                            );
+                            return (
+                              date < today || date < new Date("1900-01-01")
+                            );
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
@@ -184,17 +192,15 @@ const KoiAuctionForm: FC<{ token: string; koiID: string }> = ({
                           field.onChange,
                         )
                       }
-                      defaultValue={
+                      value={
                         field.value
-                          ? new Date(field.value)
+                          ? `${new Date(field.value)
                               .getHours()
                               .toString()
-                              .padStart(2, "0") +
-                            ":" +
-                            new Date(field.value)
+                              .padStart(2, "0")}:${new Date(field.value)
                               .getMinutes()
                               .toString()
-                              .padStart(2, "0")
+                              .padStart(2, "0")}`
                           : undefined
                       }
                     >
@@ -276,9 +282,17 @@ const KoiAuctionForm: FC<{ token: string; koiID: string }> = ({
                               field.onChange,
                             )
                           }
-                          disabled={(date) =>
-                            date < new Date() || date < new Date("1900-01-01")
-                          }
+                          disabled={(date) => {
+                            const now = new Date();
+                            const today = new Date(
+                              now.getFullYear(),
+                              now.getMonth(),
+                              now.getDate(),
+                            );
+                            return (
+                              date < today || date < new Date("1900-01-01")
+                            );
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
@@ -291,17 +305,15 @@ const KoiAuctionForm: FC<{ token: string; koiID: string }> = ({
                           field.onChange,
                         )
                       }
-                      defaultValue={
+                      value={
                         field.value
-                          ? new Date(field.value)
+                          ? `${new Date(field.value)
                               .getHours()
                               .toString()
-                              .padStart(2, "0") +
-                            ":" +
-                            new Date(field.value)
+                              .padStart(2, "0")}:${new Date(field.value)
                               .getMinutes()
                               .toString()
-                              .padStart(2, "0")
+                              .padStart(2, "0")}`
                           : undefined
                       }
                     >

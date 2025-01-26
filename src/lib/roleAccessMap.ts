@@ -2,11 +2,11 @@ const roleAccessMap = {
   admin: [
     "/",
     "/user-management",
-    "/koi-inventory",
-    "/auction/add/[koiID]",
+    "/inventory",
+    "/auctions/add/[koiID]",
     "/auctions",
   ],
-  user: ["/", "/profile-settings", "/api/auth/refresh-token"],
+  user: ["/", "/profile-settings"],
 };
 
 export default roleAccessMap;

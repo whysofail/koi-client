@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -39,82 +39,115 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useGetKoiData from "@/server/koi/getAllKois/queries";
-import { Koi } from "@/types/koiTypes";
+import useGetAllAuctions from "@/server/auction/getAllAuctions/queries";
 import TableSkeleton from "@/components/skeletons/TableSkeleton";
+import {
+  transformAuctionToTableData,
+  type AuctionTableData,
+} from "@/types/auctionTypes";
 
-const KoiTable = () => {
+const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
   const router = useRouter();
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const { data: PaginatedData, isLoading } = useGetKoiData({
+  const { data: PaginatedData, isLoading } = useGetAllAuctions({
+    token,
     page: pageIndex,
-    per_page: pageSize,
+    limit: pageSize,
   });
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns: ColumnDef<Koi>[] = [
+  const columns: ColumnDef<AuctionTableData>[] = [
     {
-      accessorKey: "code",
-      header: "Code",
+      accessorKey: "title",
+      header: "Title",
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+    },
+    {
+      accessorKey: "item",
+      header: "Item",
+    },
+    {
+      accessorKey: "start_datetime",
+      header: "Start Date",
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("code")}</div>
+        <div>
+          {new Date(row.getValue("start_datetime")).toLocaleDateString()}
+        </div>
       ),
     },
     {
-      accessorKey: "nickname",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Nickname
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
+      accessorKey: "end_datetime",
+      header: "End Date",
+      cell: ({ row }) => (
+        <div>{new Date(row.getValue("end_datetime")).toLocaleDateString()}</div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+    },
+    {
+      accessorKey: "current_highest_bid",
+      header: "Current Bid",
+      cell: ({ row }) => {
+        const value = row.getValue("current_highest_bid");
+        return <div>¥{Number(value || 0).toLocaleString()}</div>;
       },
     },
     {
-      accessorKey: "gender",
-      header: "Gender",
+      accessorKey: "reserve_price",
+      header: "Reserve Price",
+      cell: ({ row }) => {
+        const value = row.getValue("reserve_price");
+        return <div>¥{Number(value || 0).toLocaleString()}</div>;
+      },
     },
     {
-      accessorKey: "breeder.name",
-      header: "Breeder",
+      accessorKey: "bid_increment",
+      header: "Bid Increment",
+      cell: ({ row }) => {
+        const value = row.getValue("bid_increment");
+        return <div>¥{Number(value || 0).toLocaleString()}</div>;
+      },
     },
     {
-      accessorKey: "variety.name",
-      header: "Variety",
+      accessorKey: "user",
+      header: "Creator",
     },
     {
-      accessorKey: "size",
-      header: "Size",
+      accessorKey: "bids",
+      header: "Bids Count",
+    },
+    {
+      accessorKey: "participants",
+      header: "Participants",
     },
     {
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => {
-        const koi = row.original;
-        return (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(`/auctions/add/${koi.id}`)}
-          >
-            Add to Auction
-          </Button>
-        );
-      },
+      cell: ({ row }) => (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push(`/auctions/${row.original.auction_id}`)}
+        >
+          View Details
+        </Button>
+      ),
     },
   ];
 
   const table = useReactTable({
-    data: PaginatedData?.data ?? [],
+    data: PaginatedData?.data.map(transformAuctionToTableData) ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -130,7 +163,7 @@ const KoiTable = () => {
       columnVisibility,
       rowSelection,
     },
-    pageCount: Math.ceil((PaginatedData?.total ?? 0) / pageSize),
+    pageCount: Math.ceil((PaginatedData?.count ?? 0) / pageSize),
     manualPagination: true,
   });
 
@@ -142,10 +175,10 @@ const KoiTable = () => {
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Filter koi..."
-          value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter auctions..."
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("code")?.setFilterValue(event.target.value)
+            table.getColumn("title")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -229,15 +262,15 @@ const KoiTable = () => {
       <div className="flex items-center justify-between space-x-2">
         <div className="text-muted-foreground flex-1 text-sm">
           Page {pageIndex} of{" "}
-          {Math.ceil((PaginatedData?.total ?? 0) / pageSize)} | Total{" "}
-          {PaginatedData?.total ?? 0} items
+          {Math.ceil((PaginatedData?.count ?? 0) / pageSize)} | Total{" "}
+          {PaginatedData?.count ?? 0} items
         </div>
         <div className="flex items-center space-x-2">
           <Select
             value={pageSize.toString()}
             onValueChange={(value) => {
               setPageSize(Number(value));
-              setPageIndex(1); // Reset to first page when changing page size
+              setPageIndex(1);
             }}
           >
             <SelectTrigger className="w-[100px]">
@@ -264,7 +297,7 @@ const KoiTable = () => {
             size="sm"
             onClick={() => setPageIndex(pageIndex + 1)}
             disabled={
-              pageIndex >= Math.ceil((PaginatedData?.total ?? 0) / pageSize) ||
+              pageIndex >= Math.ceil((PaginatedData?.count ?? 0) / pageSize) ||
               isLoading
             }
           >
@@ -276,4 +309,4 @@ const KoiTable = () => {
   );
 };
 
-export default KoiTable;
+export default AuctionsTable;
