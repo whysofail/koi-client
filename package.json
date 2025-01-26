@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "husky install",
     "test": "jest --watch",
     "test:ci": "jest --ci"
   },
@@ -54,6 +53,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.2.2",
+    "@happy-dom/global-registrator": "^16.7.2",
     "@next/eslint-plugin-next": "15.1.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "6.1.5",
@@ -80,13 +80,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "tailwindcss": "^3.4.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "19.0.2",
-      "@types/react-dom": "19.0.2"
-    }
+    "typescript": "^5.5.4",
+    "@types/bun": "latest"
   }
 }

@@ -9,7 +9,7 @@ const Home = async () => {
   const isAdmin = session?.user?.role === "admin";
 
   return (
-    <main className="container mx-auto p-6">
+    <div className="container mx-auto p-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
           {isAdmin ? "Admin Dashboard" : "Dashboard"}
@@ -46,7 +46,7 @@ const Home = async () => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

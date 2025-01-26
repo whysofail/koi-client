@@ -11,7 +11,7 @@ import { Badge } from "../ui/badge";
 
 const ActiveAuctionsTable: FC = () => {
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md">
       <Table>
         <TableHeader>
           <TableRow>

@@ -16,10 +16,7 @@
         "plugin:jest-dom/recommended",
         "plugin:prettier/recommended",
         "next/typescript"
-      ],
-      "env": {
-        "jest/globals": true
-      }
+      ]
     }
   ],
   "rules": {
