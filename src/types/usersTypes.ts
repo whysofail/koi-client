@@ -1,9 +1,30 @@
+export enum UserRole {
+  ADMIN = "admin",
+  USER = "user",
+}
+
+export enum UserOrderBy {
+  USERNAME = "username",
+  EMAIL = "email",
+  BALANCE = "balance",
+  IS_BANNED = "is_banned",
+  REGISTRATION_DATE = "registration_date",
+}
+export interface FetchAllUsersParams {
+  token: string;
+  page?: number;
+  limit?: number;
+  role?: UserRole;
+  registrationDateFrom?: Date;
+  registrationDateTo?: Date;
+  isBanned?: boolean;
+  orderBy: UserOrderBy;
+  order: "ASC" | "DESC";
+}
+
 interface Wallet {
   wallet_id: string;
-  user_id: string;
   balance: string;
-  created_at: string;
-  updated_at: string;
 }
 
 interface UserData {
@@ -11,9 +32,8 @@ interface UserData {
   username: string;
   role: string;
   email: string;
-  password: string;
   registration_date: string;
-  last_update: string;
+  is_banned: boolean;
   wallet: Wallet;
 }
 

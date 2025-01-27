@@ -1,3 +1,28 @@
+export enum AuctionOrderBy {
+  AUCTION_ID = "auction_id",
+  TITLE = "title",
+  DESCRIPTION = "description",
+  ITEM = "item",
+  START_DATETIME = "start_datetime",
+  END_DATETIME = "end_datetime",
+  STATUS = "status",
+  CURRENT_HIGHEST_BID = "current_highest_bid",
+  RESERVE_PRICE = "reserve_price",
+  BID_INCREMENT = "bid_increment",
+  CREATED_AT = "created_at",
+  UPDATED_AT = "updated_at",
+  CREATED_BY_ID = "created_by_id",
+}
+export interface FetchAllAuctionsParams {
+  token: string;
+  page?: number;
+  limit?: number;
+  status?: AuctionStatus;
+  startDateFrom?: Date;
+  startDateTo?: Date;
+  orderBy?: AuctionOrderBy;
+  order?: "ASC" | "DESC";
+}
 interface PaginatedResponse<T> {
   status: string;
   message: string;
@@ -48,7 +73,7 @@ export type AuctionByIDResponse = Omit<
 >;
 
 export interface AuctionTableData {
-  auction_id: string; // Add this line
+  auction_id: string;
   title: string;
   description: string;
   item: string;
@@ -60,9 +85,20 @@ export interface AuctionTableData {
   bid_increment: string;
   created_at: string;
   updated_at: string;
-  user: string; // Just the username
-  bids: number; // Count of bids
-  participants: number; // Count of participants
+  user: string;
+  bids: number;
+  participants: number;
+}
+
+export enum AuctionStatus {
+  DRAFT = "DRAFT",
+  PENDING = "PENDING",
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  EXPIRED = "EXPIRED",
+  FAILED = "FAILED",
+  STARTED = "STARTED",
 }
 
 export const transformAuctionToTableData = (

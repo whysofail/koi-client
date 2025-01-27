@@ -1,40 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { PaginatedAuctionsResponse } from "@/types/auctionTypes";
+import { format } from "date-fns";
+import {
+  FetchAllAuctionsParams,
+  PaginatedAuctionsResponse,
+  AuctionStatus,
+  AuctionOrderBy,
+} from "@/types/auctionTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-
-enum AuctionStatus {
-  DRAFT = "DRAFT",
-  PENDING = "PENDING",
-  ACTIVE = "ACTIVE",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-  EXPIRED = "EXPIRED",
-  FAILED = "FAILED",
-}
-
-interface FetchAllAuctionsParams {
-  token: string;
-  page?: number;
-  limit?: number;
-  status?: AuctionStatus;
-  startDateFrom?: Date;
-  startDateTo?: Date;
-  orderBy?:
-    | "auction_id"
-    | "title"
-    | "description"
-    | "item"
-    | "start_datetime"
-    | "end_datetime"
-    | "status"
-    | "current_highest_bid"
-    | "reserve_price"
-    | "bid_increment"
-    | "created_at"
-    | "updated_at"
-    | "created_by_id";
-  order?: "ASC" | "DESC";
-}
 
 const dateNow = new Date();
 const nextWeek = new Date(dateNow.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -44,21 +16,31 @@ const fetchAllAuctions = async ({
   page = 1,
   limit = 10,
   status = AuctionStatus.ACTIVE,
-  startDateFrom = dateNow,
+  startDateFrom,
   startDateTo = nextWeek,
-  orderBy = "created_at",
+  orderBy = AuctionOrderBy.CREATED_AT,
   order = "DESC",
 }: FetchAllAuctionsParams): Promise<PaginatedAuctionsResponse> => {
-  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+  const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
-  const { data } = await fetchWithAuth.get(
-    `/auctions?page=${page}&limit=${limit}&status=${status}&startDateFrom=${formatDate(startDateFrom)}&startDateTo=${formatDate(startDateTo)}&orderBy=${orderBy}&order=${order}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    status,
+    startDateTo: formatDate(startDateTo),
+    orderBy,
+    order,
+  });
+
+  if (startDateFrom) {
+    params.append("startDateFrom", formatDate(startDateFrom));
+  }
+
+  const { data } = await fetchWithAuth.get(`/auctions?${params.toString()}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   return data;
 };

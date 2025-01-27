@@ -1,20 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { PaginatedUsersResponse } from "@/types/usersTypes";
+import { format } from "date-fns";
+import {
+  PaginatedUsersResponse,
+  FetchAllUsersParams,
+  UserRole,
+  UserOrderBy,
+} from "@/types/usersTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-
-enum UserRole {
-  ADMIN = "admin",
-  USER = "user",
-}
-
-interface FetchAllUsersParams {
-  token: string;
-  page?: number;
-  limit?: number;
-  role?: UserRole;
-  registrationDateFrom?: Date;
-  registrationDateTo?: Date;
-}
 
 const dateNow = new Date();
 const nextWeek = new Date(dateNow.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -24,17 +16,37 @@ const fetchAllUsers = async ({
   page = 1,
   limit = 10,
   role = UserRole.USER,
-  registrationDateFrom = dateNow,
+  registrationDateFrom,
   registrationDateTo = nextWeek,
+  isBanned = false,
+  //TODO: ASK ABOUT THIS
+  orderBy = UserOrderBy.REGISTRATION_DATE,
+  order = "DESC",
 }: FetchAllUsersParams): Promise<PaginatedUsersResponse> => {
-  const { data } = await fetchWithAuth.get(
-    `/users?page=${page}&limit=${limit}&role=${role}&registration_date_from=${registrationDateFrom}&registration_date_to=${registrationDateTo}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
+
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    role,
+    registrationDateTo: formatDate(registrationDateTo),
+    orderBy,
+    order,
+  });
+
+  if (registrationDateFrom) {
+    params.append("registrationDateFrom", formatDate(registrationDateFrom));
+  }
+
+  if (typeof isBanned === "boolean") {
+    params.append("isBanned", isBanned.toString());
+  }
+
+  const { data } = await fetchWithAuth.get(`/users?${params.toString()}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   return data;
 };

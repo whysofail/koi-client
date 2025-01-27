@@ -54,25 +54,23 @@ const AuctionAlertDialog: FC<{
     );
   }
 
-  if (operation === "cancel") {
-    return (
-      <AlertDialog>
-        <AlertDialogTrigger>Cancel</AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Auction</AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogDescription>
-            Are you sure you want to cancel this auction?
-          </AlertDialogDescription>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction>Cancel</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    );
-  }
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger>Cancel</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Cancel Auction</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription>
+          Are you sure you want to cancel this auction?
+        </AlertDialogDescription>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Cancel</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 };
 
 export default AuctionAlertDialog;
