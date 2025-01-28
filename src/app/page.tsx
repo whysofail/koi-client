@@ -16,7 +16,10 @@ const Home = async () => {
         </h1>
       </div>
       <div className="mt-6">
-        <StatsCards isAdmin={isAdmin} />
+        <StatsCards
+          isAdmin={isAdmin}
+          token={session?.user?.accessToken ?? ""}
+        />
       </div>
       <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-4">
