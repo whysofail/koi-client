@@ -10,6 +10,7 @@ import {
 import SidebarNav from "@/components/dashboard/sidebar-nav";
 import Header from "@/components/dashboard/Header";
 import { useSession } from "next-auth/react";
+import { User } from "next-auth";
 
 type PathCheckerProps = {
   children: React.ReactNode;
@@ -38,7 +39,7 @@ const PathChecker: React.FC<PathCheckerProps> = ({ children }) => {
           <header className="flex h-14 items-center gap-4 border-b px-6  dark:border-neutral-700">
             <SidebarTrigger />
             <div className="ml-auto">
-              <Header />
+              <Header user={session?.user as User} />
             </div>
           </header>
           <main className="flex-1 overflow-auto">{children}</main>
