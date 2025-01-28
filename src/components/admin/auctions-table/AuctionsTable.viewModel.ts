@@ -7,6 +7,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import { AuctionOrderBy } from "@/types/auctionTypes";
+import { AuctionStatus } from "@/types/auctionTypes";
 
 const AuctionsTableViewModel = (token: string) => {
   const router = useRouter();
@@ -25,6 +26,7 @@ const AuctionsTableViewModel = (token: string) => {
     id: "title",
     label: "Title",
   });
+  const [status, setStatus] = useState<AuctionStatus | undefined>(undefined);
 
   const { data: PaginatedData, isLoading } = useGetAllAuctions({
     token,
@@ -34,6 +36,7 @@ const AuctionsTableViewModel = (token: string) => {
     startDateTo,
     orderBy,
     order,
+    status, // Add status to query params
   });
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -67,6 +70,8 @@ const AuctionsTableViewModel = (token: string) => {
     setColumnVisibility,
     rowSelection,
     setRowSelection,
+    status,
+    setStatus,
   };
 };
 
