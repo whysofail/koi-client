@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import {
   FetchAllAuctionsParams,
   PaginatedAuctionsResponse,
-  AuctionStatus,
   AuctionOrderBy,
 } from "@/types/auctionTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
@@ -15,7 +14,7 @@ const fetchAllAuctions = async ({
   token,
   page = 1,
   limit = 10,
-  status = AuctionStatus.ACTIVE,
+  status,
   startDateFrom,
   startDateTo = nextWeek,
   orderBy = AuctionOrderBy.CREATED_AT,
@@ -26,11 +25,15 @@ const fetchAllAuctions = async ({
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
-    status,
     startDateTo: formatDate(startDateTo),
     orderBy,
     order,
   });
+
+  // Only add status if it's defined
+  if (status) {
+    params.append("status", status);
+  }
 
   if (startDateFrom) {
     params.append("startDateFrom", formatDate(startDateFrom));

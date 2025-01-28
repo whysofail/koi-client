@@ -32,14 +32,23 @@ interface PaginatedResponse<T> {
   limit: number;
 }
 
-export type AuctionBody = {
+export type CreateAuctionBody = {
   title: string;
   description: string;
   item: string;
-  start_datetime: Date;
-  end_datetime: Date;
   reserve_price: number;
   bid_increment: number;
+};
+
+export type UpdateAuctionBody = {
+  title?: string;
+  description?: string;
+  item?: string;
+  start_datetime?: string;
+  end_datetime?: string;
+  reserve_price?: string;
+  bid_increment?: string;
+  status?: AuctionStatus;
 };
 
 interface User {

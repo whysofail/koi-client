@@ -1,19 +1,41 @@
 import { useMutation } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { AuctionBody } from "@/types/auctionTypes";
+import { CreateAuctionBody } from "@/types/auctionTypes";
 
-const createAuctionDraft = async (token: string, data: AuctionBody) => {
-  const { data: response } = await fetchWithAuth.post("/auctions", data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+//TODO: ASK IF IMPLEMENTATION OF THIS IS WISE OR NOT
+const getDefaultDates = () => {
+  const start = new Date();
+  const end = new Date();
+  end.setDate(end.getDate() + 7); // Default to 7 days from now
+  return {
+    start_datetime: start.toISOString(),
+    end_datetime: end.toISOString(),
+  };
+};
+
+const createAuctionDraft = async (token: string, data: CreateAuctionBody) => {
+  const defaultDates = getDefaultDates();
+  const auctionData = {
+    ...data,
+    start_datetime: data.start_datetime || defaultDates.start_datetime,
+    end_datetime: data.end_datetime || defaultDates.end_datetime,
+  };
+
+  const { data: response } = await fetchWithAuth.post(
+    "/auctions",
+    auctionData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
   return response;
 };
 
 export const useCreateAuctionDraft = (token: string) => {
   return useMutation({
-    mutationFn: (data: AuctionBody) => createAuctionDraft(token, data),
+    mutationFn: (data: CreateAuctionBody) => createAuctionDraft(token, data),
     onError: (error) => {
       console.error("Failed to create auction:", error);
     },

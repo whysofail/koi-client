@@ -16,6 +16,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  MoreHorizontal,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -32,6 +33,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
@@ -57,6 +59,8 @@ import {
 } from "@/types/auctionTypes";
 import StatusBadge from "./StatusBadge";
 import AuctionsTableViewModel from "./AuctionsTable.viewModel";
+import { AuctionStatus } from "@/types/auctionTypes";
+import AuctionDialog from "../auctions-alert-dialog/AuctionDialog";
 
 const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
   const {
@@ -85,6 +89,8 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     setPageIndex,
     pageIndex,
     setPageSize,
+    status,
+    setStatus,
   } = AuctionsTableViewModel(token);
 
   const getSortIcon = (columnOrderBy: AuctionOrderBy) => {
@@ -98,6 +104,10 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
   };
 
   const columns: ColumnDef<AuctionTableData>[] = [
+    {
+      accessorKey: "auction_id",
+      header: "ID",
+    },
     {
       accessorKey: "title",
       header: () => (
@@ -270,13 +280,42 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push(`/auctions/${row.original.auction_id}`)}
-        >
-          View Details
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(`/auctions/${row.original.auction_id}`)
+              }
+            >
+              View Details
+            </DropdownMenuItem>
+            {row.original.status === "DRAFT" ||
+            row.original.status === "ACTIVE" ? (
+              <AuctionDialog
+                operation="start"
+                bid_increment={row.original.bid_increment}
+                reserve_price={row.original.reserve_price}
+                auction_id={row.original.auction_id}
+                token={token}
+              />
+            ) : null}
+            {row.original.status === "DRAFT" && (
+              <AuctionDialog
+                operation="cancel"
+                auction_id={row.original.auction_id}
+                bid_increment={row.original.bid_increment}
+                reserve_price={row.original.reserve_price}
+                token={token}
+              />
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
     },
   ];
@@ -295,7 +334,10 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     state: {
       sorting,
       columnFilters,
-      columnVisibility,
+      columnVisibility: {
+        auction_id: false, // Hide the auction_id column by default
+        ...columnVisibility,
+      },
       rowSelection,
     },
     pageCount: Math.ceil((PaginatedData?.count ?? 0) / pageSize),
@@ -316,6 +358,28 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
+          {/* Add status filter dropdown before the existing search dropdown */}
+          <Select
+            value={status || "all"}
+            onValueChange={(value) =>
+              setStatus(value === "all" ? undefined : (value as AuctionStatus))
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              {Object.values(AuctionStatus).map((statusOption) => (
+                <SelectItem key={statusOption} value={statusOption}>
+                  {statusOption.charAt(0).toUpperCase() +
+                    statusOption.slice(1).toLowerCase()}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Existing search and filter components */}
           <div className="flex gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

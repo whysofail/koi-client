@@ -1,11 +1,11 @@
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { AuctionBody } from "@/types/auctionTypes";
+import { UpdateAuctionBody } from "@/types/auctionTypes";
 import { useMutation } from "@tanstack/react-query";
 
 const updateAuction = async (
   token: string,
   auctionId: string,
-  data: AuctionBody,
+  data: UpdateAuctionBody,
 ) => {
   const { data: response } = await fetchWithAuth.put(
     `/auctions/${auctionId}`,
@@ -27,7 +27,7 @@ export const useUpdateAuction = (token: string) => {
       data,
     }: {
       auctionId: string;
-      data: AuctionBody;
+      data: UpdateAuctionBody;
     }) => updateAuction(token, auctionId, data),
     onError: (error) => {
       console.error("Failed to update auction:", error);
