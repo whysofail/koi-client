@@ -78,23 +78,19 @@ export interface TransactionTableData {
 
 // Adjusted TransactionType enum to include types that were defined in your model
 export enum TransactionType {
-  DEPOSIT = "deposit",
-  WITHDRAWAL = "withdrawal",
-  TRANSFER = "transfer",
-  PARTICIPATE = "participate",
-  BID_PAYMENT = "bid_payment",
-  REFUND = "refund",
-  ADJUSTMENT = "adjustment",
+  DEPOSIT = "DEPOSIT",
+  WITHDRAWAL = "WITHDRAWAL",
+  TRANSFER = "TRANSFER",
+  PARTICIPATE = "PARTICIPATE",
 }
 
 // Adjusted TransactionStatus enum to match your model (added REJECTED and APPROVED)
 export enum TransactionStatus {
-  PENDING = "pending",
-  COMPLETED = "completed",
-  FAILED = "failed",
-  CANCELLED = "cancelled",
-  APPROVED = "approved",
-  REJECTED = "rejected",
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECT",
 }
 
 export const transformTransactionToTableData = (

@@ -51,9 +51,10 @@ import {
   type TransactionTableData,
   TransactionOrderBy,
 } from "@/types/transactionTypes";
-import StatusBadge from "../auctions-table/StatusBadge";
+import StatusBadge from "./StatusBadge";
 import TransactionsTableViewModel from "./TransactionsTable.viewModel";
 import { TransactionStatus } from "@/types/transactionTypes";
+import TypeBadge from "./TypeBadge";
 
 const TransactionsTable: React.FC<{ token: string }> = ({ token }) => {
   const {
@@ -104,7 +105,27 @@ const TransactionsTable: React.FC<{ token: string }> = ({ token }) => {
     },
     {
       accessorKey: "type",
-      header: "Type",
+      header: () => (
+        <Button
+          variant="ghost"
+          onClick={() => {
+            setOrderBy(TransactionOrderBy.TYPE);
+            setOrder(
+              orderBy === TransactionOrderBy.TYPE && order === "ASC"
+                ? "DESC"
+                : "ASC",
+            );
+          }}
+        >
+          Type
+          {getSortIcon(TransactionOrderBy.TYPE)}
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div>
+          <TypeBadge type={row.getValue("type")} />
+        </div>
+      ),
     },
     {
       accessorKey: "amount",
@@ -229,7 +250,6 @@ const TransactionsTable: React.FC<{ token: string }> = ({ token }) => {
   const searchableColumns = [
     { id: "amount", label: "Amount" },
     { id: "user", label: "Sender" },
-    { id: "receiver", label: "Receiver" },
   ];
 
   if (isLoading) {
