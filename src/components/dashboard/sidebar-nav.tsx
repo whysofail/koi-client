@@ -11,6 +11,7 @@ import {
   Heart,
   Gavel,
   History,
+  DollarSign,
 } from "lucide-react";
 import {
   Sidebar,
@@ -57,6 +58,16 @@ const adminNavigation = [
         title: "Auctions",
         icon: Package,
         href: "/auctions",
+      },
+      {
+        title: "Transactions",
+        icon: DollarSign,
+        href: "/transactions",
+      },
+      {
+        title: "Bids",
+        icon: Gavel,
+        href: "/bids",
       },
     ],
   },

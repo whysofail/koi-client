@@ -5,6 +5,7 @@ const roleAccessMap = {
     "/inventory",
     "/auctions/add/[koiID]",
     "/auctions",
+    "/transactions",
   ],
   user: ["/", "/profile-settings"],
 };
