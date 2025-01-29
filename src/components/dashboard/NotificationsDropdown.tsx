@@ -27,8 +27,8 @@ interface NotificationsDropdownProps {
 
 const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const isAdmin = user.role === "admin";
 
-  // Memoized unread count calculation
   const unreadCount = useMemo(
     () =>
       notifications.filter((n) => n.status === NotificationStatus.UNREAD)
@@ -38,61 +38,67 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
 
   const accessToken = user.accessToken;
   if (!accessToken) {
-    throw new Error("Access token is missing");
+    console.error("Access token is missing");
+    return null;
   }
 
-  // Fetch notifications for both admin and user roles (same hook for both)
   const {
     data: userNotifications = [],
     isLoading,
     isError,
   } = useGetUserNotifications(accessToken);
 
-  // Update notifications on data change
+  // Initialize auth socket for all users
+  const authSocket = useSocketWithAuth("auth", accessToken);
+
+  // Initialize admin socket conditionally
+  let adminSocket = null;
+  if (isAdmin) {
+    adminSocket = useSocketWithAuth("admin", accessToken);
+  }
+
   useEffect(() => {
     if (
       userNotifications &&
       JSON.stringify(userNotifications) !== JSON.stringify(notifications)
     ) {
-      // Ensure userNotifications is always an array
       const notificationsArray = Array.isArray(userNotifications)
         ? userNotifications
         : (userNotifications as GetNotificationResponse).data || [];
 
-      setNotifications(notificationsArray as Notification[]); // Set the notifications
+      setNotifications(notificationsArray as Notification[]);
     }
   }, [userNotifications, notifications]);
 
-  // Socket connections
-  const authSocket = useSocketWithAuth("auth", accessToken); // Connect to authNamespace
-  const adminSocket = useSocketWithAuth("admin", accessToken); // Connect to adminNamespace
-
-  // Socket event listeners
+  // Handle user notifications
   useEffect(() => {
-    if (!authSocket || !adminSocket) return;
-
-    const handleAdminNotification = (data: Notification) => {
-      setNotifications((prev) => [data, ...prev]);
-    };
+    if (!authSocket) return;
 
     const handleUserNotification = (data: Notification) => {
       setNotifications((prev) => [data, ...prev]);
     };
 
-    if (user.role === "admin") {
-      adminSocket.on("admin", handleAdminNotification);
-    }
-
     authSocket.on(`user:${user.id}`, handleUserNotification);
 
-    // Cleanup socket listeners
     return () => {
-      if (user.role === "admin") {
-        adminSocket.off("admin", handleAdminNotification);
-      }
       authSocket.off(`user:${user.id}`, handleUserNotification);
     };
-  }, [authSocket, adminSocket, user]);
+  }, [authSocket, user.id]);
+
+  // Handle admin notifications - only runs if adminSocket exists
+  useEffect(() => {
+    if (!adminSocket) return;
+
+    const handleAdminNotification = (data: Notification) => {
+      setNotifications((prev) => [data, ...prev]);
+    };
+
+    adminSocket.on("admin", handleAdminNotification);
+
+    return () => {
+      adminSocket.off("admin", handleAdminNotification);
+    };
+  }, [adminSocket]);
 
   return (
     <DropdownMenu>

@@ -16,6 +16,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  Eye,
   MoreHorizontal,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -462,7 +463,9 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
-              Columns Filter <ChevronDown className="ml-2 h-4 w-4" />
+              Columns
+              <Eye className="h-4 w-4" />
+              <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

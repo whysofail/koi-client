@@ -55,8 +55,9 @@ import StatusBadge from "./StatusBadge";
 import TransactionsTableViewModel from "./TransactionsTable.viewModel";
 import { TransactionStatus } from "@/types/transactionTypes";
 import TypeBadge from "./TypeBadge";
+import { Session } from "next-auth";
 
-const TransactionsTable: React.FC<{ token: string }> = ({ token }) => {
+const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
   const {
     router,
     orderBy,
@@ -86,7 +87,7 @@ const TransactionsTable: React.FC<{ token: string }> = ({ token }) => {
     setPageSize,
     status,
     setStatus,
-  } = TransactionsTableViewModel(token);
+  } = TransactionsTableViewModel(user);
 
   const getSortIcon = (columnOrderBy: TransactionOrderBy) => {
     if (orderBy !== columnOrderBy)

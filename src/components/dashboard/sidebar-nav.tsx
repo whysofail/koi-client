@@ -98,6 +98,11 @@ const userNavigation = [
         href: "/",
       },
       {
+        title: "Transactions",
+        icon: DollarSign,
+        href: "/transactions",
+      },
+      {
         title: "My Bids",
         icon: Gavel,
         href: "/dashboard/bids",

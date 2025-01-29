@@ -1,6 +1,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import useGetAllTransactions from "@/server/transaction/getAllTransactions/queries"; // Adjust based on actual query hook path
+import {
+  useGetAllTransactions,
+  useGetUserTransactions,
+} from "@/server/transaction/getAllTransactions/queries";
 import {
   SortingState,
   ColumnFiltersState,
@@ -8,8 +11,9 @@ import {
 } from "@tanstack/react-table";
 import { TransactionOrderBy } from "@/types/transactionTypes"; // Adjust based on actual path
 import { TransactionStatus } from "@/types/transactionTypes"; // Adjust based on actual path
+import { User } from "next-auth";
 
-const TransactionsTableViewModel = (token: string) => {
+const TransactionsTableViewModel = (user: User) => {
   const router = useRouter();
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -30,16 +34,29 @@ const TransactionsTableViewModel = (token: string) => {
     undefined,
   );
 
-  const { data: PaginatedData, isLoading } = useGetAllTransactions({
-    token,
-    page: pageIndex,
-    limit: pageSize,
-    startDateFrom,
-    startDateTo,
-    orderBy,
-    order,
-    status, // Add status to query params
-  });
+  // Conditional fetching logic based on user role
+  const { data: PaginatedData, isLoading } =
+    user.role === "admin"
+      ? useGetAllTransactions({
+          token: user.accessToken,
+          page: pageIndex,
+          limit: pageSize,
+          startDateFrom,
+          startDateTo,
+          orderBy,
+          order,
+          status, // Add status to query params
+        })
+      : useGetUserTransactions({
+          token: user.accessToken,
+          page: pageIndex,
+          limit: pageSize,
+          startDateFrom,
+          startDateTo,
+          orderBy,
+          order,
+          status, // Add status to query params
+        });
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);

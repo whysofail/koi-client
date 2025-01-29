@@ -7,11 +7,9 @@ import {
 } from "@/types/transactionTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
-// const dateNow = new Date();
-// const nextWeek = new Date(dateNow.getTime() + 7 * 24 * 60 * 60 * 1000);
+const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
-const fetchAllTransactions = async ({
-  token,
+const buildQueryParams = ({
   page = 1,
   limit = 10,
   startDateFrom,
@@ -19,9 +17,7 @@ const fetchAllTransactions = async ({
   status,
   orderBy = TransactionOrderBy.CREATED_AT,
   order = "DESC",
-}: FetchAllTransactionsParams): Promise<PaginatedTransactionsResponse> => {
-  const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
-
+}: Omit<FetchAllTransactionsParams, "token">) => {
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
@@ -29,37 +25,47 @@ const fetchAllTransactions = async ({
     order,
   });
 
-  if (startDateFrom) {
-    params.append("startDateFrom", formatDate(startDateFrom));
-  }
+  if (startDateFrom) params.append("startDateFrom", formatDate(startDateFrom));
+  if (startDateTo) params.append("startDateTo", formatDate(startDateTo));
+  if (status) params.append("status", status);
 
-  if (startDateTo) {
-    params.append("startDateTo", formatDate(startDateTo));
-  }
+  return params.toString();
+};
 
-  if (status) {
-    params.append("status", status);
-  }
-
-  const { data } = await fetchWithAuth.get(
-    `/transactions?${params.toString()}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  );
-
+// Fetch Admin Transactions
+const fetchAllTransactions = async ({
+  token,
+  ...params
+}: FetchAllTransactionsParams): Promise<PaginatedTransactionsResponse> => {
+  const queryString = buildQueryParams(params);
+  const { data } = await fetchWithAuth.get(`/transactions?${queryString}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return data;
 };
 
-const useGetAllTransactions = ({
+// Fetch User Transactions
+const fetchUserTransactions = async ({
   token,
   ...params
-}: FetchAllTransactionsParams) =>
+}: FetchAllTransactionsParams): Promise<PaginatedTransactionsResponse> => {
+  const queryString = buildQueryParams(params);
+  const { data } = await fetchWithAuth.get(`/transactions/me?${queryString}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return data;
+};
+
+const useGetAllTransactions = (params: FetchAllTransactionsParams) =>
   useQuery({
-    queryKey: ["allTransactions", params, token],
-    queryFn: () => fetchAllTransactions({ token, ...params }),
+    queryKey: ["allTransactions", params],
+    queryFn: () => fetchAllTransactions(params),
   });
 
-export default useGetAllTransactions;
+const useGetUserTransactions = (params: FetchAllTransactionsParams) =>
+  useQuery({
+    queryKey: ["userTransactions", params],
+    queryFn: () => fetchUserTransactions(params),
+  });
+
+export { useGetAllTransactions, useGetUserTransactions };

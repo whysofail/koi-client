@@ -35,11 +35,18 @@ export const useSocket = (): Socket | null => {
 export const useSocketWithAuth = (
   namespace: string,
   token: string,
+  enabled: boolean = true, // Add enabled parameter
 ): Socket | null => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+
   useEffect(() => {
+    // Only create socket if enabled is true
+    if (!enabled) {
+      return;
+    }
+
     const socketInstance = io(`${socketUrl}/${namespace}`, {
       auth: {
         token,
@@ -64,7 +71,7 @@ export const useSocketWithAuth = (
     return () => {
       socketInstance.disconnect();
     };
-  }, [namespace, socketUrl, token]);
+  }, [namespace, socketUrl, token, enabled]);
 
   return socket;
 };

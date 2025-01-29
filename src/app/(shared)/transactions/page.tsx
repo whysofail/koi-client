@@ -14,7 +14,7 @@ const TransactionsPage = async () => {
         </div>
       </div>
       <div className="mt-8 pl-5 pr-5">
-        <TransactionsTable token={session?.user?.accessToken ?? ""} />
+        {session?.user && <TransactionsTable user={session.user} />}
       </div>
     </>
   );

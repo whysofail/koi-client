@@ -6,8 +6,14 @@ const roleAccessMap = {
     "/auctions/add/[koiID]",
     "/auctions",
     "/transactions",
+    "/transactions/[transactionID]",
   ],
-  user: ["/", "/profile-settings"],
+  user: [
+    "/",
+    "/profile-settings",
+    "/transactions",
+    "/transactions/[transactionID]",
+  ],
 };
 
 export default roleAccessMap;
