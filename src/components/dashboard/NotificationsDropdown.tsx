@@ -37,10 +37,6 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   );
 
   const accessToken = user.accessToken;
-  if (!accessToken) {
-    console.error("Access token is missing");
-    return null;
-  }
 
   const {
     data: userNotifications = [],
@@ -49,56 +45,49 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   } = useGetUserNotifications(accessToken);
 
   // Initialize auth socket for all users
-  const authSocket = useSocketWithAuth("auth", accessToken);
-
-  // Initialize admin socket conditionally
-  let adminSocket = null;
-  if (isAdmin) {
-    adminSocket = useSocketWithAuth("admin", accessToken);
-  }
+  const socket = useSocketWithAuth(isAdmin ? "admin" : "auth", accessToken);
 
   useEffect(() => {
-    if (
-      userNotifications &&
-      JSON.stringify(userNotifications) !== JSON.stringify(notifications)
-    ) {
-      const notificationsArray = Array.isArray(userNotifications)
+    if (!userNotifications) return;
+
+    // Avoid unnecessary state updates by checking existing notifications
+    setNotifications((prev) => {
+      const newNotifications = Array.isArray(userNotifications)
         ? userNotifications
         : (userNotifications as GetNotificationResponse).data || [];
 
-      setNotifications(notificationsArray as Notification[]);
-    }
-  }, [userNotifications, notifications]);
+      const isDifferent = newNotifications.some(
+        (newNotif) =>
+          !prev.some(
+            (prevNotif) =>
+              prevNotif.notification_id === newNotif.notification_id,
+          ),
+      );
 
-  // Handle user notifications
+      return isDifferent ? (newNotifications as Notification[]) : prev;
+    });
+  }, [userNotifications]);
+
   useEffect(() => {
-    if (!authSocket) return;
+    if (!socket) return;
 
-    const handleUserNotification = (data: Notification) => {
-      setNotifications((prev) => [data, ...prev]);
+    const handleNotification = (data: Notification) => {
+      setNotifications((prev) => {
+        // Prevent duplicate notifications
+        if (prev.some((n) => n.notification_id === data.notification_id)) {
+          return prev;
+        }
+        return [data, ...prev];
+      });
     };
 
-    authSocket.on(`user:${user.id}`, handleUserNotification);
+    const eventChannel = isAdmin ? "admin" : `user:${user.id}`;
+    socket.on(eventChannel, handleNotification);
 
     return () => {
-      authSocket.off(`user:${user.id}`, handleUserNotification);
+      socket.off(eventChannel, handleNotification);
     };
-  }, [authSocket, user.id]);
-
-  // Handle admin notifications - only runs if adminSocket exists
-  useEffect(() => {
-    if (!adminSocket) return;
-
-    const handleAdminNotification = (data: Notification) => {
-      setNotifications((prev) => [data, ...prev]);
-    };
-
-    adminSocket.on("admin", handleAdminNotification);
-
-    return () => {
-      adminSocket.off("admin", handleAdminNotification);
-    };
-  }, [adminSocket]);
+  }, [socket, user.id, isAdmin]);
 
   return (
     <DropdownMenu>
@@ -131,7 +120,7 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
         ) : notifications.length > 0 ? (
           notifications.map((notification) => (
             <DropdownMenuItem
-              key={`${notification.notification_id}-${notification.created_at}`}
+              key={notification.notification_id}
               className="flex flex-col items-start gap-1 p-4"
             >
               <div className="flex w-full justify-between">

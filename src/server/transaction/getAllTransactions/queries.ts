@@ -32,40 +32,29 @@ const buildQueryParams = ({
   return params.toString();
 };
 
-// Fetch Admin Transactions
-const fetchAllTransactions = async ({
+const fetchTransactions = async ({
   token,
+  isAdmin,
   ...params
-}: FetchAllTransactionsParams): Promise<PaginatedTransactionsResponse> => {
+}: FetchAllTransactionsParams & {
+  isAdmin: boolean;
+}): Promise<PaginatedTransactionsResponse> => {
   const queryString = buildQueryParams(params);
-  const { data } = await fetchWithAuth.get(`/transactions?${queryString}`, {
+  const endpoint = isAdmin ? "/transactions" : "/transactions/me";
+
+  const { data } = await fetchWithAuth.get(`${endpoint}?${queryString}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return data;
 };
 
-// Fetch User Transactions
-const fetchUserTransactions = async ({
-  token,
-  ...params
-}: FetchAllTransactionsParams): Promise<PaginatedTransactionsResponse> => {
-  const queryString = buildQueryParams(params);
-  const { data } = await fetchWithAuth.get(`/transactions/me?${queryString}`, {
-    headers: { Authorization: `Bearer ${token}` },
+const useGetTransactions = (
+  params: FetchAllTransactionsParams & { isAdmin: boolean },
+) => {
+  return useQuery({
+    queryKey: ["transactions", params],
+    queryFn: () => fetchTransactions(params),
   });
-  return data;
 };
 
-const useGetAllTransactions = (params: FetchAllTransactionsParams) =>
-  useQuery({
-    queryKey: ["allTransactions", params],
-    queryFn: () => fetchAllTransactions(params),
-  });
-
-const useGetUserTransactions = (params: FetchAllTransactionsParams) =>
-  useQuery({
-    queryKey: ["userTransactions", params],
-    queryFn: () => fetchUserTransactions(params),
-  });
-
-export { useGetAllTransactions, useGetUserTransactions };
+export { useGetTransactions };

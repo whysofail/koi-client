@@ -1,16 +1,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  useGetAllTransactions,
-  useGetUserTransactions,
-} from "@/server/transaction/getAllTransactions/queries";
+import { useGetTransactions } from "@/server/transaction/getAllTransactions/queries";
 import {
   SortingState,
   ColumnFiltersState,
   VisibilityState,
 } from "@tanstack/react-table";
-import { TransactionOrderBy } from "@/types/transactionTypes"; // Adjust based on actual path
-import { TransactionStatus } from "@/types/transactionTypes"; // Adjust based on actual path
+import { TransactionOrderBy } from "@/types/transactionTypes";
+import { TransactionStatus } from "@/types/transactionTypes";
 import { User } from "next-auth";
 
 const TransactionsTableViewModel = (user: User) => {
@@ -34,29 +31,20 @@ const TransactionsTableViewModel = (user: User) => {
     undefined,
   );
 
-  // Conditional fetching logic based on user role
-  const { data: PaginatedData, isLoading } =
-    user.role === "admin"
-      ? useGetAllTransactions({
-          token: user.accessToken,
-          page: pageIndex,
-          limit: pageSize,
-          startDateFrom,
-          startDateTo,
-          orderBy,
-          order,
-          status, // Add status to query params
-        })
-      : useGetUserTransactions({
-          token: user.accessToken,
-          page: pageIndex,
-          limit: pageSize,
-          startDateFrom,
-          startDateTo,
-          orderBy,
-          order,
-          status, // Add status to query params
-        });
+  // Common query parameters
+  const queryParams = {
+    token: user.accessToken,
+    isAdmin: user.role === "admin",
+    page: pageIndex,
+    limit: pageSize,
+    startDateFrom,
+    startDateTo,
+    orderBy,
+    order,
+    status,
+  };
+
+  const { data: PaginatedData, isLoading } = useGetTransactions(queryParams);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
