@@ -18,6 +18,7 @@ import {
   ArrowDown,
   MoreHorizontal,
   Eye,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 import { format as formatDate } from "date-fns";
 
@@ -56,6 +57,12 @@ import TransactionsTableViewModel from "./TransactionsTable.viewModel";
 import { TransactionStatus } from "@/types/transactionTypes";
 import TypeBadge from "./TypeBadge";
 import { Session } from "next-auth";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
   const {
@@ -77,11 +84,10 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     pageSize,
     searchColumn,
     setSearchColumn,
-    // TODO : idk how
-    // startDateFrom,
-    // startDateTo,
-    // setStartDateFrom,
-    // setStartDateTo,
+    setCreatedAtFrom,
+    createdAtFrom,
+    setCreatedAtTo,
+    createdAtTo,
     setPageIndex,
     pageIndex,
     setPageSize,
@@ -326,6 +332,50 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
               className="max-w-sm"
             />
           </div>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[180px] justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {createdAtFrom
+                  ? formatDate(createdAtFrom, "dd-MM-yyyy")
+                  : "From date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={createdAtFrom}
+                onSelect={setCreatedAtFrom}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[180px] justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {createdAtTo
+                  ? formatDate(createdAtTo, "dd-MM-yyyy")
+                  : "To date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={createdAtTo}
+                onSelect={setCreatedAtTo}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         <DropdownMenu>

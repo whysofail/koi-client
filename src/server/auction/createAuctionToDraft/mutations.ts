@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { CreateAuctionBody } from "@/types/auctionTypes";
 
-//TODO: ASK IF IMPLEMENTATION OF THIS IS WISE OR NOT
 const getDefaultDates = () => {
   const start = new Date();
   const end = new Date();
@@ -17,8 +16,8 @@ const createAuctionDraft = async (token: string, data: CreateAuctionBody) => {
   const defaultDates = getDefaultDates();
   const auctionData = {
     ...data,
-    start_datetime: data.start_datetime || defaultDates.start_datetime,
-    end_datetime: data.end_datetime || defaultDates.end_datetime,
+    start_datetime: defaultDates.start_datetime,
+    end_datetime: defaultDates.end_datetime,
   };
 
   const { data: response } = await fetchWithAuth.post(

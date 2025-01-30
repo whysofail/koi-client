@@ -7,26 +7,29 @@ import {
 } from "@/types/transactionTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
-const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
+const dateNow = new Date();
+const nextWeek = new Date(dateNow.getTime() + 7 * 24 * 60 * 60 * 1000);
 
 const buildQueryParams = ({
   page = 1,
   limit = 10,
-  startDateFrom,
-  startDateTo,
+  createdAtFrom,
+  createdAtTo = nextWeek,
   status,
   orderBy = TransactionOrderBy.CREATED_AT,
   order = "DESC",
 }: Omit<FetchAllTransactionsParams, "token">) => {
+  const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
+    createdAtTo: formatDate(createdAtTo),
     orderBy,
     order,
   });
 
-  if (startDateFrom) params.append("startDateFrom", formatDate(startDateFrom));
-  if (startDateTo) params.append("startDateTo", formatDate(startDateTo));
+  if (createdAtFrom) params.append("createdAtFrom", formatDate(createdAtFrom));
+
   if (status) params.append("status", status);
 
   return params.toString();
@@ -57,4 +60,4 @@ const useGetTransactions = (
   });
 };
 
-export { useGetTransactions };
+export default useGetTransactions;

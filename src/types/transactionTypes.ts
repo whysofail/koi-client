@@ -13,8 +13,8 @@ export interface FetchAllTransactionsParams {
   page?: number;
   limit?: number;
   status?: TransactionStatus;
-  startDateFrom?: Date;
-  startDateTo?: Date;
+  createdAtFrom?: Date;
+  createdAtTo?: Date;
   orderBy?: TransactionOrderBy;
   order?: "ASC" | "DESC";
 }

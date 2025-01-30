@@ -19,7 +19,6 @@ const fetchAllUsers = async ({
   registrationDateFrom,
   registrationDateTo = nextWeek,
   isBanned = false,
-  //TODO: ASK ABOUT THIS
   orderBy = UserOrderBy.REGISTRATION_DATE,
   order = "DESC",
 }: FetchAllUsersParams): Promise<PaginatedUsersResponse> => {

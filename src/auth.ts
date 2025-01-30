@@ -62,7 +62,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return !!auth;
     },
     jwt: async ({ token, user, account }) => {
-      // Initial sign in
       if (account && user) {
         const decoded = jwtDecode(user.accessToken);
         return {

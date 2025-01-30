@@ -27,15 +27,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { AuctionStatus } from "@/types/auctionTypes";
 
 type AuctionAlertDialogProps = {
-  operation: "start" | "terminate" | "cancel";
+  operation: "publish" | "delete" | "cancel";
   bid_increment: string;
   reserve_price: string;
   auction_id: string;
   token: string;
 };
 
+//TODO:
 const AuctionDialog: FC<AuctionAlertDialogProps> = ({
   operation,
   bid_increment,
@@ -44,21 +46,25 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
   token,
 }) => {
   const [open, setOpen] = React.useState(false);
-  const { form, handleUpdateAuction, isPending } = useAuctionDialog(token, () =>
-    setOpen(false),
-  );
+  const {
+    form,
+    handlePublishAuction,
+    handleDeleteAuction,
+    handleCancelAuction,
+    isPending,
+  } = useAuctionDialog(token, () => setOpen(false));
 
-  if (operation === "start") {
+  if (operation === "publish") {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            Start Auction
+            Publish Auction
           </DropdownMenuItem>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Start Auction</DialogTitle>
+            <DialogTitle>Publish Auction</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <div className="grid gap-4 py-4">
@@ -188,9 +194,9 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
             <Button variant="outline">Cancel</Button>
             <Button
               onClick={form.handleSubmit(() =>
-                handleUpdateAuction(
+                handlePublishAuction(
                   auction_id,
-                  "start",
+                  AuctionStatus.PUBLISHED,
                   bid_increment,
                   reserve_price,
                 ),
@@ -205,8 +211,33 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
     );
   }
 
-  if (operation === "terminate") {
-    return <h1>Test</h1>;
+  if (operation === "delete") {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            Delete Auction
+          </DropdownMenuItem>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Auction</DialogTitle>
+          </DialogHeader>
+          <p className="py-4">Are you sure you want to cancel this auction?</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              No, keep it
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => handleDeleteAuction(auction_id)}
+            >
+              Yes, cancel it
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
   }
 
   return (
@@ -222,8 +253,15 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
         </DialogHeader>
         <p className="py-4">Are you sure you want to cancel this auction?</p>
         <DialogFooter>
-          <Button variant="outline">No, keep it</Button>
-          <Button variant="destructive">Yes, cancel it</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            No, keep it
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => handleCancelAuction(auction_id)}
+          >
+            Yes, cancel it
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

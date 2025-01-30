@@ -8,6 +8,14 @@ const BUFFER_TIME = 30;
 type Role = keyof typeof roleAccessMap;
 
 export default auth((req) => {
+  const isPublicRoute = doesRoleHaveAccessToURL(
+    "non-user",
+    req.nextUrl.pathname,
+  );
+  if (isPublicRoute) {
+    return NextResponse.next();
+  }
+
   if (!req.auth) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
@@ -17,6 +25,7 @@ export default auth((req) => {
   }
 
   const role = req.auth.user.role as Role;
+
   const haveAccess = doesRoleHaveAccessToURL(role, req.nextUrl.pathname);
 
   if (!haveAccess) {
@@ -35,6 +44,7 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    "/((?!login|register|403|api|session-expired|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    // exclude all nextjs internal routes
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

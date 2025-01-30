@@ -36,7 +36,7 @@ const AuctionsTableViewModel = (token: string) => {
     startDateTo,
     orderBy,
     order,
-    status, // Add status to query params
+    status,
   });
 
   const [sorting, setSorting] = useState<SortingState>([]);

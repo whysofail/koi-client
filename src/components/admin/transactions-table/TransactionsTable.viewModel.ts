@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useGetTransactions } from "@/server/transaction/getAllTransactions/queries";
+import useGetTransactions from "@/server/transaction/getTransactions/queries";
 import {
   SortingState,
   ColumnFiltersState,
@@ -14,8 +14,8 @@ const TransactionsTableViewModel = (user: User) => {
   const router = useRouter();
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [startDateFrom, setStartDateFrom] = useState<Date | undefined>();
-  const [startDateTo, setStartDateTo] = useState<Date | undefined>();
+  const [createdAtFrom, setCreatedAtFrom] = useState<Date | undefined>();
+  const [createdAtTo, setCreatedAtTo] = useState<Date | undefined>();
   const [orderBy, setOrderBy] = useState<TransactionOrderBy>(
     TransactionOrderBy.CREATED_AT,
   );
@@ -24,8 +24,8 @@ const TransactionsTableViewModel = (user: User) => {
     id: string;
     label: string;
   }>({
-    id: "transaction_id",
-    label: "Transaction ID",
+    id: "amount",
+    label: "Amount",
   });
   const [status, setStatus] = useState<TransactionStatus | undefined>(
     undefined,
@@ -37,8 +37,8 @@ const TransactionsTableViewModel = (user: User) => {
     isAdmin: user.role === "admin",
     page: pageIndex,
     limit: pageSize,
-    startDateFrom,
-    startDateTo,
+    createdAtFrom,
+    createdAtTo,
     orderBy,
     order,
     status,
@@ -57,10 +57,10 @@ const TransactionsTableViewModel = (user: User) => {
     setPageIndex,
     pageSize,
     setPageSize,
-    startDateFrom,
-    setStartDateFrom,
-    startDateTo,
-    setStartDateTo,
+    createdAtFrom,
+    setCreatedAtFrom,
+    createdAtTo,
+    setCreatedAtTo,
     orderBy,
     setOrderBy,
     order,

@@ -2,12 +2,9 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
-import SessionProvider from "@/lib/SessionProvider";
 import ReactQueryProvider from "@/lib/ReactQueryProvider";
-import PathChecker from "@/lib/PathChecker";
-import AuthRedirectProvider from "@/lib/AuthRedirectProvider";
 import { ThemeProvider } from "next-themes";
-import { getServerSession } from "@/lib/serverSession";
+import PathChecker from "@/lib/PathChecker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,9 +13,7 @@ export const metadata: Metadata = {
   description: "Koi Auction web client",
 };
 
-const RootLayout = async ({ children }: { children: React.ReactNode }) => {
-  const session = await getServerSession();
-
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -28,16 +23,25 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
           enableSystem
           disableTransitionOnChange
         >
-          <SessionProvider session={session}>
-            <AuthRedirectProvider>
-              <ReactQueryProvider>
-                <PathChecker>
-                  {children}
-                  <Toaster richColors position="top-right" />
-                </PathChecker>
-              </ReactQueryProvider>
-            </AuthRedirectProvider>
-          </SessionProvider>
+          <ReactQueryProvider>
+            <PathChecker
+              nonDashboardContent={
+                <>
+                  <h1>
+                    This reusable comps will only be rendered on the non-app
+                    pages (e.g landing page), not in the app pages
+                  </h1>
+                  <h1>
+                    Use this for reusable components in the landing pages or any
+                    non-application pages/routes
+                  </h1>
+                </>
+              }
+            >
+              {children}
+            </PathChecker>
+            <Toaster richColors position="top-right" />
+          </ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>

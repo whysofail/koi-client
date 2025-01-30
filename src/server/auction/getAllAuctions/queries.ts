@@ -30,7 +30,6 @@ const fetchAllAuctions = async ({
     order,
   });
 
-  // Only add status if it's defined
   if (status) {
     params.append("status", status);
   }

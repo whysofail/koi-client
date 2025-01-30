@@ -100,14 +100,15 @@ export interface AuctionTableData {
 }
 
 export enum AuctionStatus {
-  DRAFT = "DRAFT",
-  PENDING = "PENDING",
-  ACTIVE = "ACTIVE",
-  COMPLETED = "COMPLETED",
+  DRAFT = "DRAFT", // default dari backend setelah create
+  PENDING = "PENDING", // proses verifikasi ke buyer
+  PUBLISHED = "PUBLISHED", // masuk auction listing (ready to be consumed by users) & can be cancelled
+  COMPLETED = "COMPLETED", // verified by admin
   CANCELLED = "CANCELLED",
-  EXPIRED = "EXPIRED",
-  FAILED = "FAILED",
+  EXPIRED = "EXPIRED", // triggered
+  FAILED = "FAILED", // failed to be verified by admin (pending dan tidak di approve)
   STARTED = "STARTED",
+  DELETED = "DELETED",
 }
 
 export const transformAuctionToTableData = (

@@ -19,7 +19,7 @@ const ForbiddenOrNotFound = () => {
         </p>
       </div>
       <Button asChild>
-        <Link href="/">Return Home</Link>
+        <Link href="/dashboard">Return Home</Link>
       </Button>
     </main>
   );

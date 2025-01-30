@@ -37,7 +37,7 @@ const adminNavigation = [
       {
         title: "Dashboard",
         icon: LayoutDashboard,
-        href: "/",
+        href: "/dashboard",
       },
     ],
   },
@@ -47,27 +47,27 @@ const adminNavigation = [
       {
         title: "Users",
         icon: Users,
-        href: "/users",
+        href: "/dashboard/users-management",
       },
       {
         title: "Inventory",
         icon: Package,
-        href: "/inventory",
+        href: "/dashboard/inventory",
       },
       {
         title: "Auctions",
         icon: Package,
-        href: "/auctions",
+        href: "/dashboard/auctions",
       },
       {
         title: "Transactions",
         icon: DollarSign,
-        href: "/transactions",
+        href: "/dashboard/transactions",
       },
       {
         title: "Bids",
         icon: Gavel,
-        href: "/bids",
+        href: "/dashboard/bids",
       },
     ],
   },
@@ -77,12 +77,12 @@ const adminNavigation = [
       {
         title: "Moderation",
         icon: Shield,
-        href: "/admin/moderation",
+        href: "/dashboard/moderation",
       },
       {
         title: "Settings",
         icon: Settings,
-        href: "/admin/settings",
+        href: "/dashboard/settings",
       },
     ],
   },

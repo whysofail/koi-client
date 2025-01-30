@@ -68,17 +68,16 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
 
   const { mutate, isPending } = useUpdateAuction(token);
 
-  const handleUpdateAuction = async (
+  const handlePublishAuction = async (
     auctionId: string,
-    operation: "start" | "cancel",
+    operation: AuctionStatus,
     bid_increment: string,
     reserve_price: string,
   ) => {
     const { startDateTime, endDateTime } = form.getValues();
 
     const data: UpdateAuctionBody = {
-      status:
-        operation === "start" ? AuctionStatus.STARTED : AuctionStatus.CANCELLED,
+      status: operation,
       start_datetime: startDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       end_datetime: endDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       bid_increment,
@@ -89,19 +88,63 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
       { auctionId, data },
       {
         onSuccess: () => {
-          toast.success("Auction started");
+          toast.success("Auction published");
           onSuccess?.();
         },
         onError: () => {
-          toast.error("Failed to start auction");
+          toast.error("Failed to publish auction");
         },
       },
     );
   };
 
+  //TODO: DELETE OPERATION
+  const handleDeleteAuction = async (auctionId: string) => {
+    const data: Pick<UpdateAuctionBody, "status"> = {
+      status: AuctionStatus.DELETED,
+    };
+
+    console.log("Delete auction", auctionId, data);
+    // mutate(
+    //   { auctionId, data },
+    //   {
+    //     onSuccess: () => {
+    //       toast.success("Auction deleted");
+    //       onSuccess?.();
+    //     },
+    //     onError: () => {
+    //       toast.error("Failed to delete auction");
+    //     },
+    //   },
+    // );
+  };
+
+  //TODO: CANCEL OPERATION
+  const handleCancelAuction = async (auctionId: string) => {
+    const data: Pick<UpdateAuctionBody, "status"> = {
+      status: AuctionStatus.CANCELLED,
+    };
+
+    console.log("Cancel auction", auctionId, data);
+    // mutate(
+    //   { auctionId, data },
+    //   {
+    //     onSuccess: () => {
+    //       toast.success("Auction cancelled");
+    //       onSuccess?.();
+    //     },
+    //     onError: () => {
+    //       toast.error("Failed to cancel auction");
+    //     },
+    //   },
+    // );
+  };
+
   return {
     form,
-    handleUpdateAuction,
+    handleDeleteAuction,
+    handlePublishAuction,
+    handleCancelAuction,
     isPending,
   };
 };

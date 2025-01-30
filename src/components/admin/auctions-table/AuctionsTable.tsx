@@ -154,11 +154,20 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           {getSortIcon(AuctionOrderBy.START_DATETIME)}
         </Button>
       ),
-      cell: ({ row }) => (
-        <div>
-          {formatDate(new Date(row.getValue("start_datetime")), "dd-MM-yyyy")}
-        </div>
-      ),
+      cell: ({ row }) => {
+        if (
+          ["DRAFT", "CANCELLED", "PENDING", "COMPLETED", "FAILED"].includes(
+            row.original.status,
+          )
+        ) {
+          return <div>-</div>;
+        }
+        return (
+          <div>
+            {formatDate(new Date(row.getValue("start_datetime")), "dd-MM-yyyy")}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "end_datetime",
@@ -178,11 +187,20 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           {getSortIcon(AuctionOrderBy.END_DATETIME)}
         </Button>
       ),
-      cell: ({ row }) => (
-        <div>
-          {formatDate(new Date(row.getValue("end_datetime")), "dd-MM-yyyy")}
-        </div>
-      ),
+      cell: ({ row }) => {
+        if (
+          ["DRAFT", "CANCELLED", "PENDING", "COMPLETED", "FAILED"].includes(
+            row.original.status,
+          )
+        ) {
+          return <div>-</div>;
+        }
+        return (
+          <div>
+            {formatDate(new Date(row.getValue("end_datetime")), "dd-MM-yyyy")}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "status",
@@ -296,24 +314,23 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
             >
               View Details
             </DropdownMenuItem>
-            {row.original.status === "DRAFT" ||
-            row.original.status === "ACTIVE" ? (
-              <AuctionDialog
-                operation="start"
-                bid_increment={row.original.bid_increment}
-                reserve_price={row.original.reserve_price}
-                auction_id={row.original.auction_id}
-                token={token}
-              />
-            ) : null}
             {row.original.status === "DRAFT" && (
-              <AuctionDialog
-                operation="cancel"
-                auction_id={row.original.auction_id}
-                bid_increment={row.original.bid_increment}
-                reserve_price={row.original.reserve_price}
-                token={token}
-              />
+              <>
+                <AuctionDialog
+                  operation="publish"
+                  bid_increment={row.original.bid_increment}
+                  reserve_price={row.original.reserve_price}
+                  auction_id={row.original.auction_id}
+                  token={token}
+                />
+                <AuctionDialog
+                  operation="delete"
+                  auction_id={row.original.auction_id}
+                  bid_increment={row.original.bid_increment}
+                  reserve_price={row.original.reserve_price}
+                  token={token}
+                />
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>

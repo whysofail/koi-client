@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { signIn } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 
@@ -17,8 +17,6 @@ const LoginFormSchema = z.object({
 });
 
 const LoginFormViewModel = () => {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -70,12 +68,12 @@ const LoginFormViewModel = () => {
         redirect: false,
         email,
         password,
-        callbackUrl,
+        redirectTo: "/dashboard",
       });
 
       if (!res?.error) {
         toast.success("Login successful");
-        router.push(callbackUrl);
+        router.push("/dashboard");
       } else {
         switch (res.error) {
           case "CredentialsSignin":
