@@ -13,7 +13,13 @@ const PathChecker: React.FC<PathCheckerProps> = ({
   nonDashboardContent,
 }) => {
   const pathname = usePathname();
-  const excludedPaths = ["/login", "/register", "/403", "/session-expired"];
+  const excludedPaths = [
+    "/login",
+    "/register",
+    "/403",
+    "/session-expired",
+    "/404",
+  ];
   const isExcluded = excludedPaths.includes(pathname);
   const isDashboard = pathname.startsWith("/dashboard");
 

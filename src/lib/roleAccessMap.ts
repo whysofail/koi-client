@@ -14,14 +14,6 @@ const roleAccessMap = {
     "/dashboard/transactions",
     "/dashboard/transactions/[transactionID]",
   ],
-  "non-user": [
-    "/",
-    "/login",
-    "/register",
-    "/session-expired",
-    "/403",
-    "/article",
-  ],
 };
 
 export default roleAccessMap;
