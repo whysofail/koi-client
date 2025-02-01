@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useCreateAuctionDraft } from "@/server/auction/createAuctionToDraft/mutations";
+import useCreateAuctionDraft from "@/server/auction/createAuctionToDraft/mutations";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

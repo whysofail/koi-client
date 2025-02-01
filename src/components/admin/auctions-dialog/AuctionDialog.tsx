@@ -51,7 +51,8 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
     handlePublishAuction,
     handleDeleteAuction,
     handleCancelAuction,
-    isPending,
+    pendingDelete,
+    pendingUpdate,
   } = useAuctionDialog(token, () => setOpen(false));
 
   if (operation === "publish") {
@@ -191,7 +192,9 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
             </div>
           </Form>
           <DialogFooter>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
             <Button
               onClick={form.handleSubmit(() =>
                 handlePublishAuction(
@@ -201,9 +204,9 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
                   reserve_price,
                 ),
               )}
-              disabled={isPending}
+              disabled={pendingUpdate}
             >
-              {isPending ? "Starting..." : "Start"}
+              {pendingUpdate ? "Publishing..." : "Publish"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -231,8 +234,9 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
             <Button
               variant="destructive"
               onClick={() => handleDeleteAuction(auction_id)}
+              disabled={pendingDelete}
             >
-              Yes, cancel it
+              {pendingDelete ? "Deleting..." : "Yes, delete it"}
             </Button>
           </DialogFooter>
         </DialogContent>

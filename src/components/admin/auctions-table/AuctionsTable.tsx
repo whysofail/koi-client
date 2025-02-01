@@ -61,7 +61,7 @@ import {
 import StatusBadge from "./StatusBadge";
 import AuctionsTableViewModel from "./AuctionsTable.viewModel";
 import { AuctionStatus } from "@/types/auctionTypes";
-import AuctionDialog from "../auctions-alert-dialog/AuctionDialog";
+import AuctionDialog from "../auctions-dialog/AuctionDialog";
 
 const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
   const {

@@ -4,6 +4,8 @@ import { z } from "zod";
 import { useUpdateAuction } from "@/server/auction/updateAuction/mutations";
 import { UpdateAuctionBody, AuctionStatus } from "@/types/auctionTypes";
 import { toast } from "sonner";
+import useDeleteAuction from "@/server/auction/deleteAuction/mutations";
+import { useQueryClient } from "@tanstack/react-query";
 
 const auctionFormSchema = z
   .object({
@@ -58,6 +60,7 @@ const auctionFormSchema = z
 type AuctionFormData = z.infer<typeof auctionFormSchema>;
 
 export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
+  const queryClient = useQueryClient();
   const form = useForm<AuctionFormData>({
     resolver: zodResolver(auctionFormSchema),
     defaultValues: {
@@ -66,7 +69,14 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     },
   });
 
-  const { mutate, isPending } = useUpdateAuction(token);
+  const { mutate: updateMutate, isPending: pendingUpdate } = useUpdateAuction(
+    token,
+    queryClient,
+  );
+  const { mutate: deleteMutate, isPending: pendingDelete } = useDeleteAuction(
+    token,
+    queryClient,
+  );
 
   const handlePublishAuction = async (
     auctionId: string,
@@ -84,7 +94,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
       reserve_price,
     };
 
-    mutate(
+    updateMutate(
       { auctionId, data },
       {
         onSuccess: () => {
@@ -98,25 +108,17 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     );
   };
 
-  //TODO: DELETE OPERATION
   const handleDeleteAuction = async (auctionId: string) => {
-    const data: Pick<UpdateAuctionBody, "status"> = {
-      status: AuctionStatus.DELETED,
-    };
-
-    console.log("Delete auction", auctionId, data);
-    // mutate(
-    //   { auctionId, data },
-    //   {
-    //     onSuccess: () => {
-    //       toast.success("Auction deleted");
-    //       onSuccess?.();
-    //     },
-    //     onError: () => {
-    //       toast.error("Failed to delete auction");
-    //     },
-    //   },
-    // );
+    console.log(auctionId);
+    deleteMutate(auctionId, {
+      onSuccess: () => {
+        toast.success("Auction deleted");
+        onSuccess?.();
+      },
+      onError: () => {
+        toast.error("Failed to delete auction");
+      },
+    });
   };
 
   //TODO: CANCEL OPERATION
@@ -145,6 +147,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     handleDeleteAuction,
     handlePublishAuction,
     handleCancelAuction,
-    isPending,
+    pendingDelete,
+    pendingUpdate,
   };
 };
