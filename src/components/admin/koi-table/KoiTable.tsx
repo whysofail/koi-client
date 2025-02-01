@@ -104,7 +104,7 @@ const KoiTable = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => router.push(`/auctions/add/${koi.id}`)}
+            onClick={() => router.push(`/dashboard/auctions/add/${koi.id}`)}
           >
             Add to Auction
           </Button>
