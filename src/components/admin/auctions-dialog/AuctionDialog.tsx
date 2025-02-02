@@ -37,7 +37,6 @@ type AuctionAlertDialogProps = {
   token: string;
 };
 
-//TODO:
 const AuctionDialog: FC<AuctionAlertDialogProps> = ({
   operation,
   bid_increment,

@@ -1,24 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
-import { AuctionByIDResponse } from "@/types/auctionTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { AuctionByIDResponse } from "@/types/auctionTypes";
 
-const fetchAuctionByID = async (
-  id: string,
-  token: string,
-): Promise<AuctionByIDResponse> => {
-  const { data } = await fetchWithAuth.get(`/auctions/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+const getAuctionByID = async (id: string, token: string) => {
+  const { data } = await fetchWithAuth.get<AuctionByIDResponse>(
+    `/auctions/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
-
+  );
   return data;
 };
 
-const useGetAuctionByID = (id: string, token: string) =>
-  useQuery({
-    queryKey: ["auctionByID", id],
-    queryFn: () => fetchAuctionByID(id, token),
+const useGetAuctionByID = (
+  id: string,
+  token: string,
+  options?: { enabled?: boolean },
+) => {
+  return useQuery({
+    queryKey: ["auction", id],
+    queryFn: () => getAuctionByID(id, token),
+    enabled: options?.enabled,
   });
+};
 
 export default useGetAuctionByID;

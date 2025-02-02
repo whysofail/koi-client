@@ -17,24 +17,21 @@ import {
   ArrowUp,
   ArrowDown,
   Eye,
-  MoreHorizontal,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { format as formatDate } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format as formatDate } from "date-fns";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
@@ -53,19 +50,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import TableSkeleton from "@/components/skeletons/TableSkeleton";
-import {
-  transformAuctionToTableData,
-  type AuctionTableData,
-  AuctionOrderBy,
-} from "@/types/auctionTypes";
-import StatusBadge from "./StatusBadge";
-import AuctionsTableViewModel from "./AuctionsTable.viewModel";
-import { AuctionStatus } from "@/types/auctionTypes";
-import AuctionDialog from "../auctions-dialog/AuctionDialog";
+import { UserOrderBy, UserRole } from "@/types/usersTypes";
+import UsersTableViewModel from "./UsersTable.viewModel";
+import UserStatusBadge from "./UserStatusBadge";
 
-const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
+const UsersTable: React.FC<{ token: string }> = ({ token }) => {
   const {
-    router,
     orderBy,
     order,
     setOrderBy,
@@ -83,19 +73,20 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     pageSize,
     searchColumn,
     setSearchColumn,
-    startDateFrom,
-    startDateTo,
-    setStartDateFrom,
-    setStartDateTo,
+    registrationDateFrom,
+    registrationDateTo,
+    setRegistrationDateFrom,
+    setRegistrationDateTo,
     setPageIndex,
     pageIndex,
     setPageSize,
-    status,
-    setStatus,
-    updateAuction,
-  } = AuctionsTableViewModel(token);
+    role,
+    setRole,
+    isBanned,
+    setIsBanned,
+  } = UsersTableViewModel(token);
 
-  const getSortIcon = (columnOrderBy: AuctionOrderBy) => {
+  const getSortIcon = (columnOrderBy: UserOrderBy) => {
     if (orderBy !== columnOrderBy)
       return <ArrowUpDown className="ml-2 h-4 w-4" />;
     return order === "ASC" ? (
@@ -105,249 +96,85 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     );
   };
 
-  const columns: ColumnDef<AuctionTableData>[] = [
+  const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "auction_id",
+      accessorKey: "user_id",
       header: "ID",
     },
     {
-      accessorKey: "title",
+      accessorKey: "username",
       header: () => (
         <Button
           variant="ghost"
           onClick={() => {
-            setOrderBy(AuctionOrderBy.TITLE);
+            setOrderBy(UserOrderBy.USERNAME);
             setOrder(
-              orderBy === AuctionOrderBy.TITLE && order === "ASC"
+              orderBy === UserOrderBy.USERNAME && order === "ASC"
                 ? "DESC"
                 : "ASC",
             );
           }}
         >
-          Title
-          {getSortIcon(AuctionOrderBy.TITLE)}
+          Username
+          {getSortIcon(UserOrderBy.USERNAME)}
         </Button>
       ),
     },
     {
-      accessorKey: "description",
-      header: "Description",
-    },
-    {
-      accessorKey: "item",
-      header: "Koi ID",
-    },
-    {
-      accessorKey: "start_datetime",
+      accessorKey: "email",
       header: () => (
         <Button
           variant="ghost"
           onClick={() => {
-            setOrderBy(AuctionOrderBy.START_DATETIME);
+            setOrderBy(UserOrderBy.EMAIL);
             setOrder(
-              orderBy === AuctionOrderBy.START_DATETIME && order === "ASC"
-                ? "DESC"
-                : "ASC",
+              orderBy === UserOrderBy.EMAIL && order === "ASC" ? "DESC" : "ASC",
             );
           }}
         >
-          Start Date
-          {getSortIcon(AuctionOrderBy.START_DATETIME)}
+          Email
+          {getSortIcon(UserOrderBy.EMAIL)}
         </Button>
       ),
-      cell: ({ row }) => {
-        if (
-          ["DRAFT", "CANCELLED", "PENDING", "COMPLETED", "FAILED"].includes(
-            row.original.status,
-          )
-        ) {
-          return <div>-</div>;
-        }
-        return (
-          <div>
-            {formatDate(new Date(row.getValue("start_datetime")), "dd-MM-yyyy")}
-          </div>
-        );
-      },
     },
     {
-      accessorKey: "end_datetime",
-      header: () => (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.END_DATETIME);
-            setOrder(
-              orderBy === AuctionOrderBy.END_DATETIME && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
-        >
-          End Date
-          {getSortIcon(AuctionOrderBy.END_DATETIME)}
-        </Button>
-      ),
-      cell: ({ row }) => {
-        if (
-          ["DRAFT", "CANCELLED", "PENDING", "COMPLETED", "FAILED"].includes(
-            row.original.status,
-          )
-        ) {
-          return <div>-</div>;
-        }
-        return (
-          <div>
-            {formatDate(new Date(row.getValue("end_datetime")), "dd-MM-yyyy")}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "status",
-      header: () => (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.STATUS);
-            setOrder(
-              orderBy === AuctionOrderBy.STATUS && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
-        >
-          Status
-          {getSortIcon(AuctionOrderBy.STATUS)}
-        </Button>
-      ),
-      cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
-    },
-    {
-      accessorKey: "current_highest_bid",
-      header: () => (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.CURRENT_HIGHEST_BID);
-            setOrder(
-              orderBy === AuctionOrderBy.CURRENT_HIGHEST_BID && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
-        >
-          Current Bid
-          {getSortIcon(AuctionOrderBy.CURRENT_HIGHEST_BID)}
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const value = row.getValue("current_highest_bid");
-        return <div>Rp. {Number(value || 0).toLocaleString()}</div>;
-      },
-    },
-    {
-      accessorKey: "reserve_price",
-      header: () => (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.RESERVE_PRICE);
-            setOrder(
-              orderBy === AuctionOrderBy.RESERVE_PRICE && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
-        >
-          Reserve Price
-          {getSortIcon(AuctionOrderBy.RESERVE_PRICE)}
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const value = row.getValue("reserve_price");
-        return <div>Rp. {Number(value || 0).toLocaleString()}</div>;
-      },
-    },
-    {
-      accessorKey: "bid_increment",
-      header: () => (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.BID_INCREMENT);
-            setOrder(
-              orderBy === AuctionOrderBy.BID_INCREMENT && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
-        >
-          Bid Increment
-          {getSortIcon(AuctionOrderBy.BID_INCREMENT)}
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const value = row.getValue("bid_increment");
-        return <div>Rp.{Number(value || 0).toLocaleString()}</div>;
-      },
-    },
-    {
-      accessorKey: "user",
-      header: "Creator",
-    },
-    {
-      id: "actions",
-      header: "Actions",
+      accessorKey: "is_banned",
+      header: "Status",
       cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem
-              onClick={() =>
-                router.push(`/auctions/${row.original.auction_id}`)
-              }
-            >
-              View Details
-            </DropdownMenuItem>
-            {row.original.status === "DRAFT" && (
-              <>
-                <AuctionDialog
-                  operation="publish"
-                  bid_increment={row.original.bid_increment}
-                  reserve_price={row.original.reserve_price}
-                  auction_id={row.original.auction_id}
-                  token={token}
-                />
-                <AuctionDialog
-                  operation="delete"
-                  auction_id={row.original.auction_id}
-                  bid_increment={row.original.bid_increment}
-                  reserve_price={row.original.reserve_price}
-                  token={token}
-                />
-                <DropdownMenuItem
-                  onClick={() =>
-                    updateAuction(row.original.auction_id, row.original.item)
-                  }
-                >
-                  Update Auction
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <UserStatusBadge isBanned={row.getValue("is_banned")} />
+      ),
+    },
+    {
+      accessorKey: "registration_date",
+      header: () => (
+        <Button
+          variant="ghost"
+          onClick={() => {
+            setOrderBy(UserOrderBy.REGISTRATION_DATE);
+            setOrder(
+              orderBy === UserOrderBy.REGISTRATION_DATE && order === "ASC"
+                ? "DESC"
+                : "ASC",
+            );
+          }}
+        >
+          Registration Date
+          {getSortIcon(UserOrderBy.REGISTRATION_DATE)}
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div>
+          {formatDate(
+            new Date(row.getValue("registration_date")),
+            "dd-MM-yyyy",
+          )}
+        </div>
       ),
     },
   ];
 
   const table = useReactTable({
-    data: PaginatedData?.data.map(transformAuctionToTableData) ?? [],
+    data: PaginatedData?.data ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -361,7 +188,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       sorting,
       columnFilters,
       columnVisibility: {
-        auction_id: false, // Hide the auction_id column by default
+        user_id: false, // Hide the user_id column by default
         ...columnVisibility,
       },
       rowSelection,
@@ -370,11 +197,15 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     manualPagination: true,
   });
 
+  // Add type safety for searchable columns
   const searchableColumns = [
-    { id: "title", label: "Title" },
-    { id: "description", label: "Description" },
-    { id: "user", label: "Creator" },
-  ];
+    { id: "username", label: "Username" },
+    { id: "email", label: "Email" },
+  ] as const;
+
+  // Update the search input handling
+  const currentColumn = table.getColumn(searchColumn.id);
+  const searchValue = (currentColumn?.getFilterValue() as string) ?? "";
 
   if (isLoading) {
     return <TableSkeleton />;
@@ -384,28 +215,35 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          {/* Add status filter dropdown before the existing search dropdown */}
+          {/* Role filter */}
           <Select
-            value={status || "all"}
-            onValueChange={(value) =>
-              setStatus(value === "all" ? undefined : (value as AuctionStatus))
-            }
+            value={role}
+            onValueChange={(value) => setRole(value as UserRole)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={UserRole.USER}>User</SelectItem>
+              <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Status filter */}
+          <Select
+            value={isBanned ? "banned" : "active"}
+            onValueChange={(value) => setIsBanned(value === "banned")}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              {Object.values(AuctionStatus).map((statusOption) => (
-                <SelectItem key={statusOption} value={statusOption}>
-                  {statusOption.charAt(0).toUpperCase() +
-                    statusOption.slice(1).toLowerCase()}
-                </SelectItem>
-              ))}
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="banned">Banned</SelectItem>
             </SelectContent>
           </Select>
 
-          {/* Existing search and filter components */}
+          {/* Search controls */}
           <div className="flex gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -428,19 +266,17 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
             </DropdownMenu>
             <Input
               placeholder={`Search by ${searchColumn.label}...`}
-              value={
-                (table
-                  .getColumn(searchColumn.id)
-                  ?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table
-                  .getColumn(searchColumn.id)
-                  ?.setFilterValue(event.target.value)
-              }
+              value={searchValue}
+              onChange={(event) => {
+                const column = table.getColumn(searchColumn.id);
+                if (column) {
+                  column.setFilterValue(event.target.value);
+                }
+              }}
               className="max-w-sm"
             />
           </div>
+
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -448,20 +284,21 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                 className="w-[180px] justify-start text-left font-normal"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {startDateFrom
-                  ? formatDate(startDateFrom, "dd-MM-yyyy")
+                {registrationDateFrom
+                  ? formatDate(registrationDateFrom, "dd-MM-yyyy")
                   : "From date"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={startDateFrom}
-                onSelect={setStartDateFrom}
+                selected={registrationDateFrom}
+                onSelect={setRegistrationDateFrom}
                 initialFocus
               />
             </PopoverContent>
           </Popover>
+
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -469,16 +306,16 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                 className="w-[180px] justify-start text-left font-normal"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {startDateTo
-                  ? formatDate(startDateTo, "dd-MM-yyyy")
+                {registrationDateTo
+                  ? formatDate(registrationDateTo, "dd-MM-yyyy")
                   : "To date"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={startDateTo}
-                onSelect={setStartDateTo}
+                selected={registrationDateTo}
+                onSelect={setRegistrationDateTo}
                 initialFocus
               />
             </PopoverContent>
@@ -488,9 +325,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
-              Columns
-              <Eye className="h-4 w-4" />
-              <ChevronDown className="ml-2 h-4 w-4" />
+              Columns <Eye className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -514,6 +349,8 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {/* Change the border styling here */}
       <div className="relative rounded-md border dark:border-neutral-700">
         {isLoading && (
           <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
@@ -564,6 +401,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           </TableBody>
         </Table>
       </div>
+
       <div className="flex items-center justify-between space-x-2">
         <div className="text-muted-foreground flex-1 text-sm">
           Page {pageIndex} of{" "}
@@ -614,4 +452,4 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
   );
 };
 
-export default AuctionsTable;
+export default UsersTable;

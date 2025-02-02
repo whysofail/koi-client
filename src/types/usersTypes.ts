@@ -51,3 +51,8 @@ export interface PaginatedUsersResponse {
   page: number;
   limit: number;
 }
+
+export interface WarnUserBody {
+  user_id: string;
+  reason: string;
+}

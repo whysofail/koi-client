@@ -1,35 +1,36 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import useGetAllAuctions from "@/server/auction/getAllAuctions/queries";
+import useGetAllUsers from "@/server/user/getAllUsers/queries";
 import {
   SortingState,
   ColumnFiltersState,
   VisibilityState,
 } from "@tanstack/react-table";
-import { AuctionOrderBy, AuctionStatus } from "@/types/auctionTypes";
+import { UserOrderBy, UserRole } from "@/types/usersTypes";
 import { format } from "date-fns";
 
-const AuctionsTableViewModel = (token: string) => {
+const UsersTableViewModel = (token: string) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const pageIndex = Number(searchParams.get("page")) || 1;
   const pageSize = Number(searchParams.get("limit")) || 10;
-  const startDateFrom = searchParams.get("startDateFrom")
-    ? new Date(searchParams.get("startDateFrom")!)
+  const registrationDateFrom = searchParams.get("registrationDateFrom")
+    ? new Date(searchParams.get("registrationDateFrom")!)
     : undefined;
-  const startDateTo = searchParams.get("startDateTo")
-    ? new Date(searchParams.get("startDateTo")!)
+  const registrationDateTo = searchParams.get("registrationDateTo")
+    ? new Date(searchParams.get("registrationDateTo")!)
     : undefined;
   const orderBy =
-    (searchParams.get("orderBy") as AuctionOrderBy) ||
-    AuctionOrderBy.CREATED_AT;
+    (searchParams.get("orderBy") as UserOrderBy) ||
+    UserOrderBy.REGISTRATION_DATE;
   const order = (searchParams.get("order") as "ASC" | "DESC") || "DESC";
+  const role = (searchParams.get("role") as UserRole) || UserRole.USER;
+  const isBanned = searchParams.get("isBanned") === "true";
   const searchColumn = {
-    id: searchParams.get("searchColumn") || "title",
-    label: searchParams.get("searchColumnLabel") || "Title",
+    id: searchParams.get("searchColumn") || "username",
+    label: searchParams.get("searchColumnLabel") || "Username",
   };
-  const status = searchParams.get("status") as AuctionStatus | undefined;
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -62,22 +63,25 @@ const AuctionsTableViewModel = (token: string) => {
     [searchParams, router],
   );
 
-  const setStartDateFrom = useCallback(
+  const setRegistrationDateFrom = useCallback(
     (date?: Date) => {
       if (date) {
         router.push(
-          `?${createQueryString("startDateFrom", format(date, "yyyy-MM-dd"))}`,
+          `?${createQueryString(
+            "registrationDateFrom",
+            format(date, "yyyy-MM-dd"),
+          )}`,
         );
       }
     },
     [createQueryString, router],
   );
 
-  const setStartDateTo = useCallback(
+  const setRegistrationDateTo = useCallback(
     (date?: Date) => {
       if (date) {
         router.push(
-          `?${createQueryString("startDateTo", format(date, "yyyy-MM-dd"))}`,
+          `?${createQueryString("registrationDateTo", format(date, "yyyy-MM-dd"))}`,
         );
       }
     },
@@ -85,7 +89,7 @@ const AuctionsTableViewModel = (token: string) => {
   );
 
   const setOrderBy = useCallback(
-    (newOrderBy: AuctionOrderBy) => {
+    (newOrderBy: UserOrderBy) => {
       router.push(`?${createQueryString("orderBy", newOrderBy)}`);
     },
     [createQueryString, router],
@@ -94,6 +98,20 @@ const AuctionsTableViewModel = (token: string) => {
   const setOrder = useCallback(
     (newOrder: "ASC" | "DESC") => {
       router.push(`?${createQueryString("order", newOrder)}`);
+    },
+    [createQueryString, router],
+  );
+
+  const setRole = useCallback(
+    (newRole: UserRole) => {
+      router.push(`?${createQueryString("role", newRole)}`);
+    },
+    [createQueryString, router],
+  );
+
+  const setIsBanned = useCallback(
+    (banned: boolean) => {
+      router.push(`?${createQueryString("isBanned", String(banned))}`);
     },
     [createQueryString, router],
   );
@@ -108,32 +126,16 @@ const AuctionsTableViewModel = (token: string) => {
     [searchParams, router],
   );
 
-  const setStatus = useCallback(
-    (newStatus?: AuctionStatus) => {
-      if (newStatus) {
-        router.push(`?${createQueryString("status", newStatus)}`);
-      } else {
-        const params = new URLSearchParams(searchParams.toString());
-        params.delete("status");
-        router.push(`?${params.toString()}`);
-      }
-    },
-    [createQueryString, router, searchParams],
-  );
-
-  const updateAuction = (auctionId: string, koiID: string) => {
-    router.push(`/dashboard/auctions/update/${auctionId}?koiID=${koiID}`);
-  };
-
-  const { data: PaginatedData, isLoading } = useGetAllAuctions({
+  const { data: PaginatedData, isLoading } = useGetAllUsers({
     token,
     page: pageIndex,
     limit: pageSize,
-    startDateFrom,
-    startDateTo,
+    registrationDateFrom,
+    registrationDateTo,
     orderBy,
     order,
-    status,
+    role,
+    isBanned,
   });
 
   return {
@@ -142,14 +144,18 @@ const AuctionsTableViewModel = (token: string) => {
     setPageIndex,
     pageSize,
     setPageSize,
-    startDateFrom,
-    setStartDateFrom,
-    startDateTo,
-    setStartDateTo,
+    registrationDateFrom,
+    setRegistrationDateFrom,
+    registrationDateTo,
+    setRegistrationDateTo,
     orderBy,
     setOrderBy,
     order,
     setOrder,
+    role,
+    setRole,
+    isBanned,
+    setIsBanned,
     searchColumn,
     setSearchColumn,
     PaginatedData,
@@ -162,10 +168,7 @@ const AuctionsTableViewModel = (token: string) => {
     setColumnVisibility,
     rowSelection,
     setRowSelection,
-    status,
-    setStatus,
-    updateAuction,
   };
 };
 
-export default AuctionsTableViewModel;
+export default UsersTableViewModel;

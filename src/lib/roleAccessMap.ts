@@ -7,6 +7,7 @@ const roleAccessMap = {
     "/dashboard/auctions",
     "/dashboard/transactions",
     "/dashboard/transactions/[transactionID]",
+    "/dashboard/auctions/update/[auctionID]",
   ],
   user: [
     "/dashboard",

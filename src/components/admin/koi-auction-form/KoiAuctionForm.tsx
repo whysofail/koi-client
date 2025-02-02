@@ -15,14 +15,21 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import KoiAuctionFormViewModel from "./KoiAuctionForm.viewModel";
 
-const KoiAuctionForm: FC<{ token: string; koiID: string }> = ({
-  token,
-  koiID,
-}) => {
-  const { form, onSubmit, isPending, formatCurrency } = KoiAuctionFormViewModel(
-    token,
-    koiID,
-  );
+type KoiAuctionFormProps = {
+  token: string;
+  id: string;
+  operation: "create" | "update";
+};
+
+const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
+  const {
+    form,
+    onSubmit,
+    pendingCreate,
+    pendingUpdate,
+    formatCurrency,
+    isUpdate,
+  } = KoiAuctionFormViewModel(token, id, operation);
 
   return (
     <Form {...form}>
@@ -185,8 +192,21 @@ const KoiAuctionForm: FC<{ token: string; koiID: string }> = ({
           </div>
         </div>
 
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? (
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isUpdate ? pendingUpdate : pendingCreate}
+        >
+          {isUpdate ? (
+            pendingUpdate ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating Auction...
+              </>
+            ) : (
+              "Update Auction"
+            )
+          ) : pendingCreate ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Adding to Auction...
