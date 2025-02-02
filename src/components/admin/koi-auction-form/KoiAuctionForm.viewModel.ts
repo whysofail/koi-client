@@ -66,7 +66,7 @@ const KoiAuctionFormViewModel = (token: string, koiID: string) => {
       {
         onSuccess: () => {
           toast.success("Auction created successfully");
-          router.push("/auctions");
+          router.push("/dashboard/auctions");
         },
         onError: (error) => {
           toast.error("Failed to create auction");

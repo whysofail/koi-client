@@ -5,7 +5,7 @@ import { CreateAuctionBody } from "@/types/auctionTypes";
 const getDefaultDates = () => {
   const start = new Date();
   const end = new Date();
-  end.setDate(end.getDate() + 7); // Default to 7 days from now
+  end.setDate(end.getDate() + 7);
   return {
     start_datetime: start.toISOString(),
     end_datetime: end.toISOString(),
