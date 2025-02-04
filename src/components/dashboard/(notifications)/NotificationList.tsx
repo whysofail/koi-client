@@ -4,10 +4,14 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface NotificationListProps {
   notifications: Notification[];
+  onMarkAsRead: (notificationId: string) => void;
+  isMarkingAsRead: boolean;
 }
 
 const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
+  onMarkAsRead,
+  isMarkingAsRead,
 }) => {
   return (
     <>
@@ -16,6 +20,8 @@ const NotificationList: React.FC<NotificationListProps> = ({
           <NotificationItem
             key={notification.notification_id}
             notification={notification}
+            onMarkAsRead={onMarkAsRead}
+            isMarkingAsRead={isMarkingAsRead}
           />
         ))
       ) : (

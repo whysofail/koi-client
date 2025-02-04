@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useState, useMemo } from "react";
+import { FC } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,82 +13,50 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { User } from "next-auth";
-import { useSocketWithAuth } from "@/hooks/use-socket";
-import {
-  Notification,
-  NotificationStatus,
-  GetNotificationResponse,
-} from "@/types/notificationTypes";
-import { useGetUserNotifications } from "@/server/notifications/getAdminNotification/queries";
+import { Notification, NotificationStatus } from "@/types/notificationTypes";
 import NotificationList from "./(notifications)/NotificationList";
+import { useSocket } from "@/hooks/use-socket";
+import { useUserNotifications } from "@/server/notifications/getNotification/queries";
+import { useMarkAllNotificationsAsRead } from "@/server/notifications/markAllAsRead/mutation";
+import { useMarkNotificationAsRead } from "@/server/notifications/markAsRead/mutation";
+import { useNotificationSocket } from "@/server/notifications/useNotification";
 
 interface NotificationsDropdownProps {
   user: User;
 }
 
 const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const isAdmin = user.role === "admin";
-
-  const unreadCount = useMemo(
-    () =>
-      notifications.filter((n) => n.status === NotificationStatus.UNREAD)
-        .length,
-    [notifications],
-  );
-
   const accessToken = user.accessToken;
 
+  // Socket setup
+  const { authSocket } = useSocket(accessToken);
+  useNotificationSocket({ authSocket });
+
+  // Notifications query and mutations
   const {
-    data: userNotifications = [],
+    data: notificationsData,
     isLoading,
     isError,
-  } = useGetUserNotifications(accessToken);
+  } = useUserNotifications(accessToken);
 
-  // Initialize auth socket for all users
-  const socket = useSocketWithAuth(isAdmin ? "admin" : "auth", accessToken);
+  const markAllAsRead = useMarkAllNotificationsAsRead(accessToken);
+  const markAsRead = useMarkNotificationAsRead(accessToken);
 
-  useEffect(() => {
-    if (!userNotifications) return;
+  // Ensure notificationsData is properly structured
+  const notifications: Notification[] = notificationsData?.data ?? [];
 
-    // Avoid unnecessary state updates by checking existing notifications
-    setNotifications((prev) => {
-      const newNotifications = Array.isArray(userNotifications)
-        ? userNotifications
-        : (userNotifications as GetNotificationResponse).data || [];
+  // Calculate unread count safely
+  const unreadCount = notifications.filter(
+    (n) => n.status === NotificationStatus.UNREAD,
+  ).length;
 
-      const isDifferent = newNotifications.some(
-        (newNotif) =>
-          !prev.some(
-            (prevNotif) =>
-              prevNotif.notification_id === newNotif.notification_id,
-          ),
-      );
+  // Limit displayed notifications to 5
+  const displayedNotifications = notifications.slice(0, 5);
 
-      return isDifferent ? (newNotifications as Notification[]) : prev;
-    });
-  }, [userNotifications]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleNotification = (data: Notification) => {
-      setNotifications((prev) => {
-        // Prevent duplicate notifications
-        if (prev.some((n) => n.notification_id === data.notification_id)) {
-          return prev;
-        }
-        return [data, ...prev];
-      });
-    };
-
-    const eventChannel = isAdmin ? "admin" : `user:${user.id}`;
-    socket.on(eventChannel, handleNotification);
-
-    return () => {
-      socket.off(eventChannel, handleNotification);
-    };
-  }, [socket, user.id, isAdmin]);
+  // Handler for marking all notifications as read
+  const handleMarkAllAsRead = () => {
+    markAllAsRead.mutate();
+  };
 
   return (
     <DropdownMenu>
@@ -108,7 +76,20 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80 max-w-[90vw]">
-        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+        <div className="flex items-center justify-between p-2">
+          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+          {unreadCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleMarkAllAsRead}
+              disabled={markAllAsRead.isPending}
+              className="text-xs"
+            >
+              Mark all as read
+            </Button>
+          )}
+        </div>
         <DropdownMenuSeparator />
         {isLoading ? (
           <DropdownMenuItem className="text-muted-foreground text-center">
@@ -118,11 +99,19 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
           <DropdownMenuItem className="text-muted-foreground text-center">
             Error fetching notifications
           </DropdownMenuItem>
+        ) : displayedNotifications.length === 0 ? (
+          <DropdownMenuItem className="text-muted-foreground text-center">
+            No notifications
+          </DropdownMenuItem>
         ) : (
-          <NotificationList notifications={notifications} />
+          <NotificationList
+            notifications={displayedNotifications}
+            onMarkAsRead={(notificationId) => markAsRead.mutate(notificationId)}
+            isMarkingAsRead={markAsRead.isPending}
+          />
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="w-full text-center">
+        <DropdownMenuItem className="w-full cursor-pointer text-center">
           View all notifications
         </DropdownMenuItem>
       </DropdownMenuContent>

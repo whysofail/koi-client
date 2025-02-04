@@ -1,13 +1,24 @@
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Notification, NotificationType } from "@/types/notificationTypes";
+import {
+  Notification,
+  NotificationType,
+  NotificationStatus,
+} from "@/types/notificationTypes";
+import { useRouter } from "next/navigation";
 
 interface NotificationItemProps {
   notification: Notification;
+  onMarkAsRead: (notificationId: string) => void;
+  isMarkingAsRead: boolean;
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
+  onMarkAsRead,
+  isMarkingAsRead,
 }) => {
+  const router = useRouter();
+
   const generateUrl = (type: NotificationType, referenceId: string) => {
     switch (type) {
       case NotificationType.AUCTION:
@@ -23,12 +34,23 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     }
   };
 
-  const notificationUrl = notification.reference_id
-    ? generateUrl(notification.type, notification.reference_id)
-    : "#";
+  const handleClick = () => {
+    if (!isMarkingAsRead) {
+      onMarkAsRead(notification.notification_id);
+      const notificationUrl = notification.reference_id
+        ? generateUrl(notification.type, notification.reference_id)
+        : "#";
+      router.push(notificationUrl);
+    }
+  };
 
   return (
-    <DropdownMenuItem className="flex flex-col items-start gap-1 p-4">
+    <DropdownMenuItem
+      onClick={handleClick}
+      className={`flex cursor-pointer flex-col items-start gap-1 p-4 ${
+        notification.status === NotificationStatus.READ ? "bg-gray-400" : ""
+      }`}
+    >
       <div className="flex w-full justify-between">
         <span className="font-medium">{notification.type}</span>
         <span className="text-muted-foreground text-xs">
@@ -38,9 +60,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       <span className="text-muted-foreground text-sm">
         {notification.message}
       </span>
-      <a href={notificationUrl} className="text-blue-500 hover:underline">
-        View Details
-      </a>
     </DropdownMenuItem>
   );
 };
