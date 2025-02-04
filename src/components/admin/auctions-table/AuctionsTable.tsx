@@ -62,6 +62,7 @@ import StatusBadge from "./StatusBadge";
 import AuctionsTableViewModel from "./AuctionsTable.viewModel";
 import { AuctionStatus } from "@/types/auctionTypes";
 import AuctionDialog from "../auctions-dialog/AuctionDialog";
+import Link from "next/link";
 
 const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
   const {
@@ -92,7 +93,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     setPageSize,
     status,
     setStatus,
-    updateAuction,
+    updateURLSearchParams,
   } = AuctionsTableViewModel(token);
 
   const getSortIcon = (columnOrderBy: AuctionOrderBy) => {
@@ -331,12 +332,19 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                   reserve_price={row.original.reserve_price}
                   token={token}
                 />
-                <DropdownMenuItem
-                  onClick={() =>
-                    updateAuction(row.original.auction_id, row.original.item)
-                  }
-                >
-                  Update Auction
+                <DropdownMenuItem asChild>
+                  <Link
+                    href={updateURLSearchParams(row.original.auction_id, {
+                      koiID: row.original.item,
+                      title: row.original.title,
+                      description: row.original.description,
+                      item: row.original.item,
+                      reserve_price: row.original.reserve_price.toString(),
+                      bid_increment: row.original.bid_increment.toString(),
+                    })}
+                  >
+                    Update Auction
+                  </Link>
                 </DropdownMenuItem>
               </>
             )}

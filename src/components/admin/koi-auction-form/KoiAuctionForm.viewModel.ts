@@ -4,10 +4,8 @@ import { z } from "zod";
 import useCreateAuctionDraft from "@/server/auction/createAuctionToDraft/mutations";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
 import { useUpdateAuction } from "@/server/auction/updateAuction/mutations";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 const formSchema = z.object({
   title: z.string().nonempty("Title is required"),
@@ -50,6 +48,13 @@ const KoiAuctionFormViewModel = (
   token: string,
   id: string,
   operation: "create" | "update",
+  initialData?: {
+    title: string;
+    description: string;
+    item: string;
+    reserve_price: number;
+    bid_increment: number;
+  },
 ) => {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -62,13 +67,9 @@ const KoiAuctionFormViewModel = (
     queryClient,
   );
 
-  const { data: auctionFormData } = useGetAuctionByID(id, token, {
-    enabled: operation === "update",
-  });
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       title: "",
       description: "",
       item: id,
@@ -76,19 +77,6 @@ const KoiAuctionFormViewModel = (
       bid_increment: 0,
     },
   });
-
-  useEffect(() => {
-    if (operation === "update" && auctionFormData?.data?.[0]) {
-      const auction = auctionFormData.data[0];
-      form.reset({
-        title: auction.title,
-        description: auction.description,
-        item: auction.item,
-        reserve_price: parseInt(auction.reserve_price) || 0,
-        bid_increment: parseInt(auction.bid_increment) || 0,
-      });
-    }
-  }, [auctionFormData, operation, form]);
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data) => {
     if (operation === "create") {

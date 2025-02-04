@@ -121,8 +121,31 @@ const AuctionsTableViewModel = (token: string) => {
     [createQueryString, router, searchParams],
   );
 
-  const updateAuction = (auctionId: string, koiID: string) => {
-    router.push(`/dashboard/auctions/update/${auctionId}?koiID=${koiID}`);
+  interface IUpdateURLSearchParams {
+    koiID: string;
+    title: string;
+    description: string;
+    item: string;
+    reserve_price: string;
+    bid_increment: string;
+  }
+
+  const updateURLSearchParams = (
+    auctionId: string,
+    params: IUpdateURLSearchParams,
+  ) => {
+    const searchParams = new URLSearchParams({
+      koiID: params.koiID,
+      title: params.title,
+      description: params.description,
+      item: params.item,
+      reserve_price: params.reserve_price,
+      bid_increment: params.bid_increment,
+    });
+
+    const url = `/dashboard/auctions/update/${auctionId}?${searchParams.toString()}`;
+
+    return url;
   };
 
   const { data: PaginatedData, isLoading } = useGetAllAuctions({
@@ -164,7 +187,7 @@ const AuctionsTableViewModel = (token: string) => {
     setRowSelection,
     status,
     setStatus,
-    updateAuction,
+    updateURLSearchParams,
   };
 };
 

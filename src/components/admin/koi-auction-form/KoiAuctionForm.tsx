@@ -19,9 +19,21 @@ type KoiAuctionFormProps = {
   token: string;
   id: string;
   operation: "create" | "update";
+  initialData?: {
+    title: string;
+    description: string;
+    item: string;
+    reserve_price: number;
+    bid_increment: number;
+  };
 };
 
-const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
+const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
+  token,
+  id,
+  operation,
+  initialData,
+}) => {
   const {
     form,
     onSubmit,
@@ -29,7 +41,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
     pendingUpdate,
     formatCurrency,
     isUpdate,
-  } = KoiAuctionFormViewModel(token, id, operation);
+  } = KoiAuctionFormViewModel(token, id, operation, initialData);
 
   return (
     <Form {...form}>
