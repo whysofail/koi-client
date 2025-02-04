@@ -2,6 +2,8 @@ export enum NotificationType {
   BID = "BID",
   AUCTION = "AUCTION",
   SYSTEM = "SYSTEM",
+  TRANSACTION = "TRANSACTION",
+
   // Add other notification types as needed
 }
 
@@ -27,9 +29,9 @@ export interface FetchAllNotificationParams {
 export interface Notification {
   notification_id: string; // UUID of the notification
   user: {
-    user_id: string; // Assuming the User entity has user_id as a primary identifier
-    name: string; // Example user fields, customize as needed
-    email: string; // Example user fields, customize as needed
+    user_id: string;
+    name: string;
+    email: string;
   };
   type: NotificationType;
   message: string | null; // The message can be null, hence we allow that

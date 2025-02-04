@@ -20,6 +20,7 @@ import {
   GetNotificationResponse,
 } from "@/types/notificationTypes";
 import { useGetUserNotifications } from "@/server/notifications/getAdminNotification/queries";
+import NotificationList from "./(notifications)/NotificationList";
 
 interface NotificationsDropdownProps {
   user: User;
@@ -117,27 +118,8 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
           <DropdownMenuItem className="text-muted-foreground text-center">
             Error fetching notifications
           </DropdownMenuItem>
-        ) : notifications.length > 0 ? (
-          notifications.map((notification) => (
-            <DropdownMenuItem
-              key={notification.notification_id}
-              className="flex flex-col items-start gap-1 p-4"
-            >
-              <div className="flex w-full justify-between">
-                <span className="font-medium">{notification.type}</span>
-                <span className="text-muted-foreground text-xs">
-                  {new Date(notification.created_at).toLocaleString()}
-                </span>
-              </div>
-              <span className="text-muted-foreground text-sm">
-                {notification.message}
-              </span>
-            </DropdownMenuItem>
-          ))
         ) : (
-          <DropdownMenuItem className="text-muted-foreground text-center">
-            No new notifications
-          </DropdownMenuItem>
+          <NotificationList notifications={notifications} />
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem className="w-full text-center">
