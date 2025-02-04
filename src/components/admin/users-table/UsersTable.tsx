@@ -7,7 +7,6 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -53,19 +52,18 @@ import TableSkeleton from "@/components/skeletons/TableSkeleton";
 import { UserOrderBy, UserRole } from "@/types/usersTypes";
 import UsersTableViewModel from "./UsersTable.viewModel";
 import UserStatusBadge from "./UserStatusBadge";
+import Link from "next/link";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 const UsersTable: React.FC<{ token: string }> = ({ token }) => {
   const {
     orderBy,
     order,
-    setOrderBy,
-    setOrder,
+    handleSort,
     PaginatedData,
-    setSorting,
     setColumnFilters,
     setColumnVisibility,
     setRowSelection,
-    sorting,
     columnFilters,
     columnVisibility,
     rowSelection,
@@ -84,6 +82,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     setRole,
     isBanned,
     setIsBanned,
+    updateURLSearchParams,
   } = UsersTableViewModel(token);
 
   const getSortIcon = (columnOrderBy: UserOrderBy) => {
@@ -106,14 +105,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(UserOrderBy.USERNAME);
-            setOrder(
-              orderBy === UserOrderBy.USERNAME && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(UserOrderBy.USERNAME)}
         >
           Username
           {getSortIcon(UserOrderBy.USERNAME)}
@@ -123,19 +115,29 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     {
       accessorKey: "email",
       header: () => (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setOrderBy(UserOrderBy.EMAIL);
-            setOrder(
-              orderBy === UserOrderBy.EMAIL && order === "ASC" ? "DESC" : "ASC",
-            );
-          }}
-        >
+        <Button variant="ghost" onClick={() => handleSort(UserOrderBy.EMAIL)}>
           Email
           {getSortIcon(UserOrderBy.EMAIL)}
         </Button>
       ),
+    },
+    {
+      accessorKey: "wallet.balance",
+      header: () => (
+        <Button variant="ghost" onClick={() => handleSort(UserOrderBy.BALANCE)}>
+          Balance
+          {getSortIcon(UserOrderBy.BALANCE)}
+        </Button>
+      ),
+      accessorFn: (row) => {
+        const balance = row.wallet?.balance;
+        return balance ? parseFloat(balance) : 0;
+      },
+      cell: ({ row }) => {
+        const wallet = row.original.wallet;
+        const balance = wallet?.balance ? parseFloat(wallet.balance) : 0;
+        return <div>{formatCurrency(balance)}</div>;
+      },
     },
     {
       accessorKey: "is_banned",
@@ -149,14 +151,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(UserOrderBy.REGISTRATION_DATE);
-            setOrder(
-              orderBy === UserOrderBy.REGISTRATION_DATE && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(UserOrderBy.REGISTRATION_DATE)}
         >
           Registration Date
           {getSortIcon(UserOrderBy.REGISTRATION_DATE)}
@@ -171,39 +166,58 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
         </div>
       ),
     },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const user = row.original;
+        const userDetailsUrl = updateURLSearchParams(user.user_id, {
+          username: user.username,
+          email: user.email,
+          registration_date: user.registration_date,
+          is_banned: user.is_banned.toString(),
+          balance: user.wallet.balance.toString(),
+        });
+
+        return (
+          <Button asChild variant="ghost" size="sm">
+            <Link href={userDetailsUrl}>
+              <Eye className="mr-2 h-4 w-4" />
+              View Details
+            </Link>
+          </Button>
+        );
+      },
+    },
   ];
 
   const table = useReactTable({
     data: PaginatedData?.data ?? [],
     columns,
-    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
-      sorting,
       columnFilters,
       columnVisibility: {
-        user_id: false, // Hide the user_id column by default
+        user_id: false,
         ...columnVisibility,
       },
       rowSelection,
     },
     pageCount: Math.ceil((PaginatedData?.count ?? 0) / pageSize),
     manualPagination: true,
+    manualSorting: true,
   });
 
-  // Add type safety for searchable columns
   const searchableColumns = [
     { id: "username", label: "Username" },
     { id: "email", label: "Email" },
   ] as const;
 
-  // Update the search input handling
   const currentColumn = table.getColumn(searchColumn.id);
   const searchValue = (currentColumn?.getFilterValue() as string) ?? "";
 
@@ -215,7 +229,6 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          {/* Role filter */}
           <Select
             value={role}
             onValueChange={(value) => setRole(value as UserRole)}
@@ -229,7 +242,6 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
             </SelectContent>
           </Select>
 
-          {/* Status filter */}
           <Select
             value={isBanned ? "banned" : "active"}
             onValueChange={(value) => setIsBanned(value === "banned")}
@@ -243,7 +255,6 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
             </SelectContent>
           </Select>
 
-          {/* Search controls */}
           <div className="flex gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -350,11 +361,10 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
         </DropdownMenu>
       </div>
 
-      {/* Change the border styling here */}
       <div className="relative rounded-md border dark:border-neutral-700">
         {isLoading && (
-          <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin" />
+          <div className="absolute right-4 top-4">
+            <Loader2 className="h-4 w-4 animate-spin" />
           </div>
         )}
         <Table>

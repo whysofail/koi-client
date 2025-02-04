@@ -57,6 +57,10 @@ const useGetTransactions = (
   return useQuery({
     queryKey: ["transactions", params],
     queryFn: () => fetchTransactions(params),
+    placeholderData: (previousData) => previousData,
+    staleTime: 5000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 

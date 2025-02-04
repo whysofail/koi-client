@@ -84,18 +84,21 @@ const AuctionsTableViewModel = (token: string) => {
     [createQueryString, router],
   );
 
-  const setOrderBy = useCallback(
+  const handleSort = useCallback(
     (newOrderBy: AuctionOrderBy) => {
-      router.push(`?${createQueryString("orderBy", newOrderBy)}`);
-    },
-    [createQueryString, router],
-  );
+      const params = new URLSearchParams(searchParams.toString());
+      const currentOrderBy = params.get("orderBy") as AuctionOrderBy;
+      const currentOrder = params.get("order") as "ASC" | "DESC";
 
-  const setOrder = useCallback(
-    (newOrder: "ASC" | "DESC") => {
-      router.push(`?${createQueryString("order", newOrder)}`);
+      if (newOrderBy === currentOrderBy) {
+        params.set("order", currentOrder === "ASC" ? "DESC" : "ASC");
+      } else {
+        params.set("orderBy", newOrderBy);
+        params.set("order", "DESC");
+      }
+      router.push(`?${params.toString()}`);
     },
-    [createQueryString, router],
+    [searchParams, router],
   );
 
   const setSearchColumn = useCallback(
@@ -121,7 +124,7 @@ const AuctionsTableViewModel = (token: string) => {
     [createQueryString, router, searchParams],
   );
 
-  interface IUpdateURLSearchParams {
+  interface IURLSearchParams {
     koiID: string;
     title: string;
     description: string;
@@ -130,9 +133,9 @@ const AuctionsTableViewModel = (token: string) => {
     bid_increment: string;
   }
 
-  const updateURLSearchParams = (
+  const updateAuctionURLSearchParams = (
     auctionId: string,
-    params: IUpdateURLSearchParams,
+    params: IURLSearchParams,
   ) => {
     const searchParams = new URLSearchParams({
       koiID: params.koiID,
@@ -144,6 +147,24 @@ const AuctionsTableViewModel = (token: string) => {
     });
 
     const url = `/dashboard/auctions/update/${auctionId}?${searchParams.toString()}`;
+
+    return url;
+  };
+
+  const itemAuctionURLSearchParams = (
+    auctionId: string,
+    params: IURLSearchParams,
+  ) => {
+    const searchParams = new URLSearchParams({
+      koiID: params.koiID,
+      title: params.title,
+      description: params.description,
+      item: params.item,
+      reserve_price: params.reserve_price,
+      bid_increment: params.bid_increment,
+    });
+
+    const url = `/dashboard/auctions/item/${auctionId}?${searchParams.toString()}`;
 
     return url;
   };
@@ -160,7 +181,6 @@ const AuctionsTableViewModel = (token: string) => {
   });
 
   return {
-    router,
     pageIndex,
     setPageIndex,
     pageSize,
@@ -170,9 +190,8 @@ const AuctionsTableViewModel = (token: string) => {
     startDateTo,
     setStartDateTo,
     orderBy,
-    setOrderBy,
     order,
-    setOrder,
+    handleSort,
     searchColumn,
     setSearchColumn,
     PaginatedData,
@@ -187,7 +206,8 @@ const AuctionsTableViewModel = (token: string) => {
     setRowSelection,
     status,
     setStatus,
-    updateURLSearchParams,
+    updateAuctionURLSearchParams,
+    itemAuctionURLSearchParams,
   };
 };
 

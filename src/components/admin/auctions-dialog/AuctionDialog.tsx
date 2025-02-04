@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react"; // Add ReactNode import
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -35,6 +35,7 @@ type AuctionAlertDialogProps = {
   reserve_price: string;
   auction_id: string;
   token: string;
+  children: ReactNode; // Add children to props type
 };
 
 const AuctionDialog: FC<AuctionAlertDialogProps> = ({
@@ -43,6 +44,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
   reserve_price,
   auction_id,
   token,
+  children,
 }) => {
   const [open, setOpen] = React.useState(false);
   const {
@@ -59,7 +61,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            Publish Auction
+            {children}
           </DropdownMenuItem>
         </DialogTrigger>
         <DialogContent>
@@ -218,7 +220,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            Delete Auction
+            {children}
           </DropdownMenuItem>
         </DialogTrigger>
         <DialogContent>
@@ -247,7 +249,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          Cancel Auction
+          {children}
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>

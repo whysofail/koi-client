@@ -4,6 +4,7 @@ import AuctionsTable from "@/components/admin/auctions-table/AuctionsTable";
 
 const AuctionsPage: FC = async () => {
   const session = await getServerSession();
+  const token = session?.user.accessToken ?? "";
 
   return (
     <>
@@ -15,7 +16,7 @@ const AuctionsPage: FC = async () => {
         </div>
       </div>
       <div className="mt-8 pl-5 pr-5">
-        <AuctionsTable token={session?.user?.accessToken ?? ""} />
+        <AuctionsTable token={token} />
       </div>
     </>
   );

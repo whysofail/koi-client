@@ -90,18 +90,21 @@ const TransactionsTableViewModel = (user: User) => {
     [createQueryString, router],
   );
 
-  const setOrderBy = useCallback(
+  const handleSort = useCallback(
     (newOrderBy: TransactionOrderBy) => {
-      router.push(`?${createQueryString("orderBy", newOrderBy)}`);
-    },
-    [createQueryString, router],
-  );
+      const params = new URLSearchParams(searchParams.toString());
+      const currentOrderBy = params.get("orderBy") as TransactionOrderBy;
+      const currentOrder = params.get("order") as "ASC" | "DESC";
 
-  const setOrder = useCallback(
-    (newOrder: "ASC" | "DESC") => {
-      router.push(`?${createQueryString("order", newOrder)}`);
+      if (newOrderBy === currentOrderBy) {
+        params.set("order", currentOrder === "ASC" ? "DESC" : "ASC");
+      } else {
+        params.set("orderBy", newOrderBy);
+        params.set("order", "DESC");
+      }
+      router.push(`?${params.toString()}`);
     },
-    [createQueryString, router],
+    [searchParams, router],
   );
 
   const setSearchColumn = useCallback(
@@ -150,9 +153,8 @@ const TransactionsTableViewModel = (user: User) => {
     createdAtTo,
     setCreatedAtTo,
     orderBy,
-    setOrderBy,
     order,
-    setOrder,
+    handleSort,
     searchColumn,
     setSearchColumn,
     PaginatedData,

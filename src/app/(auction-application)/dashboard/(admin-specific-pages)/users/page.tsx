@@ -4,6 +4,7 @@ import UsersTable from "@/components/admin/users-table/UsersTable";
 
 const UserManagement: FC = async () => {
   const session = await getServerSession();
+  const token = session?.user.accessToken ?? "";
 
   return (
     <>
@@ -15,7 +16,7 @@ const UserManagement: FC = async () => {
         </div>
       </div>
       <div className="mt-8 pl-5 pr-5">
-        <UsersTable token={session?.user?.accessToken ?? ""} />
+        <UsersTable token={token} />
       </div>
     </>
   );

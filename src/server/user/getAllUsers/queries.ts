@@ -52,8 +52,16 @@ const fetchAllUsers = async ({
 
 const useGetAllUsers = ({ token, ...params }: FetchAllUsersParams) =>
   useQuery({
-    queryKey: ["allUsers", params, token],
+    queryKey: ["allUsers", params],
     queryFn: () => fetchAllUsers({ token, ...params }),
+    // Keep previous data while fetching new data
+    placeholderData: (previousData) => previousData,
+    // Prevent unnecessary refetches
+    staleTime: 5000,
+    // Disable automatic refetch on window focus
+    refetchOnWindowFocus: false,
+    // Disable automatic refetch on mount
+    refetchOnMount: false,
   });
 
 export default useGetAllUsers;

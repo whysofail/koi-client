@@ -1,11 +1,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import useGetAllUsers from "@/server/user/getAllUsers/queries";
-import {
-  SortingState,
-  ColumnFiltersState,
-  VisibilityState,
-} from "@tanstack/react-table";
+import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 import { UserOrderBy, UserRole } from "@/types/usersTypes";
 import { format } from "date-fns";
 
@@ -32,7 +28,6 @@ const UsersTableViewModel = (token: string) => {
     label: searchParams.get("searchColumnLabel") || "Username",
   };
 
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -88,18 +83,21 @@ const UsersTableViewModel = (token: string) => {
     [createQueryString, router],
   );
 
-  const setOrderBy = useCallback(
+  const handleSort = useCallback(
     (newOrderBy: UserOrderBy) => {
-      router.push(`?${createQueryString("orderBy", newOrderBy)}`);
-    },
-    [createQueryString, router],
-  );
+      const params = new URLSearchParams(searchParams.toString());
+      const currentOrderBy = params.get("orderBy") as UserOrderBy;
+      const currentOrder = params.get("order") as "ASC" | "DESC";
 
-  const setOrder = useCallback(
-    (newOrder: "ASC" | "DESC") => {
-      router.push(`?${createQueryString("order", newOrder)}`);
+      if (newOrderBy === currentOrderBy) {
+        params.set("order", currentOrder === "ASC" ? "DESC" : "ASC");
+      } else {
+        params.set("orderBy", newOrderBy);
+        params.set("order", "DESC");
+      }
+      router.push(`?${params.toString()}`);
     },
-    [createQueryString, router],
+    [searchParams, router],
   );
 
   const setRole = useCallback(
@@ -126,16 +124,41 @@ const UsersTableViewModel = (token: string) => {
     [searchParams, router],
   );
 
+  interface IUpdateURLSearchParams {
+    username: string;
+    email: string;
+    registration_date: string;
+    is_banned: string;
+    balance: string;
+  }
+
+  const updateURLSearchParams = (
+    user_id: string,
+    data: IUpdateURLSearchParams,
+  ) => {
+    const searchParams = new URLSearchParams({
+      username: data.username,
+      email: data.email,
+      registration_date: data.registration_date,
+      is_banned: data.is_banned,
+      balance: data.balance,
+    });
+
+    const url = `/dashboard/users/${user_id}?${searchParams.toString()}`;
+
+    return url;
+  };
+
   const { data: PaginatedData, isLoading } = useGetAllUsers({
     token,
-    page: pageIndex,
+    page: pageIndex, // This will now use whatever page is in the URL
     limit: pageSize,
+    role,
     registrationDateFrom,
     registrationDateTo,
+    isBanned,
     orderBy,
     order,
-    role,
-    isBanned,
   });
 
   return {
@@ -149,9 +172,7 @@ const UsersTableViewModel = (token: string) => {
     registrationDateTo,
     setRegistrationDateTo,
     orderBy,
-    setOrderBy,
     order,
-    setOrder,
     role,
     setRole,
     isBanned,
@@ -160,14 +181,14 @@ const UsersTableViewModel = (token: string) => {
     setSearchColumn,
     PaginatedData,
     isLoading,
-    sorting,
-    setSorting,
     columnFilters,
     setColumnFilters,
     columnVisibility,
     setColumnVisibility,
     rowSelection,
     setRowSelection,
+    updateURLSearchParams,
+    handleSort,
   };
 };
 

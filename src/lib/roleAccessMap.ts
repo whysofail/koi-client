@@ -1,13 +1,15 @@
 const roleAccessMap = {
   admin: [
     "/dashboard",
-    "/dashboard/users-management",
+    "/dashboard/users",
+    "/dashboard/users/[userID]",
     "/dashboard/inventory",
-    "/dashboard/auctions/add/[koiID]",
     "/dashboard/auctions",
+    "/dashboard/auctions/add/[koiID]",
+    "/dashboard/auctions/update/[auctionID]",
     "/dashboard/transactions",
     "/dashboard/transactions/[transactionID]",
-    "/dashboard/auctions/update/[auctionID]",
+    "/dashboard/bids",
   ],
   user: [
     "/dashboard",

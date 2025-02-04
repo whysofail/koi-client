@@ -63,15 +63,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
   const {
     router,
     orderBy,
     order,
-    setOrderBy,
-    setOrder,
-    PaginatedData,
+    handleSort,
     setSorting,
     setColumnFilters,
     setColumnVisibility,
@@ -93,6 +92,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     setPageSize,
     status,
     setStatus,
+    PaginatedData,
   } = TransactionsTableViewModel(user);
 
   const getSortIcon = (columnOrderBy: TransactionOrderBy) => {
@@ -115,14 +115,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(TransactionOrderBy.TYPE);
-            setOrder(
-              orderBy === TransactionOrderBy.TYPE && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(TransactionOrderBy.TYPE)}
         >
           Type
           {getSortIcon(TransactionOrderBy.TYPE)}
@@ -139,22 +132,15 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(TransactionOrderBy.AMOUNT);
-            setOrder(
-              orderBy === TransactionOrderBy.AMOUNT && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(TransactionOrderBy.AMOUNT)}
         >
           Amount
           {getSortIcon(TransactionOrderBy.AMOUNT)}
         </Button>
       ),
       cell: ({ row }) => {
-        const value = row.getValue("amount");
-        return <div>Rp. {Number(value || 0).toLocaleString()}</div>;
+        const value = row.original.amount;
+        return <div>{formatCurrency(value ?? 0)}</div>;
       },
     },
     {
@@ -166,14 +152,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(TransactionOrderBy.CREATED_AT);
-            setOrder(
-              orderBy === TransactionOrderBy.CREATED_AT && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(TransactionOrderBy.CREATED_AT)}
         >
           Date
           {getSortIcon(TransactionOrderBy.CREATED_AT)}
@@ -190,14 +169,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(TransactionOrderBy.STATUS);
-            setOrder(
-              orderBy === TransactionOrderBy.STATUS && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(TransactionOrderBy.STATUS)}
         >
           Status
           {getSortIcon(TransactionOrderBy.STATUS)}
@@ -252,6 +224,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     },
     pageCount: Math.ceil((PaginatedData?.count ?? 0) / pageSize),
     manualPagination: true,
+    manualSorting: true, // Add this
   });
 
   const searchableColumns = [

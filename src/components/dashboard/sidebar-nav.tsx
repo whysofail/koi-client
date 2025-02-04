@@ -47,7 +47,7 @@ const adminNavigation = [
       {
         title: "Users",
         icon: Users,
-        href: "/dashboard/users-management",
+        href: "/dashboard/users",
       },
       {
         title: "Inventory",

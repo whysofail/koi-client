@@ -18,6 +18,9 @@ import {
   ArrowDown,
   Eye,
   MoreHorizontal,
+  Trash,
+  Upload,
+  Pencil,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -63,14 +66,12 @@ import AuctionsTableViewModel from "./AuctionsTable.viewModel";
 import { AuctionStatus } from "@/types/auctionTypes";
 import AuctionDialog from "../auctions-dialog/AuctionDialog";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
   const {
-    router,
     orderBy,
     order,
-    setOrderBy,
-    setOrder,
     PaginatedData,
     setSorting,
     setColumnFilters,
@@ -93,7 +94,9 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     setPageSize,
     status,
     setStatus,
-    updateURLSearchParams,
+    updateAuctionURLSearchParams,
+    itemAuctionURLSearchParams,
+    handleSort,
   } = AuctionsTableViewModel(token);
 
   const getSortIcon = (columnOrderBy: AuctionOrderBy) => {
@@ -116,14 +119,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.TITLE);
-            setOrder(
-              orderBy === AuctionOrderBy.TITLE && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(AuctionOrderBy.TITLE)}
         >
           Title
           {getSortIcon(AuctionOrderBy.TITLE)}
@@ -143,14 +139,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.START_DATETIME);
-            setOrder(
-              orderBy === AuctionOrderBy.START_DATETIME && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(AuctionOrderBy.START_DATETIME)}
         >
           Start Date
           {getSortIcon(AuctionOrderBy.START_DATETIME)}
@@ -176,14 +165,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.END_DATETIME);
-            setOrder(
-              orderBy === AuctionOrderBy.END_DATETIME && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(AuctionOrderBy.END_DATETIME)}
         >
           End Date
           {getSortIcon(AuctionOrderBy.END_DATETIME)}
@@ -209,14 +191,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.STATUS);
-            setOrder(
-              orderBy === AuctionOrderBy.STATUS && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(AuctionOrderBy.STATUS)}
         >
           Status
           {getSortIcon(AuctionOrderBy.STATUS)}
@@ -229,22 +204,15 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.CURRENT_HIGHEST_BID);
-            setOrder(
-              orderBy === AuctionOrderBy.CURRENT_HIGHEST_BID && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(AuctionOrderBy.CURRENT_HIGHEST_BID)}
         >
           Current Bid
           {getSortIcon(AuctionOrderBy.CURRENT_HIGHEST_BID)}
         </Button>
       ),
       cell: ({ row }) => {
-        const value = row.getValue("current_highest_bid");
-        return <div>Rp. {Number(value || 0).toLocaleString()}</div>;
+        const value = row.original.current_highest_bid;
+        return <div>{formatCurrency(value ?? 0)}</div>;
       },
     },
     {
@@ -252,22 +220,15 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.RESERVE_PRICE);
-            setOrder(
-              orderBy === AuctionOrderBy.RESERVE_PRICE && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(AuctionOrderBy.RESERVE_PRICE)}
         >
           Reserve Price
           {getSortIcon(AuctionOrderBy.RESERVE_PRICE)}
         </Button>
       ),
       cell: ({ row }) => {
-        const value = row.getValue("reserve_price");
-        return <div>Rp. {Number(value || 0).toLocaleString()}</div>;
+        const value = row.original.reserve_price;
+        return <div>{formatCurrency(value ?? 0)}</div>;
       },
     },
     {
@@ -275,22 +236,15 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => {
-            setOrderBy(AuctionOrderBy.BID_INCREMENT);
-            setOrder(
-              orderBy === AuctionOrderBy.BID_INCREMENT && order === "ASC"
-                ? "DESC"
-                : "ASC",
-            );
-          }}
+          onClick={() => handleSort(AuctionOrderBy.BID_INCREMENT)}
         >
           Bid Increment
           {getSortIcon(AuctionOrderBy.BID_INCREMENT)}
         </Button>
       ),
       cell: ({ row }) => {
-        const value = row.getValue("bid_increment");
-        return <div>Rp.{Number(value || 0).toLocaleString()}</div>;
+        const value = row.original.bid_increment;
+        return <div>{formatCurrency(value ?? 0)}</div>;
       },
     },
     {
@@ -309,12 +263,20 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            <DropdownMenuItem
-              onClick={() =>
-                router.push(`/auctions/${row.original.auction_id}`)
-              }
-            >
-              View Details
+            <DropdownMenuItem asChild>
+              <Link
+                href={itemAuctionURLSearchParams(row.original.auction_id, {
+                  koiID: row.original.item,
+                  title: row.original.title,
+                  description: row.original.description,
+                  item: row.original.item,
+                  reserve_price: row.original.reserve_price.toString(),
+                  bid_increment: row.original.bid_increment.toString(),
+                })}
+              >
+                <Eye className="mr-2 h-4 w-4" />
+                View Details
+              </Link>
             </DropdownMenuItem>
             {row.original.status === "DRAFT" && (
               <>
@@ -324,25 +286,39 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                   reserve_price={row.original.reserve_price}
                   auction_id={row.original.auction_id}
                   token={token}
-                />
+                >
+                  <div className="flex w-full items-center">
+                    <Upload className="mr-2 h-4 w-4" />
+                    <span>Publish Auction</span>
+                  </div>
+                </AuctionDialog>
                 <AuctionDialog
                   operation="delete"
                   auction_id={row.original.auction_id}
                   bid_increment={row.original.bid_increment}
                   reserve_price={row.original.reserve_price}
                   token={token}
-                />
+                >
+                  <div className="flex w-full items-center">
+                    <Trash className="mr-2 h-4 w-4" />
+                    <span>Delete Auction</span>
+                  </div>
+                </AuctionDialog>
                 <DropdownMenuItem asChild>
                   <Link
-                    href={updateURLSearchParams(row.original.auction_id, {
-                      koiID: row.original.item,
-                      title: row.original.title,
-                      description: row.original.description,
-                      item: row.original.item,
-                      reserve_price: row.original.reserve_price.toString(),
-                      bid_increment: row.original.bid_increment.toString(),
-                    })}
+                    href={updateAuctionURLSearchParams(
+                      row.original.auction_id,
+                      {
+                        koiID: row.original.item,
+                        title: row.original.title,
+                        description: row.original.description,
+                        item: row.original.item,
+                        reserve_price: row.original.reserve_price.toString(),
+                        bid_increment: row.original.bid_increment.toString(),
+                      },
+                    )}
                   >
+                    <Pencil className="mr-2 h-4 w-4" />
                     Update Auction
                   </Link>
                 </DropdownMenuItem>
@@ -376,6 +352,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     },
     pageCount: Math.ceil((PaginatedData?.count ?? 0) / pageSize),
     manualPagination: true,
+    manualSorting: true,
   });
 
   const searchableColumns = [

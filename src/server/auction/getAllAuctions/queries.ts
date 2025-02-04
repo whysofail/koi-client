@@ -49,8 +49,12 @@ const fetchAllAuctions = async ({
 
 const useGetAllAuctions = ({ token, ...params }: FetchAllAuctionsParams) =>
   useQuery({
-    queryKey: ["allAuctions", params, token],
+    queryKey: ["allAuctions", params],
     queryFn: () => fetchAllAuctions({ token, ...params }),
+    placeholderData: (previousData) => previousData,
+    staleTime: 5000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
 export default useGetAllAuctions;
