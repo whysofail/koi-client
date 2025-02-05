@@ -16,7 +16,7 @@ const useWarnUser = (token: string, queryClient: QueryClient) => {
   return useMutation({
     mutationFn: (data: WarnUserBody) => warnUser(token, data),
     onSettled: async () => {
-      return await queryClient.invalidateQueries({ queryKey: ["warnedUsers"] });
+      return await queryClient.invalidateQueries({ queryKey: ["user"] });
     },
     onError: (error) => {
       console.error("Failed to warn user:", error);

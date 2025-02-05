@@ -49,7 +49,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import TableSkeleton from "@/components/skeletons/TableSkeleton";
-import { UserOrderBy, UserRole } from "@/types/usersTypes";
+import { UserOrderBy, UserRole, UsersTableData } from "@/types/usersTypes";
 import UsersTableViewModel from "./UsersTable.viewModel";
 import UserStatusBadge from "./UserStatusBadge";
 import Link from "next/link";
@@ -82,7 +82,6 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     setRole,
     isBanned,
     setIsBanned,
-    updateURLSearchParams,
   } = UsersTableViewModel(token);
 
   const getSortIcon = (columnOrderBy: UserOrderBy) => {
@@ -95,7 +94,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     );
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<UsersTableData>[] = [
     {
       accessorKey: "user_id",
       header: "ID",
@@ -170,18 +169,9 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const user = row.original;
-        const userDetailsUrl = updateURLSearchParams(user.user_id, {
-          username: user.username,
-          email: user.email,
-          registration_date: user.registration_date,
-          is_banned: user.is_banned.toString(),
-          balance: user.wallet.balance.toString(),
-        });
-
         return (
           <Button asChild variant="ghost" size="sm">
-            <Link href={userDetailsUrl}>
+            <Link href={`/dashboard/users/${row.original.user_id}`}>
               <Eye className="mr-2 h-4 w-4" />
               View Details
             </Link>
