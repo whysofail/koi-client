@@ -5,11 +5,6 @@ const handleNotificationUpdate = (data: Notification, queryClient: any) => {
   queryClient.invalidateQueries({ queryKey });
 };
 
-const handleChatUpdate = (data: any, queryClient: any) => {
-  const queryKey = ["chats", data.chatId].filter(Boolean);
-  queryClient.invalidateQueries({ queryKey });
-};
-
 const handleAuctionUpdate = (data: any, queryClient: any) => {
   const queryKey = ["auctions", data.auctionId].filter(Boolean);
   queryClient.invalidateQueries({ queryKey });
@@ -21,6 +16,5 @@ export const entityHandlers: Record<
   (data: any, queryClient: any) => void
 > = {
   notification: handleNotificationUpdate,
-  chat: handleChatUpdate,
   auction: handleAuctionUpdate,
 };

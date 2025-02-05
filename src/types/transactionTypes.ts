@@ -12,6 +12,9 @@ export interface FetchAllTransactionsParams {
   token: string;
   page?: number;
   limit?: number;
+  userId?: string;
+  username?: string;
+  type?: TransactionType;
   status?: TransactionStatus;
   createdAtFrom?: Date;
   createdAtTo?: Date;
@@ -57,14 +60,14 @@ export interface Transaction {
   created_at: string;
   updated_at: string;
   wallet: Wallet;
+  proof_of_payment?: string;
 }
 
 export type PaginatedTransactionsResponse = PaginatedResponse<Transaction>;
 
-export type TransactionByIDResponse = Omit<
-  PaginatedResponse<Transaction>,
-  "count" | "page" | "limit"
->;
+export type TransactionByIDResponse = {
+  data: Transaction;
+};
 
 export interface TransactionTableData {
   transaction_id: string;
@@ -91,6 +94,17 @@ export enum TransactionStatus {
   FAILED = "FAILED",
   APPROVED = "APPROVED",
   REJECTED = "REJECT",
+}
+
+export interface TransactionFilters {
+  userId?: string;
+  type?: string;
+  username?: string;
+  status?: TransactionStatus;
+  createdAtFrom?: string;
+  createdAtTo?: string;
+  orderBy?: TransactionOrderBy;
+  order?: "ASC" | "DESC";
 }
 
 export const transformTransactionToTableData = (

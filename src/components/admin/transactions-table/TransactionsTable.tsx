@@ -64,6 +64,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatCurrency } from "@/lib/formatCurrency";
+import TransactionFilters from "./TransactionFilter";
 
 const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
   const {
@@ -93,6 +94,8 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     status,
     setStatus,
     PaginatedData,
+    handleFiltersApply,
+    currentFilters,
   } = TransactionsTableViewModel(user);
 
   const getSortIcon = (columnOrderBy: TransactionOrderBy) => {
@@ -191,7 +194,9 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
           <DropdownMenuContent align="start">
             <DropdownMenuItem
               onClick={() =>
-                router.push(`/transactions/${row.original.transaction_id}`)
+                router.push(
+                  `/dashboard/transactions/${row.original.transaction_id}`,
+                )
               }
             >
               View Details
@@ -240,6 +245,11 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
+          <TransactionFilters
+            onApply={handleFiltersApply}
+            initialFilters={currentFilters}
+          />
+
           <Select
             value={status || "all"}
             onValueChange={(value) =>

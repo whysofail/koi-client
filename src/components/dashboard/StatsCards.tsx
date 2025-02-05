@@ -28,46 +28,54 @@ const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="text-muted-foreground h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.data.userTotal}</div>
-            <p className="text-muted-foreground text-xs">
-              +{data?.data.userTotalThisWeek} new this week
-            </p>
-          </CardContent>
+          <Link href={"/dashboard/users"} passHref>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <Users className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{data?.data.userTotal}</div>
+              <p className="text-muted-foreground text-xs">
+                +{data?.data.userTotalThisWeek} new this week
+              </p>
+            </CardContent>
+          </Link>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Active Auctions
-            </CardTitle>
-            <Package className="text-muted-foreground h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {data?.data.auctionsActive}
-            </div>
-            <p className="text-muted-foreground text-xs">
-              {data?.data.auctionsEndingSoon} ending today
-            </p>
-          </CardContent>
+          <Link href={"/dashboard/auctions"} passHref>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Active Auctions
+              </CardTitle>
+              <Package className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {data?.data.auctionsActive}
+              </div>
+              <p className="text-muted-foreground text-xs">
+                {data?.data.auctionsEndingSoon} ending today
+              </p>
+            </CardContent>
+          </Link>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Deposits
-            </CardTitle>
-            <DollarSign className="text-muted-foreground h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.data.depositsTotal}</div>
-            <p className="text-muted-foreground text-xs">
-              +12% from last month
-            </p>
-          </CardContent>
+          <Link href="/dashboard/transactions" passHref>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Deposits
+              </CardTitle>
+              <DollarSign className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {data?.data.depositsTotal}
+              </div>
+              <p className="text-muted-foreground text-xs">
+                +12% from last month
+              </p>
+            </CardContent>
+          </Link>
         </Card>
         <Link href={"#"} passHref>
           <Card>

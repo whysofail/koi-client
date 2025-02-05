@@ -19,8 +19,7 @@ import { useSocket } from "@/hooks/use-socket";
 import { useUserNotifications } from "@/server/notifications/getNotification/queries";
 import { useMarkAllNotificationsAsRead } from "@/server/notifications/markAllAsRead/mutation";
 import { useMarkNotificationAsRead } from "@/server/notifications/markAsRead/mutation";
-import { useNotificationSocket } from "@/server/notifications/useNotification";
-
+import { useNotificationSocket } from "@/hooks/useNotification";
 interface NotificationsDropdownProps {
   user: User;
 }

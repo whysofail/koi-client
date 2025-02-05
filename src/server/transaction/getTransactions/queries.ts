@@ -15,6 +15,9 @@ const buildQueryParams = ({
   limit = 10,
   createdAtFrom,
   createdAtTo = nextWeek,
+  userId,
+  username,
+  type,
   status,
   orderBy = TransactionOrderBy.CREATED_AT,
   order = "DESC",
@@ -29,7 +32,9 @@ const buildQueryParams = ({
   });
 
   if (createdAtFrom) params.append("createdAtFrom", formatDate(createdAtFrom));
-
+  if (userId) params.append("userId", userId);
+  if (username) params.append("username", username);
+  if (type) params.append("type", type);
   if (status) params.append("status", status);
 
   return params.toString();
