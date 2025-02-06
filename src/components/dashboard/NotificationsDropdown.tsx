@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,12 +42,22 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   const markAsRead = useMarkNotificationAsRead(accessToken);
 
   // Ensure notificationsData is properly structured
-  const notifications: Notification[] = notificationsData?.data ?? [];
+  const notifications: Notification[] = useMemo(
+    () => notificationsData?.data ?? [],
+    [notificationsData],
+  );
+
+  // State for unread count
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Calculate unread count safely
-  const unreadCount = notifications.filter(
-    (n) => n.status === NotificationStatus.UNREAD,
-  ).length;
+  useEffect(() => {
+    const count = notifications.filter(
+      (n) => n.status === NotificationStatus.UNREAD,
+    ).length;
+
+    setUnreadCount(count);
+  }, [notifications]);
 
   // Limit displayed notifications to 5
   const displayedNotifications = notifications.slice(0, 5);

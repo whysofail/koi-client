@@ -95,6 +95,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     setStatus,
     PaginatedData,
     handleFiltersApply,
+    handleResetFilters,
     currentFilters,
   } = TransactionsTableViewModel(user);
 
@@ -163,7 +164,10 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
       ),
       cell: ({ row }) => (
         <div>
-          {formatDate(new Date(row.getValue("created_at")), "dd MMM yyyy")}
+          {formatDate(
+            new Date(row.getValue("created_at")),
+            "dd/MM/yyyy : hh:mm a",
+          )}
         </div>
       ),
     },
@@ -247,6 +251,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
         <div className="flex items-center gap-2">
           <TransactionFilters
             onApply={handleFiltersApply}
+            onReset={handleResetFilters}
             initialFilters={currentFilters}
           />
 

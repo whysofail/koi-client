@@ -35,16 +35,19 @@ import { Label } from "@/components/ui/label";
 
 interface TransactionFiltersProps {
   onApply: (filters: TransactionFilters) => void;
+  onReset: () => void;
   initialFilters?: TransactionFilters;
 }
 
 export default function TransactionFilters({
   onApply,
+  onReset,
   initialFilters,
 }: TransactionFiltersProps) {
   const [filters, setFilters] = useState<TransactionFilters>(
     initialFilters || {},
   );
+
   const [isOpen, setIsOpen] = useState(false);
 
   const handleChange = (field: keyof TransactionFilters, value: any) => {
@@ -53,6 +56,8 @@ export default function TransactionFilters({
 
   const handleReset = () => {
     setFilters({});
+    setIsOpen(false);
+    onReset();
   };
 
   const handleApply = () => {

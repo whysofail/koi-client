@@ -48,7 +48,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     <DropdownMenuItem
       onClick={handleClick}
       className={`flex cursor-pointer flex-col items-start gap-1 p-4 ${
-        notification.status === NotificationStatus.READ ? "bg-gray-400" : ""
+        notification.status === NotificationStatus.READ ? "bg-gray-400/20" : ""
       }`}
     >
       <div className="flex w-full justify-between">

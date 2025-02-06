@@ -10,8 +10,8 @@ import {
   Shield,
   Heart,
   Gavel,
-  History,
   DollarSign,
+  Hammer,
 } from "lucide-react";
 import {
   Sidebar,
@@ -56,7 +56,7 @@ const adminNavigation = [
       },
       {
         title: "Auctions",
-        icon: Package,
+        icon: Hammer,
         href: "/dashboard/auctions",
       },
       {
@@ -95,12 +95,12 @@ const userNavigation = [
       {
         title: "Dashboard",
         icon: LayoutDashboard,
-        href: "/",
+        href: "/dashboard",
       },
       {
         title: "Transactions",
         icon: DollarSign,
-        href: "/transactions",
+        href: "/dashboard/transactions",
       },
       {
         title: "My Bids",
@@ -113,19 +113,14 @@ const userNavigation = [
     label: "Auctions",
     items: [
       {
-        title: "My Listings",
+        title: "My Auction",
         icon: Package,
         href: "/dashboard/listings",
       },
       {
-        title: "Watchlist",
+        title: "Wishlist",
         icon: Heart,
-        href: "/dashboard/watchlist",
-      },
-      {
-        title: "History",
-        icon: History,
-        href: "/dashboard/history",
+        href: "/dashboard/wishlist",
       },
     ],
   },

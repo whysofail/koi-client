@@ -61,6 +61,8 @@ export interface Transaction {
   updated_at: string;
   wallet: Wallet;
   proof_of_payment?: string;
+  admin_id: string;
+  admin: User;
 }
 
 export type PaginatedTransactionsResponse = PaginatedResponse<Transaction>;
@@ -93,7 +95,7 @@ export enum TransactionStatus {
   COMPLETED = "COMPLETED",
   FAILED = "FAILED",
   APPROVED = "APPROVED",
-  REJECTED = "REJECT",
+  REJECTED = "REJECTED",
 }
 
 export interface TransactionFilters {

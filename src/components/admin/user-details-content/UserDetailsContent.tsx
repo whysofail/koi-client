@@ -18,6 +18,7 @@ import UserStatusBadge from "@/components/admin/users-table/UserStatusBadge";
 import { FC } from "react";
 import WarnUserDialog from "@/components/admin/user-details-dialog/WarnUserDialog";
 import UserDetailsSkeleton from "@/components/skeletons/UserDetailsSkeleton";
+import BackButton from "@/components/dashboard/BackButton";
 
 const UserDetailsContent: FC<{
   userId: string;
@@ -41,6 +42,7 @@ const UserDetailsContent: FC<{
 
   return (
     <>
+      <BackButton />
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">User Details</h2>

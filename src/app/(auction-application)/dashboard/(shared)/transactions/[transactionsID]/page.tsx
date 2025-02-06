@@ -11,22 +11,14 @@ const TransactionsDetailPage = async ({
   const transactionsID = (await params).transactionsID;
 
   return (
-    <>
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="pl-5 pr-5 pt-5 text-3xl font-bold tracking-tight">
-            Transactions Detail
-          </h2>
-        </div>
-      </div>
+    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       {session?.user && (
         <TransactionDetails
           user={session.user}
           transactionId={transactionsID}
         />
       )}
-      <div className="mt-8 pl-5 pr-5">transactionId: {transactionsID}</div>
-    </>
+    </div>
   );
 };
 

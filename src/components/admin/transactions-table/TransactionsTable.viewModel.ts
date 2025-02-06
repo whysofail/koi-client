@@ -91,9 +91,20 @@ const TransactionsTableViewModel = (user: User) => {
     [createQueryString, router],
   );
 
+  const handleResetFilters = useCallback(() => {
+    router.push(window.location.pathname);
+  }, [router]);
+
   const setStatus = useCallback(
-    (status: TransactionStatus) => {
+    (status: TransactionStatus | undefined) => {
       router.push(`?${createQueryString({ status })}`);
+    },
+    [createQueryString, router],
+  );
+
+  const setType = useCallback(
+    (type: TransactionType) => {
+      router.push(`?${createQueryString({ type })}`);
     },
     [createQueryString, router],
   );
@@ -175,6 +186,7 @@ const TransactionsTableViewModel = (user: User) => {
     orderBy,
     order,
     status,
+    type,
   });
 
   return {
@@ -204,7 +216,10 @@ const TransactionsTableViewModel = (user: User) => {
     setRowSelection,
     status,
     setStatus,
+    type,
+    setType,
     handleFiltersApply,
+    handleResetFilters,
     currentFilters: {
       status,
       type,
