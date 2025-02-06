@@ -19,6 +19,7 @@ const LoginFormSchema = z.object({
 const LoginFormViewModel = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -49,6 +50,7 @@ const LoginFormViewModel = () => {
   const onSubmit: SubmitHandler<z.infer<typeof LoginFormSchema>> = async (
     data,
   ) => {
+    setLoading(true);
     try {
       const { email, password, rememberMe } = data;
 
@@ -98,6 +100,8 @@ const LoginFormViewModel = () => {
       }
 
       console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,6 +117,7 @@ const LoginFormViewModel = () => {
   return {
     form,
     onSubmit,
+    isLoading,
     clearRememberedUser,
     showPassword,
     togglePasswordVisibility: () => setShowPassword((prev) => !prev),

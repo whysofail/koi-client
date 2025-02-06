@@ -23,7 +23,7 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 const LoginForm = () => {
-  const { form, onSubmit, showPassword, togglePasswordVisibility } =
+  const { form, onSubmit, showPassword, togglePasswordVisibility, isLoading } =
     LoginFormViewModel();
 
   return (
@@ -115,9 +115,39 @@ const LoginForm = () => {
               <Button
                 className="w-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-100"
                 type="submit"
+                disabled={isLoading} // Disable button when isLoading
               >
-                <LogIn className="mr-2 h-4 w-4" /> Sign In
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <svg
+                      className="mr-2 h-4 w-4 animate-spin"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                      ></path>
+                    </svg>
+                    Loading...
+                  </div>
+                ) : (
+                  <>
+                    <LogIn className="mr-2 h-4 w-4" /> Sign In
+                  </>
+                )}
               </Button>
+
               <div className="text-center text-sm text-zinc-600 dark:text-zinc-400">
                 Don&apos;t have an account?{" "}
                 <Button
