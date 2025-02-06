@@ -1,14 +1,34 @@
 import React from "react";
 import KoiAuctionForm from "@/components/admin/koi-auction-form/KoiAuctionForm";
-import KoiDetails from "@/components/admin/koi-details/KoiDetails";
+import KoiDetailsAdd from "@/components/admin/koi-details/KoiDetailsAdd";
 import { getServerSession } from "@/lib/serverSession";
 
 const AddAuctionPage = async ({
   params,
+  searchParams,
 }: {
   params: Promise<{ koiID: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   const koiID = (await params).koiID;
+  const {
+    koiCode = "",
+    nickname = "",
+    gender = "",
+    breeder = "",
+    variety = "",
+    size = "",
+  } = await searchParams;
+
+  const koiData = {
+    code: koiCode as string,
+    nickname: nickname as string,
+    gender: gender as string,
+    breeder: breeder as string,
+    variety: variety as string,
+    size: size as string,
+  };
+
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";
 
@@ -20,7 +40,7 @@ const AddAuctionPage = async ({
         </h1>
       </div>
       <div className="grid gap-4 md:min-h-[36rem] md:gap-6 lg:grid-cols-2">
-        <KoiDetails koiID={koiID} />
+        <KoiDetailsAdd koiID={koiID} koiData={koiData} />
         <KoiAuctionForm id={koiID} token={token} operation="create" />
       </div>
     </div>

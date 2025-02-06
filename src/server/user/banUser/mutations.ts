@@ -17,8 +17,9 @@ const banUser = async (token: string, userId: string) => {
 const useBanUser = (token: string, queryClient: QueryClient) => {
   return useMutation({
     mutationFn: (userId: string) => banUser(token, userId),
-    onSettled: async () => {
-      return await queryClient.invalidateQueries({ queryKey: ["allUsers"] });
+    onSettled: async (_, __, userId) => {
+      await queryClient.invalidateQueries({ queryKey: ["allUsers"] });
+      await queryClient.invalidateQueries({ queryKey: ["user", userId] });
     },
     onError: (error) => {
       console.error("Failed to ban user:", error);

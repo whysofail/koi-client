@@ -124,31 +124,6 @@ const UsersTableViewModel = (token: string) => {
     [searchParams, router],
   );
 
-  interface IUpdateURLSearchParams {
-    username: string;
-    email: string;
-    registration_date: string;
-    is_banned: string;
-    balance: string;
-  }
-
-  const updateURLSearchParams = (
-    user_id: string,
-    data: IUpdateURLSearchParams,
-  ) => {
-    const searchParams = new URLSearchParams({
-      username: data.username,
-      email: data.email,
-      registration_date: data.registration_date,
-      is_banned: data.is_banned,
-      balance: data.balance,
-    });
-
-    const url = `/dashboard/users/${user_id}?${searchParams.toString()}`;
-
-    return url;
-  };
-
   const { data: PaginatedData, isLoading } = useGetAllUsers({
     token,
     page: pageIndex, // This will now use whatever page is in the URL
@@ -187,7 +162,6 @@ const UsersTableViewModel = (token: string) => {
     setColumnVisibility,
     rowSelection,
     setRowSelection,
-    updateURLSearchParams,
     handleSort,
   };
 };

@@ -1,11 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -14,8 +11,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -39,23 +34,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useGetKoiData from "@/server/koi/getAllKois/queries";
 import { Koi } from "@/types/koiTypes";
 import TableSkeleton from "@/components/skeletons/TableSkeleton";
+import KoiTableViewModel from "./KoiTable.viewModel";
+import Link from "next/link";
 
 const KoiTable = () => {
-  const router = useRouter();
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  const { data: PaginatedData, isLoading } = useGetKoiData({
-    page: pageIndex,
-    per_page: pageSize,
-  });
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const {
+    pageIndex,
+    setPageIndex,
+    pageSize,
+    setPageSize,
+    searchColumn,
+    setSearchColumn,
+    PaginatedData,
+    isLoading,
+    sorting,
+    setSorting,
+    columnFilters,
+    setColumnFilters,
+    columnVisibility,
+    setColumnVisibility,
+    rowSelection,
+    setRowSelection,
+    addToAuctionSearchParams,
+  } = KoiTableViewModel();
 
   const columns: ColumnDef<Koi>[] = [
     {
@@ -101,12 +104,19 @@ const KoiTable = () => {
       cell: ({ row }) => {
         const koi = row.original;
         return (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(`/dashboard/auctions/add/${koi.id}`)}
-          >
-            Add to Auction
+          <Button asChild variant="outline" size="sm">
+            <Link
+              href={addToAuctionSearchParams(koi.id.toString(), {
+                koiCode: koi.code,
+                nickname: koi.nickname ?? "",
+                gender: koi.gender,
+                breeder: koi.breeder.name,
+                variety: koi.variety.name,
+                size: koi.size,
+              })}
+            >
+              Add to Auction
+            </Link>
           </Button>
         );
       },
@@ -138,17 +148,49 @@ const KoiTable = () => {
     return <TableSkeleton />;
   }
 
+  const searchableColumns = [
+    { id: "code", label: "Code" },
+    { id: "nickname", label: "Nickname" },
+    { id: "breeder.name", label: "Breeder" },
+  ];
+
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
-        <Input
-          placeholder="Filter koi..."
-          value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("code")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-[200px]">
+                Search by {searchColumn.label}{" "}
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {searchableColumns.map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={searchColumn.id === column.id}
+                  onCheckedChange={() => setSearchColumn(column)}
+                >
+                  {column.label}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Input
+            placeholder={`Search by ${searchColumn.label}...`}
+            value={
+              (table.getColumn(searchColumn.id)?.getFilterValue() as string) ??
+              ""
+            }
+            onChange={(event) =>
+              table
+                .getColumn(searchColumn.id)
+                ?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">

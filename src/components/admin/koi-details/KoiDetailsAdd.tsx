@@ -14,7 +14,7 @@ interface KoiDetailsProps {
   koiData: KoiData;
 }
 
-const KoiDetails: FC<KoiDetailsProps> = ({ koiData }) => {
+const KoiDetailsAdd: FC<KoiDetailsProps> = ({ koiData }) => {
   const renderValue = (value: string | null) => value || "-";
 
   return (
@@ -63,4 +63,4 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiData }) => {
   );
 };
 
-export default KoiDetails;
+export default KoiDetailsAdd;
