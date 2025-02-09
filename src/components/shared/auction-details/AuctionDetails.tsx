@@ -6,7 +6,8 @@ import AdminContent from "./AdminContent";
 import UserContent from "./UserContent";
 import UserHeader from "./UserHeader";
 import { useAuctionDetailsViewModel } from "./AuctionDetails.viewModel";
-import { Skeleton } from "@/components/ui/skeleton";
+import UserContentSkeleton from "@/components/skeletons/UserContentSkeleton";
+import AdminContentSkeleton from "@/components/skeletons/AdminContentSkeleton";
 
 interface AuctionDetailsProps {
   isAdmin: boolean;
@@ -25,7 +26,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
   );
 
   if (isLoading) {
-    return <Skeleton className="h-[200px] w-full" />;
+    return isAdmin ? <AdminContentSkeleton /> : <UserContentSkeleton />;
   }
 
   if (error || !auction) {
