@@ -12,6 +12,7 @@ import {
   Gavel,
   DollarSign,
   Hammer,
+  Bell,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +39,11 @@ const adminNavigation = [
         title: "Dashboard",
         icon: LayoutDashboard,
         href: "/dashboard",
+      },
+      {
+        title: "Notifications",
+        icon: Bell,
+        href: "/dashboard/notifications",
       },
     ],
   },

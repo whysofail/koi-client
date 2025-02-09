@@ -4,29 +4,27 @@ import doesRoleHaveAccessToURL from "./lib/doesRoleHaveAccessToURL";
 import roleAccessMap from "./lib/roleAccessMap";
 
 const BUFFER_TIME = 30;
-
 type Role = keyof typeof roleAccessMap;
 
 export default auth((req) => {
-  // except for the /dashboard, all other routes are public
-  if (!req.nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.next();
-  }
+  const { pathname } = req.nextUrl;
 
-  if (!req.auth) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+  // Allow all non-dashboard routes
+  if (!pathname.startsWith("/dashboard")) return NextResponse.next();
 
-  if (req.nextUrl.pathname.startsWith("/api")) {
-    return NextResponse.next();
-  }
+  if (!req.auth) return NextResponse.redirect(new URL("/login", req.url));
+
+  if (pathname.startsWith("/api")) return NextResponse.next();
 
   const role = req.auth.user.role as Role;
-  const haveAccess = doesRoleHaveAccessToURL(role, req.nextUrl.pathname);
 
-  if (!haveAccess) {
+  // Ensure role exists in roleAccessMap
+  if (!(role in roleAccessMap))
     return NextResponse.redirect(new URL("/403", req.url));
-  }
+
+  const haveAccess = doesRoleHaveAccessToURL(role, pathname);
+
+  if (!haveAccess) return NextResponse.redirect(new URL("/403", req.url));
 
   const tokenExpiry = req.auth.user.accessTokenExpires;
   const currentTime = Math.floor(Date.now() / 1000);
@@ -40,7 +38,6 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    // exclude all nextjs internal routes from the middleware
     "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

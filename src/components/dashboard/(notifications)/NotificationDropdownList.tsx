@@ -1,5 +1,5 @@
 import { Notification } from "@/types/notificationTypes";
-import NotificationItem from "./NotificationItem";
+import NotificationItem from "./NotificationDropdownItem";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface NotificationListProps {

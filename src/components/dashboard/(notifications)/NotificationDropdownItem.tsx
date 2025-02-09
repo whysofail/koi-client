@@ -1,3 +1,4 @@
+import { formatDistanceToNow } from "date-fns";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
   Notification,
@@ -24,11 +25,11 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       case NotificationType.AUCTION:
         return `/auction/${referenceId}`;
       case NotificationType.SYSTEM:
-        return `/reports/user/${referenceId}`;
+        return `/dashboard/user/${referenceId}`;
       case NotificationType.BID:
-        return `/auction/${referenceId}`;
+        return `/dashboard/auction/${referenceId}`;
       case NotificationType.TRANSACTION:
-        return `/transactions/${referenceId}`;
+        return `/dashboard/transactions/${referenceId}`;
       default:
         return "#"; // Default URL if type does not match any case
     }
@@ -47,14 +48,18 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <DropdownMenuItem
       onClick={handleClick}
-      className={`flex cursor-pointer flex-col items-start gap-1 p-4 ${
-        notification.status === NotificationStatus.READ ? "bg-gray-400/20" : ""
+      className={`ga my-1 flex cursor-pointer flex-col items-start gap-1 p-4 ${
+        notification.status === NotificationStatus.READ
+          ? "bg-gray-50"
+          : "border-l-4 border-sidebar-primary bg-white"
       }`}
     >
       <div className="flex w-full justify-between">
         <span className="font-medium">{notification.type}</span>
         <span className="text-muted-foreground text-xs">
-          {new Date(notification.created_at).toLocaleString()}
+          {formatDistanceToNow(new Date(notification.created_at), {
+            addSuffix: true,
+          })}
         </span>
       </div>
       <span className="text-muted-foreground text-sm">

@@ -10,12 +10,14 @@ const roleAccessMap = {
     "/dashboard/transactions",
     "/dashboard/transactions/[transactionsID]",
     "/dashboard/bids",
+    "/dashboard/notifications",
   ],
   user: [
     "/dashboard",
     "/dashboard/profile-settings",
     "/dashboard/transactions",
     "/dashboard/transactions/[transactionsID]",
+    "/dashboard/notifications",
   ],
 };
 

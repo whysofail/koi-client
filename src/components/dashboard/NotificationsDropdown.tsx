@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,13 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { User } from "next-auth";
-import { Notification, NotificationStatus } from "@/types/notificationTypes";
-import NotificationList from "./(notifications)/NotificationList";
+import NotificationList from "./(notifications)/NotificationDropdownList";
 import { useSocket } from "@/hooks/use-socket";
-import { useUserNotifications } from "@/server/notifications/getNotification/queries";
-import { useMarkAllNotificationsAsRead } from "@/server/notifications/markAllAsRead/mutation";
-import { useMarkNotificationAsRead } from "@/server/notifications/markAsRead/mutation";
 import { useNotificationSocket } from "@/hooks/useNotification";
+import useNotificationViewModel from "./(notifications)/NotificationDropdown.viewModel";
+import { Notification } from "@/types/notificationTypes";
+
 interface NotificationsDropdownProps {
   user: User;
 }
@@ -31,41 +30,27 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   const { authSocket } = useSocket(accessToken);
   useNotificationSocket({ authSocket });
 
-  // Notifications query and mutations
+  // Notification ViewModel
   const {
-    data: notificationsData,
-    isLoading,
-    isError,
-  } = useUserNotifications(accessToken);
-
-  const markAllAsRead = useMarkAllNotificationsAsRead(accessToken);
-  const markAsRead = useMarkNotificationAsRead(accessToken);
-
-  // Ensure notificationsData is properly structured
-  const notifications: Notification[] = useMemo(
-    () => notificationsData?.data ?? [],
-    [notificationsData],
-  );
+    notifications,
+    isNotificationsLoading,
+    notificationsError,
+    handleMarkAsRead,
+    handleMarkAllAsRead,
+    isMarkingAsRead,
+  } = useNotificationViewModel(accessToken);
 
   // State for unread count
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Calculate unread count safely
   useEffect(() => {
-    const count = notifications.filter(
-      (n) => n.status === NotificationStatus.UNREAD,
-    ).length;
-
-    setUnreadCount(count);
+    setUnreadCount(
+      notifications.filter((n: Notification) => n.status === "UNREAD").length,
+    );
   }, [notifications]);
 
   // Limit displayed notifications to 5
   const displayedNotifications = notifications.slice(0, 5);
-
-  // Handler for marking all notifications as read
-  const handleMarkAllAsRead = () => {
-    markAllAsRead.mutate();
-  };
 
   return (
     <DropdownMenu>
@@ -78,7 +63,7 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0">
+            <Badge className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 p-0">
               {unreadCount}
             </Badge>
           )}
@@ -92,7 +77,6 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
               variant="ghost"
               size="sm"
               onClick={handleMarkAllAsRead}
-              disabled={markAllAsRead.isPending}
               className="text-xs"
             >
               Mark all as read
@@ -100,11 +84,11 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
           )}
         </div>
         <DropdownMenuSeparator />
-        {isLoading ? (
+        {isNotificationsLoading ? (
           <DropdownMenuItem className="text-muted-foreground text-center">
             Loading...
           </DropdownMenuItem>
-        ) : isError ? (
+        ) : notificationsError ? (
           <DropdownMenuItem className="text-muted-foreground text-center">
             Error fetching notifications
           </DropdownMenuItem>
@@ -115,8 +99,8 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
         ) : (
           <NotificationList
             notifications={displayedNotifications}
-            onMarkAsRead={(notificationId) => markAsRead.mutate(notificationId)}
-            isMarkingAsRead={markAsRead.isPending}
+            onMarkAsRead={handleMarkAsRead}
+            isMarkingAsRead={isMarkingAsRead}
           />
         )}
         <DropdownMenuSeparator />
