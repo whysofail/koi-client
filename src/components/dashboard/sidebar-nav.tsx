@@ -12,6 +12,7 @@ import {
   Gavel,
   DollarSign,
   Hammer,
+  History,
   Bell,
 } from "lucide-react";
 import {
@@ -124,9 +125,14 @@ const userNavigation = [
         href: "/dashboard/listings",
       },
       {
-        title: "Wishlist",
+        title: "Watchlist",
         icon: Heart,
         href: "/dashboard/wishlist",
+      },
+      {
+        title: "History",
+        icon: History,
+        href: "/dashboard/history",
       },
     ],
   },
