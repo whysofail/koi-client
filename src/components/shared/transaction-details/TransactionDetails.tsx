@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import AcceptRejectTransactionButton from "@/components/admin/transaction-details-dialog/AcceptRejectDepositButton";
 import TransactionDetailsSkeleton from "@/components/skeletons/TransactionDetailsSkeleton";
 import BackButton from "@/components/dashboard/BackButton";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 const IMAGE_URL = process.env.NEXT_PUBLIC_S3_URL || "";
 
@@ -66,7 +67,10 @@ const TransactionDetails = ({
                     value: transaction.transaction_id,
                   },
                   { label: "User ID", value: transaction.wallet.user.username },
-                  { label: "Amount", value: transaction.amount },
+                  {
+                    label: "Amount",
+                    value: formatCurrency(transaction.amount),
+                  },
                   {
                     label: "Type",
                     value: <TypeBadge type={transaction.type} />,

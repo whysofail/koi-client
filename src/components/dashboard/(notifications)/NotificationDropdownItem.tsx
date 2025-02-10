@@ -50,7 +50,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       onClick={handleClick}
       className={`ga my-1 flex cursor-pointer flex-col items-start gap-1 p-4 ${
         notification.status === NotificationStatus.READ
-          ? "bg-gray-50"
+          ? "bg-gray-100"
           : "border-l-4 border-sidebar-primary bg-white"
       }`}
     >
