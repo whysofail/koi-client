@@ -2,15 +2,11 @@ import useGetBidsByAuctionID from "@/server/bid/getBidsByAuctionID/queries";
 import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
 import { Auction } from "@/types/auctionTypes";
 import { Bid } from "@/types/bidTypes";
-import { Socket } from "socket.io-client";
-import { useAuctionSocket } from "@/hooks/useAuctionSocket";
 
 export const useAuctionDetailsViewModel = (
   auctionID: string,
   token: string,
-  socket: Socket | null,
 ) => {
-  const auctionSocket = useAuctionSocket({ socket, auctionId: auctionID });
   const {
     data: auctionData,
     isLoading: isLoadingAuction,
@@ -35,6 +31,5 @@ export const useAuctionDetailsViewModel = (
     bids,
     isLoading: isLoadingAuction || isLoadingBids,
     error: auctionError || bidsError,
-    auctionSocket,
   };
 };

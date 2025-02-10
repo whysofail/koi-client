@@ -1,3 +1,5 @@
+import { AuctionParticipant } from "./auctionParticipantTypes";
+
 export enum AuctionOrderBy {
   AUCTION_ID = "auction_id",
   TITLE = "title",
@@ -96,7 +98,7 @@ export interface AuctionTableData {
   updated_at: string;
   user: string;
   bids: number;
-  participants: number;
+  participants: AuctionParticipant[];
 }
 
 export enum AuctionStatus {
@@ -130,7 +132,7 @@ export const transformAuctionToTableData = (
       updated_at: "",
       user: "N/A",
       bids: 0,
-      participants: 0,
+      participants: [],
     };
   }
 
@@ -149,6 +151,6 @@ export const transformAuctionToTableData = (
     updated_at: auction.updated_at ?? "",
     user: auction.user?.username ?? "N/A",
     bids: auction.bids?.length ?? 0,
-    participants: auction.participants?.length ?? 0,
+    participants: auction.participants ?? [],
   };
 };

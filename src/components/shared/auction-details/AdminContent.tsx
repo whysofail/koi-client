@@ -8,6 +8,8 @@ import { User, Clock, DollarSign, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ImageGallery from "./ImageGallery";
 import { BidHistory } from "./BidHistory";
+import { AuctionParticipant } from "@/types/auctionParticipantTypes";
+import { formatDistanceToNow } from "date-fns";
 
 interface AdminContentProps {
   auction: Auction;
@@ -73,11 +75,42 @@ const AdminContent: React.FC<AdminContentProps> = ({
           <TabsContent value="participants">
             <Card>
               <CardContent className="p-6">
-                <div className="py-8 text-center">
+                {auction.participants.length > 0 ? (
+                  <div className="grid gap-4">
+                    {auction.participants.map(
+                      (participant: AuctionParticipant) => (
+                        <div
+                          key={participant.auction_participant_id}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2">
+                            <User className="text-muted-foreground h-4 w-4" />
+                            <div>
+                              <p className="text-sm font-medium">
+                                {participant.user.username}
+                              </p>
+                              <p className="text-muted-foreground text-xs">
+                                {participant.user.user_id}
+                              </p>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">Date Joined</p>
+                            <p className="text-muted-foreground text-xs">
+                              {formatDistanceToNow(participant.joined_at, {
+                                addSuffix: true,
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                ) : (
                   <p className="text-muted-foreground text-sm">
                     No participants yet
                   </p>
-                </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
