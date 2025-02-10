@@ -70,8 +70,8 @@ export interface Auction {
   created_at: string;
   updated_at: string;
   user: User;
-  bids: any[]; // TODO: Define Bid interface if needed
-  participants: any[]; // TODO: Define Participant interface if needed
+  bids: any[];
+  participants: any[];
 }
 
 export type PaginatedAuctionsResponse = PaginatedResponse<Auction>;

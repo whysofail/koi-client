@@ -1,16 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 
 const BackButton = () => {
   const router = useRouter();
-  const currentUrl = window.location.pathname; // Get the current URL
+  const pathname = usePathname();
 
   const handleBack = () => {
-    // Check if the URL contains a dynamic segment, like '/users/[user_id]'
-    const basePath = currentUrl.split("/").slice(0, -1).join("/"); // Remove the last segment (user_id)
-    router.push(basePath); // Navigate back to the parent path
+    const basePath = pathname.split("/").slice(0, -1).join("/");
+    router.push(basePath);
   };
 
   return (

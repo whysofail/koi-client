@@ -151,24 +151,6 @@ const AuctionsTableViewModel = (token: string) => {
     return url;
   };
 
-  const itemAuctionURLSearchParams = (
-    auctionId: string,
-    params: IURLSearchParams,
-  ) => {
-    const searchParams = new URLSearchParams({
-      koiID: params.koiID,
-      title: params.title,
-      description: params.description,
-      item: params.item,
-      reserve_price: params.reserve_price,
-      bid_increment: params.bid_increment,
-    });
-
-    const url = `/dashboard/auctions/item/${auctionId}?${searchParams.toString()}`;
-
-    return url;
-  };
-
   const { data: PaginatedData, isLoading } = useGetAllAuctions({
     token,
     page: pageIndex,
@@ -207,7 +189,6 @@ const AuctionsTableViewModel = (token: string) => {
     status,
     setStatus,
     updateAuctionURLSearchParams,
-    itemAuctionURLSearchParams,
   };
 };
 

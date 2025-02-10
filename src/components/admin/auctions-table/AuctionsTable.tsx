@@ -95,7 +95,6 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     status,
     setStatus,
     updateAuctionURLSearchParams,
-    itemAuctionURLSearchParams,
     handleSort,
   } = AuctionsTableViewModel(token);
 
@@ -265,14 +264,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           <DropdownMenuContent align="start">
             <DropdownMenuItem asChild>
               <Link
-                href={itemAuctionURLSearchParams(row.original.auction_id, {
-                  koiID: row.original.item,
-                  title: row.original.title,
-                  description: row.original.description,
-                  item: row.original.item,
-                  reserve_price: row.original.reserve_price.toString(),
-                  bid_increment: row.original.bid_increment.toString(),
-                })}
+                href={`/dashboard/auctions/item/${row.original.auction_id}`}
               >
                 <Eye className="mr-2 h-4 w-4" />
                 View Details
