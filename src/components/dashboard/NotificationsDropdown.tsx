@@ -18,6 +18,7 @@ import { useSocket } from "@/hooks/use-socket";
 import { useNotificationSocket } from "@/hooks/useNotification";
 import useNotificationViewModel from "./(notifications)/NotificationDropdown.viewModel";
 import { Notification } from "@/types/notificationTypes";
+import Link from "next/link";
 
 interface NotificationsDropdownProps {
   user: User;
@@ -72,16 +73,16 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
       <DropdownMenuContent align="end" className="w-80 max-w-[90vw]">
         <div className="flex items-center justify-between p-2">
           <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleMarkAllAsRead}
-              className="text-xs"
-            >
-              Mark all as read
-            </Button>
-          )}
+
+          <Button
+            disabled={isMarkingAsRead || unreadCount === 0}
+            variant="ghost"
+            size="sm"
+            onClick={handleMarkAllAsRead}
+            className="text-xs"
+          >
+            Mark all as read
+          </Button>
         </div>
         <DropdownMenuSeparator />
         {isNotificationsLoading ? (
@@ -105,7 +106,14 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem className="w-full cursor-pointer text-center">
-          View all notifications
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="flex w-full justify-center text-center"
+          >
+            <Link href="/dashboard/notifications">View all notifications</Link>
+          </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
