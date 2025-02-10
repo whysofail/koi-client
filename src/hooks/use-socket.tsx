@@ -6,6 +6,12 @@ import { entityHandlers } from "@/server/socket/handler";
 const AUTH_NAMESPACE = "/auth"; // Notifications & user data
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 
+interface SocketData {
+  entity: string;
+  type: string;
+  data: any;
+}
+
 export const useSocket = (token?: string) => {
   const queryClient = useQueryClient();
   const [authSocket, setAuthSocket] = useState<Socket | null>(null);
@@ -18,20 +24,36 @@ export const useSocket = (token?: string) => {
     });
     setPublicSocket(publicSocketInstance);
 
-    publicSocketInstance.on("connect", () =>
-      console.log("Connected to public namespace"),
-    );
-    publicSocketInstance.on("update", (data) => {
+    publicSocketInstance.on("connect", () => {
+      console.log("Connected to public namespace");
+    });
+
+    // Handle entity updates (auctions, etc.)
+    publicSocketInstance.on("update", (data: SocketData) => {
       const handler = entityHandlers[data.entity];
       if (handler) handler(data, queryClient);
     });
 
-    publicSocketInstance.on("connect_error", (err) =>
-      console.error("Public connection error:", err.message),
-    );
+    // Handle auction-specific events
+    publicSocketInstance.on("userListUpdate", (users: string[]) => {
+      console.log("Auction users updated:", users);
+      // You can add additional handling here if needed
+    });
+
+    publicSocketInstance.on("success", (message: string) => {
+      console.log("Socket success:", message);
+    });
+
+    publicSocketInstance.on("connect_error", (err) => {
+      console.error("Public connection error:", err.message);
+    });
 
     return () => {
-      publicSocketInstance.close();
+      if (publicSocketInstance) {
+        // Leave any auction rooms before disconnecting
+        publicSocketInstance.emit("leaveAuction", "all");
+        publicSocketInstance.close();
+      }
     };
   }, [queryClient]);
 
@@ -46,10 +68,11 @@ export const useSocket = (token?: string) => {
 
     setAuthSocket(authSocketInstance);
 
-    authSocketInstance.on("connect", () =>
-      console.log("Connected to auth namespace"),
-    );
-    authSocketInstance.on("update", (data) => {
+    authSocketInstance.on("connect", () => {
+      console.log("Connected to auth namespace");
+    });
+
+    authSocketInstance.on("update", (data: SocketData) => {
       const handler = entityHandlers[data.entity];
       if (handler) handler(data, queryClient);
     });
@@ -59,7 +82,9 @@ export const useSocket = (token?: string) => {
     });
 
     return () => {
-      authSocketInstance.close();
+      if (authSocketInstance) {
+        authSocketInstance.close();
+      }
     };
   }, [token, queryClient]);
 

@@ -15,7 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import { User } from "next-auth";
 import NotificationList from "./(notifications)/NotificationDropdownList";
 import { useSocket } from "@/hooks/use-socket";
-import { useNotificationSocket } from "@/hooks/useNotification";
 import useNotificationViewModel from "./(notifications)/NotificationDropdown.viewModel";
 import { Notification } from "@/types/notificationTypes";
 import Link from "next/link";
@@ -26,10 +25,10 @@ interface NotificationsDropdownProps {
 
 const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   const accessToken = user.accessToken;
+  const [open, setOpen] = useState(false);
 
   // Socket setup
   const { authSocket } = useSocket(accessToken);
-  useNotificationSocket({ authSocket });
 
   // Notification ViewModel
   const {
@@ -39,7 +38,7 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
     handleMarkAsRead,
     handleMarkAllAsRead,
     isMarkingAsRead,
-  } = useNotificationViewModel(accessToken);
+  } = useNotificationViewModel({ token: accessToken, authSocket });
 
   // State for unread count
   const [unreadCount, setUnreadCount] = useState(0);
@@ -53,8 +52,12 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   // Limit displayed notifications to 5
   const displayedNotifications = notifications.slice(0, 5);
 
+  const handleViewAll = () => {
+    setOpen(false);
+  };
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -111,6 +114,7 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
             variant="ghost"
             size="sm"
             className="flex w-full justify-center text-center"
+            onClick={handleViewAll}
           >
             <Link href="/dashboard/notifications">View all notifications</Link>
           </Button>
