@@ -21,6 +21,7 @@ import {
   Trash,
   Upload,
   Pencil,
+  ExternalLink,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -252,7 +253,6 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     },
     {
       id: "actions",
-      header: "Actions",
       cell: ({ row }) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -266,7 +266,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
               <Link
                 href={`/dashboard/auctions/item/${row.original.auction_id}`}
               >
-                <Eye className="mr-2 h-4 w-4" />
+                <ExternalLink className="mr-2 h-4 w-4" />
                 View Details
               </Link>
             </DropdownMenuItem>

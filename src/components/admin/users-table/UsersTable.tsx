@@ -16,6 +16,7 @@ import {
   ArrowUp,
   ArrowDown,
   Eye,
+  ExternalLink,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format as formatDate } from "date-fns";
@@ -167,12 +168,11 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     },
     {
       id: "actions",
-      header: "Actions",
       cell: ({ row }) => {
         return (
           <Button asChild variant="ghost" size="sm">
             <Link href={`/dashboard/users/${row.original.user_id}`}>
-              <Eye className="mr-2 h-4 w-4" />
+              <ExternalLink className="mr-2 h-4 w-4" />
               View Details
             </Link>
           </Button>
