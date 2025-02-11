@@ -1,7 +1,5 @@
-// src/viewModels/useTransactionDetailsViewModel.ts
-
 import useGetTransactionByID from "@/server/transaction/getTransactionsById/queries";
-import useAcceptRejectDeposit from "@/server/transaction/acceptRejectDeposit/mutation";
+import useAcceptRejectDeposit from "@/server/transaction/acceptRejectDeposit/mutations";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -25,8 +23,9 @@ export const useTransactionDetailsViewModel = (
           toast.success("Transaction approved successfully");
           onSuccess?.();
         },
-        onError: () => {
-          toast.error("Failed to approve transaction");
+        onError: (error) => {
+          toast.error(error.message);
+          console.error("Failed to approve transaction:", error);
         },
       },
     );
@@ -40,8 +39,9 @@ export const useTransactionDetailsViewModel = (
           toast.success("Transaction rejected successfully");
           onSuccess?.();
         },
-        onError: () => {
-          toast.error("Failed to reject transaction");
+        onError: (error) => {
+          toast.error(error.message);
+          console.error("Failed to reject transaction:", error);
         },
       },
     );

@@ -45,8 +45,9 @@ export function usePlaceBidForm(
           form.reset({ amount: values.amount + minIncrement });
           setIsSubmitting(false);
         },
-        onError: () => {
-          toast.error("Failed to place bid");
+        onError: (error) => {
+          toast.error(error.message);
+          console.error("Failed to place bid:", error);
           setIsSubmitting(false);
         },
       },

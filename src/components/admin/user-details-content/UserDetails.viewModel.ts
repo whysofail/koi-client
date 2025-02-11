@@ -1,7 +1,7 @@
 import useGetUserByID from "@/server/user/getUserByID/queries";
 import useBanUser from "@/server/user/banUser/mutations";
 import useUnbanUser from "@/server/user/unbanUser/mutations";
-import useWarnUser from "@/server/user/warnUser/mutation";
+import useWarnUser from "@/server/user/warnUser/mutations";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -22,8 +22,9 @@ export const useUserDetailsViewModel = (
         toast.success("User banned successfully");
         onSuccess?.();
       },
-      onError: () => {
-        toast.error("Failed to ban user");
+      onError: (error) => {
+        toast.error(error.message);
+        console.error("Failed to ban user:", error);
       },
     });
   };

@@ -92,7 +92,7 @@ const KoiAuctionFormViewModel = (
             router.push("/dashboard/auctions");
           },
           onError: (error) => {
-            toast.error("Failed to create auction");
+            toast.error(error.message);
             console.error("Failed to create auction:", error);
           },
         },
@@ -115,8 +115,8 @@ const KoiAuctionFormViewModel = (
             router.push("/dashboard/auctions");
             queryClient.invalidateQueries({ queryKey: ["auction", id] });
           },
-          onError: (error) => {
-            toast.error("Failed to update auction");
+          onError: (error: Error) => {
+            toast.error(error.message);
             console.error("Failed to update auction:", error);
           },
         },

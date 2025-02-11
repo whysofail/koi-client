@@ -1,5 +1,6 @@
 import { useMutation, QueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { getErrorMessage } from "@/lib/handleApiError";
 
 const acceptRejectDeposit = async (
   token: string,
@@ -20,13 +21,19 @@ const acceptRejectDeposit = async (
 
 const useAcceptRejectDeposit = (token: string, queryClient: QueryClient) => {
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       transactionId,
       status,
     }: {
       transactionId: string;
       status: "APPROVED" | "REJECTED";
-    }) => acceptRejectDeposit(token, transactionId, status),
+    }) => {
+      try {
+        return await acceptRejectDeposit(token, transactionId, status);
+      } catch (error) {
+        throw new Error(getErrorMessage(error));
+      }
+    },
     onSettled: async (_, __, { transactionId }) => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({

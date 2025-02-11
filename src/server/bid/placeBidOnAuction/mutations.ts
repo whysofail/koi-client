@@ -1,5 +1,6 @@
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { getErrorMessage } from "@/lib/handleApiError";
 
 interface PlaceBidParams {
   auctionID: string;
@@ -24,7 +25,13 @@ const placeBidOnAuction = async (
 
 const usePlaceBid = (token: string, queryClient: QueryClient) => {
   return useMutation({
-    mutationFn: (params: PlaceBidParams) => placeBidOnAuction(token, params),
+    mutationFn: async (params: PlaceBidParams) => {
+      try {
+        return await placeBidOnAuction(token, params);
+      } catch (error) {
+        throw new Error(getErrorMessage(error));
+      }
+    },
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
     },

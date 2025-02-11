@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { CreateAuctionBody } from "@/types/auctionTypes";
+import { getErrorMessage } from "@/lib/handleApiError";
 
 const getDefaultDates = () => {
   const start = new Date();
@@ -34,7 +35,14 @@ const createAuctionDraft = async (token: string, data: CreateAuctionBody) => {
 
 const useCreateAuctionDraft = (token: string) => {
   return useMutation({
-    mutationFn: (data: CreateAuctionBody) => createAuctionDraft(token, data),
+    mutationFn: async (data: CreateAuctionBody) => {
+      try {
+        return await createAuctionDraft(token, data);
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        throw new Error(errorMessage);
+      }
+    },
     onError: (error) => {
       console.error("Failed to create auction:", error);
     },

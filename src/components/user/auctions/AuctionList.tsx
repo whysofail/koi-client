@@ -1,6 +1,7 @@
 "use client";
 
 import AuctionCard from "./AuctionCard";
+import AuctionCardSkeleton from "@/components/skeletons/AuctionCardSkeleton";
 import useGetBids from "@/server/bid/getBids/queries";
 import { LoggedInUserBidsResponse } from "@/types/bidTypes";
 import { FC } from "react";
@@ -17,7 +18,13 @@ const AuctionList: FC<MyAuctionListProps> = ({ token, currentUserId }) => {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <AuctionCardSkeleton key={index} />
+        ))}
+      </div>
+    );
   }
 
   const response = data as LoggedInUserBidsResponse;

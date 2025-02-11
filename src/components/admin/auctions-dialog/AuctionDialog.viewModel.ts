@@ -115,8 +115,9 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
         toast.success("Auction deleted");
         onSuccess?.();
       },
-      onError: () => {
-        toast.error("Failed to delete auction");
+      onError: (error) => {
+        toast.error(error.message);
+        console.error("Failed to delete auction:", error);
       },
     });
   };

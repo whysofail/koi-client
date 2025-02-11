@@ -1,5 +1,6 @@
 import { useMutation, QueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { getErrorMessage } from "@/lib/handleApiError";
 
 const deleteAuction = async (token: string, auctionId: string) => {
   const { data: response } = await fetchWithAuth.delete(
@@ -15,7 +16,13 @@ const deleteAuction = async (token: string, auctionId: string) => {
 
 const useDeleteAuction = (token: string, queryClient: QueryClient) => {
   return useMutation({
-    mutationFn: (auctionId: string) => deleteAuction(token, auctionId),
+    mutationFn: async (auctionId: string) => {
+      try {
+        return await deleteAuction(token, auctionId);
+      } catch (error) {
+        throw new Error(getErrorMessage(error));
+      }
+    },
     onSettled: async () => {
       return await queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
     },
