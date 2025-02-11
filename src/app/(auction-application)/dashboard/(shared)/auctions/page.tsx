@@ -1,10 +1,12 @@
-import React, { FC } from "react";
+import React from "react";
 import { getServerSession } from "@/lib/serverSession";
 import AuctionsTable from "@/components/admin/auctions-table/AuctionsTable";
+import AuctionList from "@/components/user/auctions/AuctionList";
 
-const AuctionsPage: FC = async () => {
+const AuctionsPage = async () => {
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";
+  const userId = session?.user.id ?? "";
   const role = session?.user.role ?? "";
   const isAdmin = role === "admin";
 
@@ -23,7 +25,11 @@ const AuctionsPage: FC = async () => {
         </div>
       </div>
       <div className="mt-8 pl-5 pr-5">
-        <AuctionsTable token={token} />
+        {isAdmin ? (
+          <AuctionsTable token={token} />
+        ) : (
+          <AuctionList token={token} currentUserId={userId} />
+        )}
       </div>
     </>
   );
