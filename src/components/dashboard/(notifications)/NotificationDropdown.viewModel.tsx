@@ -2,9 +2,20 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMarkNotificationAsRead } from "@/server/notifications/markAsRead/mutation";
 import { useMarkAllNotificationsAsRead } from "@/server/notifications/markAllAsRead/mutation";
 import { useUserNotifications } from "@/server/notifications/getNotification/queries";
+import { useNotificationSocket } from "@/hooks/useNotificationSocket";
+import { Socket } from "socket.io-client";
 
-const useNotificationViewModel = (token: string) => {
+interface UseNotificationViewModelProps {
+  token: string;
+  authSocket: Socket | null;
+}
+
+const useNotificationViewModel = ({
+  token,
+  authSocket,
+}: UseNotificationViewModelProps) => {
   const queryClient = useQueryClient();
+  useNotificationSocket({ authSocket });
 
   // Fetch user notifications
   const {

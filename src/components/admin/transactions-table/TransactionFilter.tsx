@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import {
   Select,
@@ -202,6 +203,9 @@ export default function TransactionFilters({
           </Select>
         </div>
         <div className="flex justify-between">
+          <AlertDialogCancel asChild>
+            <Button variant="outline">Close</Button>
+          </AlertDialogCancel>
           <Button variant="outline" onClick={handleReset}>
             Reset Filters
           </Button>
