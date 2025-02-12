@@ -3,6 +3,9 @@
 import React, { FC } from "react";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { Skeleton } from "@/components/ui/skeleton";
+import SingleImageDisplay, {
+  SingleImage,
+} from "@/components/shared/single-image/SingleImageDisplay";
 
 interface KoiData {
   code: string | null | undefined;
@@ -17,9 +20,15 @@ interface KoiDetailsProps {
   koiID?: string;
   koiData?: KoiData;
   isLoading?: boolean;
+  image?: SingleImage;
 }
 
-const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
+const KoiDetails: FC<KoiDetailsProps> = ({
+  koiID,
+  koiData,
+  isLoading,
+  image,
+}) => {
   const query = useGetKoiByID(koiID || "");
 
   if (isLoading || query.isLoading) {
@@ -101,7 +110,10 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
         </dl>
       </div>
       <div className="flex-1 overflow-hidden rounded-lg border dark:border-neutral-700">
-        FOR IMAGE
+        <SingleImageDisplay
+          title={displayData.nickname || displayData.code || "Koi"}
+          image={image}
+        />
       </div>
     </div>
   );

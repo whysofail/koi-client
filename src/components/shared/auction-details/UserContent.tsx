@@ -14,13 +14,20 @@ import { Auction, AuctionStatus } from "@/types/auctionTypes";
 import { Bid } from "@/types/bidTypes";
 import { Separator } from "@/components/ui/separator";
 import PlaceBidForm from "./PlaceBidForm";
-
+interface GalleryImage {
+  thumbnailURL: string;
+  largeURL: string;
+  width: number;
+  height: number;
+  alt: string;
+}
 interface UserContentProps {
   token: string;
   auction: Auction;
   auctionID: string;
   bids: Bid[];
   title: string;
+  images?: GalleryImage[];
 }
 
 const UserContent: React.FC<UserContentProps> = ({
@@ -29,6 +36,7 @@ const UserContent: React.FC<UserContentProps> = ({
   auctionID,
   bids,
   title,
+  images,
 }) => {
   const currentBid = Number(auction.current_highest_bid);
   const reservePrice = Number(auction.reserve_price);
@@ -36,7 +44,7 @@ const UserContent: React.FC<UserContentProps> = ({
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <ImageGallery title={title} />
+      <ImageGallery title={title} images={images} />
       <div className="space-y-6">
         <Card>
           <CardContent className="grid gap-4 p-6">

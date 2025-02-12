@@ -10,7 +10,13 @@ import ImageGallery from "./ImageGallery";
 import { BidHistory } from "./BidHistory";
 import { AuctionParticipant } from "@/types/auctionParticipantTypes";
 import { formatDistanceToNow } from "date-fns";
-
+interface GalleryImage {
+  thumbnailURL: string;
+  largeURL: string;
+  width: number;
+  height: number;
+  alt: string;
+}
 interface AdminContentProps {
   auction: Auction;
   bids: Bid[];
@@ -18,6 +24,7 @@ interface AdminContentProps {
   currentBid: string;
   reservePrice: string;
   bidIncrement: string;
+  images?: GalleryImage[];
 }
 
 const AdminContent: React.FC<AdminContentProps> = ({
@@ -27,6 +34,7 @@ const AdminContent: React.FC<AdminContentProps> = ({
   currentBid,
   reservePrice,
   bidIncrement,
+  images,
 }) => {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -37,7 +45,7 @@ const AdminContent: React.FC<AdminContentProps> = ({
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
-              <ImageGallery title={title} />
+              <ImageGallery title={title} images={images} />
               <Separator />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
