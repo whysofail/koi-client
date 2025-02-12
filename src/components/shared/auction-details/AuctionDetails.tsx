@@ -54,7 +54,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
       )}
 
       {/* Optional: Display connected users if needed */}
-      {!isAdmin && (
+      {isAdmin && (
         <div className="mb-4">
           <p>Active Users: {users.length}</p>
           <p>Connection Status: {isConnected ? "Connected" : "Disconnected"}</p>
