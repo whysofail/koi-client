@@ -290,6 +290,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                   bid_increment={row.original.bid_increment}
                   reserve_price={row.original.reserve_price}
                   token={token}
+                  koiId={row.original.item}
                 >
                   <div className="flex w-full items-center">
                     <Trash className="mr-2 h-4 w-4" />

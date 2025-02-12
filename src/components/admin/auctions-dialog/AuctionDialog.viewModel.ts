@@ -6,6 +6,9 @@ import { UpdateAuctionBody, AuctionStatus } from "@/types/auctionTypes";
 import { toast } from "sonner";
 import useDeleteAuction from "@/server/auction/deleteAuction/mutations";
 import { useQueryClient } from "@tanstack/react-query";
+import useUpdateKoi from "@/server/koi/updateKoi/mutations";
+import { KoiStatus } from "@/types/koiTypes";
+import { getErrorMessage } from "@/lib/handleApiError";
 
 const auctionFormSchema = z
   .object({
@@ -78,6 +81,9 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     queryClient,
   );
 
+  const { mutate: updateKoiStatus, isPending: pendingUpdateKoiStatus } =
+    useUpdateKoi(queryClient);
+
   const handlePublishAuction = async (
     auctionId: string,
     operation: AuctionStatus,
@@ -108,18 +114,35 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     );
   };
 
-  const handleDeleteAuction = async (auctionId: string) => {
-    console.log(auctionId);
-    deleteMutate(auctionId, {
-      onSuccess: () => {
-        toast.success("Auction deleted");
-        onSuccess?.();
-      },
-      onError: (error) => {
-        toast.error(error.message);
-        console.error("Failed to delete auction:", error);
-      },
-    });
+  const handleDeleteAuction = async (auctionId: string, koiId: string) => {
+    try {
+      await new Promise((resolve, reject) => {
+        updateKoiStatus(
+          {
+            koiId: koiId,
+            koiStatus: KoiStatus.AUCTION,
+          },
+          {
+            onSuccess: resolve,
+            onError: reject,
+          },
+        );
+      });
+
+      await new Promise((resolve, reject) => {
+        deleteMutate(auctionId, {
+          onSuccess: resolve,
+          onError: reject,
+        });
+      });
+
+      toast.success("Auction deleted");
+      onSuccess?.();
+      queryClient.invalidateQueries({ queryKey: ["koiData", koiId] });
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      console.error("Operation failed to execute", error);
+    }
   };
 
   //TODO: CANCEL OPERATION
@@ -143,12 +166,14 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     // );
   };
 
+  const isDeleting = pendingDelete || pendingUpdateKoiStatus;
+
   return {
     form,
     handleDeleteAuction,
     handlePublishAuction,
     handleCancelAuction,
-    pendingDelete,
+    pendingDelete: isDeleting,
     pendingUpdate,
   };
 };

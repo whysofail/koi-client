@@ -2,14 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { GetNotificationResponse } from "@/types/notificationTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
-const fetchUserNotifications = async (
-  token: string,
-): Promise<GetNotificationResponse> => {
-  const { data } = await fetchWithAuth.get("/notifications/me", {
-    headers: {
-      Authorization: `Bearer ${token}`,
+const fetchUserNotifications = async (token: string) => {
+  const { data } = await fetchWithAuth.get<GetNotificationResponse>(
+    "/notifications/me",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
   return data;
 };
 

@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import React, { FC, ReactNode, useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -35,7 +35,8 @@ type AuctionAlertDialogProps = {
   reserve_price: string;
   auction_id: string;
   token: string;
-  children: ReactNode; // Add children to props type
+  koiId?: string;
+  children: ReactNode;
 };
 
 const AuctionDialog: FC<AuctionAlertDialogProps> = ({
@@ -44,9 +45,10 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
   reserve_price,
   auction_id,
   token,
+  koiId,
   children,
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const {
     form,
     handlePublishAuction,
@@ -227,17 +229,17 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
           <DialogHeader>
             <DialogTitle>Delete Auction</DialogTitle>
           </DialogHeader>
-          <p className="py-4">Are you sure you want to cancel this auction?</p>
+          <p className="py-4">Are you sure you want to delete this auction?</p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
               No, keep it
             </Button>
             <Button
               variant="destructive"
-              onClick={() => handleDeleteAuction(auction_id)}
+              onClick={() => handleDeleteAuction(auction_id, koiId!)}
               disabled={pendingDelete}
             >
-              {pendingDelete ? "Deleting..." : "Yes, delete it"}
+              {pendingDelete ? "Processing..." : "Yes, delete it"}
             </Button>
           </DialogFooter>
         </DialogContent>

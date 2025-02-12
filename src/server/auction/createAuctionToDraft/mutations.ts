@@ -33,8 +33,8 @@ const createAuctionDraft = async (token: string, data: CreateAuctionBody) => {
   return response;
 };
 
-const useCreateAuctionDraft = (token: string) => {
-  return useMutation({
+const useCreateAuctionDraft = (token: string) =>
+  useMutation({
     mutationFn: async (data: CreateAuctionBody) => {
       try {
         return await createAuctionDraft(token, data);
@@ -47,6 +47,5 @@ const useCreateAuctionDraft = (token: string) => {
       console.error("Failed to create auction:", error);
     },
   });
-};
 
 export default useCreateAuctionDraft;
