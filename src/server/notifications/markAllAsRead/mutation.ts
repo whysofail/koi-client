@@ -31,5 +31,10 @@ export const useMarkAllNotificationsAsRead = (token: string) => {
         },
       );
     },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+    },
   });
 };

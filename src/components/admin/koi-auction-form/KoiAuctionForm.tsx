@@ -37,7 +37,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
   const {
     form,
     onSubmit,
-    pendingCreate,
+    pendingCreate: isSubmitting,
     pendingUpdate,
     formatCurrency,
     isUpdate,
@@ -207,7 +207,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
         <Button
           type="submit"
           className="w-full"
-          disabled={isUpdate ? pendingUpdate : pendingCreate}
+          disabled={isUpdate ? pendingUpdate : isSubmitting}
         >
           {isUpdate ? (
             pendingUpdate ? (
@@ -218,7 +218,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
             ) : (
               "Update Auction"
             )
-          ) : pendingCreate ? (
+          ) : isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Adding to Auction...

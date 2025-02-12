@@ -6,6 +6,9 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useUpdateAuction } from "@/server/auction/updateAuction/mutations";
 import { useQueryClient } from "@tanstack/react-query";
+import useUpdateKoi from "@/server/koi/updateKoi/mutations";
+import { KoiStatus } from "@/types/koiTypes";
+import { getErrorMessage } from "@/lib/handleApiError";
 
 const formSchema = z.object({
   title: z.string().nonempty("Title is required"),
@@ -67,6 +70,9 @@ const KoiAuctionFormViewModel = (
     queryClient,
   );
 
+  const { mutate: updateKoiStatus, isPending: pendingUpdateKoiStatus } =
+    useUpdateKoi(queryClient);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -78,25 +84,46 @@ const KoiAuctionFormViewModel = (
     },
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data) => {
+  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     if (operation === "create") {
-      createAuction(
-        {
-          ...data,
-          reserve_price: data.reserve_price,
-          bid_increment: data.bid_increment,
-        },
-        {
-          onSuccess: () => {
-            toast.success("Auction created successfully");
-            router.push("/dashboard/auctions");
-          },
-          onError: (error) => {
-            toast.error(error.message);
-            console.error("Failed to create auction:", error);
-          },
-        },
-      );
+      try {
+        // First, update the koi status
+        await new Promise((resolve, reject) => {
+          updateKoiStatus(
+            {
+              koiId: id,
+              koiStatus: KoiStatus.IN_AUCTION,
+            },
+            {
+              onSuccess: resolve,
+              onError: reject,
+            },
+          );
+        });
+
+        // Only if koi status update succeeds, create the auction
+        await new Promise((resolve, reject) => {
+          createAuction(
+            {
+              ...data,
+              reserve_price: data.reserve_price,
+              bid_increment: data.bid_increment,
+            },
+            {
+              onSuccess: resolve,
+              onError: reject,
+            },
+          );
+        });
+
+        // If both operations succeed
+        toast.success("Auction created successfully");
+        router.push("/dashboard/auctions");
+        queryClient.invalidateQueries({ queryKey: ["koiData", id] });
+      } catch (error) {
+        toast.error(getErrorMessage(error));
+        console.error("Operation failed:", error);
+      }
     } else {
       updateAuction(
         {
@@ -124,10 +151,15 @@ const KoiAuctionFormViewModel = (
     }
   };
 
+  const isSubmitting =
+    operation === "create"
+      ? pendingCreate || pendingUpdateKoiStatus
+      : pendingUpdate;
+
   return {
     form,
     onSubmit,
-    pendingCreate,
+    pendingCreate: isSubmitting,
     pendingUpdate,
     formatDate,
     formatCurrency,

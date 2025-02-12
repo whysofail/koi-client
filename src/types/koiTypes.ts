@@ -82,3 +82,8 @@ export interface PaginatedResponse {
 }
 
 export type { Koi };
+
+export enum KoiStatus {
+  IN_AUCTION = "InAuction",
+  SOLD = "Sold",
+}
