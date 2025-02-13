@@ -87,7 +87,6 @@ const KoiAuctionFormViewModel = (
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     if (operation === "create") {
       try {
-        // First, update the koi status
         await new Promise((resolve, reject) => {
           updateKoiStatus(
             {
@@ -101,7 +100,6 @@ const KoiAuctionFormViewModel = (
           );
         });
 
-        // Only if koi status update succeeds, create the auction
         await new Promise((resolve, reject) => {
           createAuction(
             {
@@ -116,7 +114,6 @@ const KoiAuctionFormViewModel = (
           );
         });
 
-        // If both operations succeed
         toast.success("Auction created successfully");
         router.push("/dashboard/auctions");
         queryClient.invalidateQueries({ queryKey: ["koiData", id] });

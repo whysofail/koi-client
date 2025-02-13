@@ -25,7 +25,7 @@ interface Bloodline {
   updated_at: string;
 }
 
-interface Koi {
+export interface Koi {
   id: number;
   code: string;
   nickname: string | null;
@@ -81,9 +81,8 @@ export interface PaginatedResponse {
   total: number;
 }
 
-export type { Koi };
-
 export enum KoiStatus {
+  AUCTION = "Auction",
   IN_AUCTION = "InAuction",
   SOLD = "Sold",
 }

@@ -21,7 +21,7 @@ const fetchAllUsers = async ({
   isBanned = false,
   orderBy = UserOrderBy.REGISTRATION_DATE,
   order = "DESC",
-}: FetchAllUsersParams): Promise<PaginatedUsersResponse> => {
+}: FetchAllUsersParams) => {
   const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
   const params = new URLSearchParams({
@@ -41,11 +41,14 @@ const fetchAllUsers = async ({
     params.append("isBanned", isBanned.toString());
   }
 
-  const { data } = await fetchWithAuth.get(`/users?${params.toString()}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const { data } = await fetchWithAuth.get<PaginatedUsersResponse>(
+    `/users?${params.toString()}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   return data;
 };
@@ -54,13 +57,9 @@ const useGetAllUsers = ({ token, ...params }: FetchAllUsersParams) =>
   useQuery({
     queryKey: ["allUsers", params],
     queryFn: () => fetchAllUsers({ token, ...params }),
-    // Keep previous data while fetching new data
     placeholderData: (previousData) => previousData,
-    // Prevent unnecessary refetches
     staleTime: 5000,
-    // Disable automatic refetch on window focus
     refetchOnWindowFocus: false,
-    // Disable automatic refetch on mount
     refetchOnMount: false,
   });
 

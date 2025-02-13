@@ -46,13 +46,16 @@ const fetchTransactions = async ({
   ...params
 }: FetchAllTransactionsParams & {
   isAdmin: boolean;
-}): Promise<PaginatedTransactionsResponse> => {
+}) => {
   const queryString = buildQueryParams(params);
   const endpoint = isAdmin ? "/transactions" : "/transactions/me";
 
-  const { data } = await fetchWithAuth.get(`${endpoint}?${queryString}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const { data } = await fetchWithAuth.get<PaginatedTransactionsResponse>(
+    `${endpoint}?${queryString}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
   return data;
 };
 

@@ -1,6 +1,6 @@
 import React from "react";
 import KoiAuctionForm from "@/components/admin/koi-auction-form/KoiAuctionForm";
-import KoiDetailsAdd from "@/components/admin/koi-details/KoiDetailsAdd";
+import KoiDetails from "@/components/admin/koi-details/KoiDetails";
 import { getServerSession } from "@/lib/serverSession";
 
 const AddAuctionPage = async ({
@@ -40,7 +40,7 @@ const AddAuctionPage = async ({
         </h1>
       </div>
       <div className="grid gap-4 md:min-h-[36rem] md:gap-6 lg:grid-cols-2">
-        <KoiDetailsAdd koiID={koiID} koiData={koiData} />
+        <KoiDetails koiID={koiID} koiData={koiData} />
         <KoiAuctionForm id={koiID} token={token} operation="create" />
       </div>
     </div>

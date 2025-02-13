@@ -1,21 +1,68 @@
+"use client";
+
 import React, { FC } from "react";
+import useGetKoiByID from "@/server/koi/getKoiByID/queries";
+import { Skeleton } from "@/components/ui/skeleton";
+import SingleImageDisplay, {
+  SingleImage,
+} from "@/components/shared/single-image/SingleImageDisplay";
 
 interface KoiData {
-  code: string | null;
-  nickname: string | null;
-  gender: string | null;
-  breeder: string | null;
-  variety: string | null;
-  size: string | null;
+  code: string | null | undefined;
+  nickname: string | null | undefined;
+  gender?: string | null | undefined;
+  breeder: string | null | undefined;
+  variety: string | null | undefined;
+  size: string | null | undefined;
 }
 
 interface KoiDetailsProps {
-  koiID: string;
-  koiData: KoiData;
+  koiID?: string;
+  koiData?: KoiData;
+  isLoading?: boolean;
+  image?: SingleImage;
 }
 
-const KoiDetails: FC<KoiDetailsProps> = ({ koiData }) => {
-  const renderValue = (value: string | null) => value || "-";
+const KoiDetails: FC<KoiDetailsProps> = ({
+  koiID,
+  koiData,
+  isLoading,
+  image,
+}) => {
+  const query = useGetKoiByID(koiID || "");
+
+  if (isLoading || query.isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-xl border p-4 dark:border-neutral-700">
+          <Skeleton className="h-6 w-32" />
+          <div className="mt-4 space-y-2">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="grid grid-cols-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <Skeleton className="aspect-video rounded-lg" />
+      </div>
+    );
+  }
+
+  const displayData = koiData || {
+    code: query.data?.code,
+    nickname: query.data?.nickname,
+    variety: query.data?.variety.name,
+    size: query.data?.size,
+    breeder: query.data?.breeder.name,
+    gender: query.data?.gender,
+  };
+
+  const renderValue = (value: string | null | undefined) => {
+    if (value === undefined || value === null) return "-";
+    return value;
+  };
 
   return (
     <div className="flex min-h-[24rem] flex-col space-y-4 md:h-full">
@@ -24,40 +71,49 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiData }) => {
         <dl className="mt-3 space-y-2 md:mt-4">
           <div className="grid grid-cols-2">
             <dt className="text-muted-foreground text-sm">Code</dt>
-            <dd className="text-sm font-medium">{renderValue(koiData.code)}</dd>
+            <dd className="text-sm font-medium">
+              {renderValue(displayData.code)}
+            </dd>
           </div>
           <div className="grid grid-cols-2">
             <dt className="text-muted-foreground text-sm">Nickname</dt>
             <dd className="text-sm font-medium">
-              {renderValue(koiData.nickname)}
+              {renderValue(displayData.nickname)}
             </dd>
           </div>
           <div className="grid grid-cols-2">
             <dt className="text-muted-foreground text-sm">Variety</dt>
             <dd className="text-sm font-medium">
-              {renderValue(koiData.variety)}
+              {renderValue(displayData.variety)}
             </dd>
           </div>
           <div className="grid grid-cols-2">
             <dt className="text-muted-foreground text-sm">Size</dt>
-            <dd className="text-sm font-medium">{renderValue(koiData.size)}</dd>
+            <dd className="text-sm font-medium">
+              {renderValue(displayData.size)}
+            </dd>
           </div>
           <div className="grid grid-cols-2">
             <dt className="text-muted-foreground text-sm">Breeder</dt>
             <dd className="text-sm font-medium">
-              {renderValue(koiData.breeder)}
+              {renderValue(displayData.breeder)}
             </dd>
           </div>
-          <div className="grid grid-cols-2">
-            <dt className="text-muted-foreground text-sm">Gender</dt>
-            <dd className="text-sm font-medium">
-              {renderValue(koiData.gender)}
-            </dd>
-          </div>
+          {displayData.gender && (
+            <div className="grid grid-cols-2">
+              <dt className="text-muted-foreground text-sm">Gender</dt>
+              <dd className="text-sm font-medium">
+                {renderValue(displayData.gender)}
+              </dd>
+            </div>
+          )}
         </dl>
       </div>
       <div className="flex-1 overflow-hidden rounded-lg border dark:border-neutral-700">
-        FOR IMAGE
+        <SingleImageDisplay
+          title={displayData.nickname || displayData.code || "Koi"}
+          image={image}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import { getServerSession } from "@/lib/serverSession";
-import KoiDetailsUpdate from "@/components/admin/koi-details/KoiDetailsUpdate";
+import KoiDetails from "@/components/admin/koi-details/KoiDetails";
 import KoiAuctionForm from "@/components/admin/koi-auction-form/KoiAuctionForm";
 
 export default async function UpdateAuctionPage({
@@ -38,7 +38,7 @@ export default async function UpdateAuctionPage({
         </h1>
       </div>
       <div className="grid gap-4 md:min-h-[36rem] md:gap-6 lg:grid-cols-2">
-        <KoiDetailsUpdate koiID={koiID as string} />
+        <KoiDetails koiID={koiID as string} />
         <KoiAuctionForm
           id={auctionID}
           token={token}

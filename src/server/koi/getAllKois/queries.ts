@@ -10,14 +10,9 @@ interface FetchKoiParams {
 const fetchKoiData = async ({
   page = 1,
   per_page = 10,
-}: FetchKoiParams = {}): Promise<PaginatedResponse> => {
-  const { data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_LARAVEL_URL}/api/kois?page=${page}&per_page=${per_page}&status=auction`,
-    {
-      headers: {
-        "x-api-key": process.env.KOI_HEADERS,
-      },
-    },
+}: FetchKoiParams = {}) => {
+  const { data } = await axios.get<PaginatedResponse>(
+    `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/koi?page=${page}&per_page=${per_page}&status=auction`,
   );
 
   return data;
