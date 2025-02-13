@@ -23,6 +23,8 @@ const useGetAuctionByID = (
     queryKey: ["auction", id],
     queryFn: () => getAuctionByID(id, token),
     enabled: options?.enabled,
+    refetchInterval: false, // Disable polling since we use sockets
+    staleTime: Infinity, // Keep data fresh since we update via sockets
   });
 };
 

@@ -1,124 +1,103 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Auction } from "@/types/auctionTypes";
 
+type AuctionSocketType =
+  | "PARTICIPANT_JOINED"
+  | "BID_PLACED"
+  | "STATUS_CHANGED"
+  | "AUCTION_UPDATED";
+
 interface SocketData {
-  entity: string;
-  type: string;
+  entity: "auction";
+  type: AuctionSocketType;
   data: Auction;
 }
 interface UseAuctionSocketProps {
-  socket: Socket | null;
-  auctionId?: string;
-}
-
-interface UseAuctionSocketReturn {
-  users: string[];
-  isConnected: boolean;
-  joinAuction: (auctionId: string) => void;
-  leaveAuction: (auctionId: string) => void;
-  getUsers: (auctionId: string) => void;
-  lastUpdate: Auction | null;
+  publicSocket: Socket | null;
+  auctionId: string;
 }
 
 export const useAuctionSocket = ({
-  socket,
+  publicSocket,
   auctionId,
-}: UseAuctionSocketProps): UseAuctionSocketReturn => {
-  const [users, setUsers] = useState<string[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<Auction | null>(null);
+}: UseAuctionSocketProps) => {
   const queryClient = useQueryClient();
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [lastReceivedAt, setLastReceivedAt] = useState<Date | null>(null);
 
   useEffect(() => {
-    if (!socket || !auctionId) return;
+    if (!publicSocket) return;
+    setIsConnecting(true);
+    publicSocket.on("connect", () => {
+      setIsConnected(true);
+      setIsConnecting(false);
+    });
+    publicSocket.on("connect_error", (err) => {
+      setIsConnected(false);
+      setIsConnecting(false);
+      setError(err);
+    });
 
-    const handleUserListUpdate = (updatedUsers: string[]) => {
-      console.log("Received user list update:", updatedUsers);
-      setUsers(updatedUsers);
+    publicSocket.emit("joinAuction", auctionId);
+
+    const handleUpdate = (data: SocketData) => {
+      if (data.entity !== "auction") return;
+      setLastReceivedAt(new Date());
+
+      // Invalidate on Socket update
+      if (data.type) {
+        console.log("Invalidating queries for new bid", data);
+        queryClient.invalidateQueries({
+          queryKey: ["auction", auctionId],
+        });
+      }
+
+      queryClient.setQueryData<Auction>(
+        ["auction", data.data.auction_id],
+        (oldData) => {
+          if (!oldData) return data.data;
+          switch (data.type) {
+            case "PARTICIPANT_JOINED":
+              return {
+                ...oldData,
+                participants: Array.isArray(oldData.participants)
+                  ? [...oldData.participants, ...data.data.participants]
+                  : [data.data.participants],
+              };
+            case "BID_PLACED":
+              return {
+                ...oldData,
+                current_highest_bid: data.data.current_highest_bid,
+                bids: data.data.bids, // Replace with new bids data
+              };
+            case "STATUS_CHANGED":
+              return {
+                ...oldData,
+                status: data.data.status,
+              };
+            case "AUCTION_UPDATED":
+              return data.data;
+            default:
+              return oldData;
+          }
+        },
+      );
     };
 
-    const handleAuctionUpdate = (data: SocketData) => {
-      if (data.entity === "auction" && data.data.auction_id === auctionId) {
-        console.log("Received auction update:", data);
-        setLastUpdate(data.data);
-        queryClient.invalidateQueries({ queryKey: ["auctions", auctionId] });
+    publicSocket.on("update", handleUpdate);
 
-        // If update includes bid data, invalidate bids query
-        if (data.data.bids) {
-          queryClient.invalidateQueries({
-            queryKey: ["auctions", auctionId, "bids"],
-          });
-        }
+    return () => {
+      if (publicSocket.connected) {
+        publicSocket.emit("leaveAuction", auctionId);
+        publicSocket.off("connect");
+        publicSocket.off("connect_error");
+        publicSocket.off("update", handleUpdate);
       }
     };
-
-    const handleSuccess = (message: string) => {
-      console.log("Socket success:", message);
-      setIsConnected(true);
-    };
-
-    const handleError = (error: Error) => {
-      console.error("Socket error:", error);
-      setIsConnected(false);
-    };
-
-    // Set up event listeners
-    socket.on("userListUpdate", handleUserListUpdate);
-    socket.on("update", handleAuctionUpdate);
-    socket.on("success", handleSuccess);
-    socket.on("connect_error", handleError);
-    socket.on("disconnect", () => setIsConnected(false));
-
-    // Join auction room
-    socket.emit("joinAuction", auctionId);
-    console.log("Joining auction room:", auctionId);
-
-    // Cleanup
-    return () => {
-      socket.off("userListUpdate", handleUserListUpdate);
-      socket.off("update", handleAuctionUpdate);
-      socket.off("success", handleSuccess);
-      socket.off("connect_error", handleError);
-      socket.emit("leaveAuction", auctionId);
-      console.log("Leaving auction room:", auctionId);
-    };
-  }, [socket, auctionId, queryClient]);
-
-  const joinAuction = useCallback(
-    (roomId: string) => {
-      if (!socket) return;
-      console.log("Manually joining auction:", roomId);
-      socket.emit("joinAuction", roomId);
-    },
-    [socket],
-  );
-
-  const leaveAuction = useCallback(
-    (roomId: string) => {
-      if (!socket) return;
-      console.log("Manually leaving auction:", roomId);
-      socket.emit("leaveAuction", roomId);
-    },
-    [socket],
-  );
-
-  const getUsers = useCallback(
-    (roomId: string) => {
-      if (!socket) return;
-      console.log("Requesting users for auction:", roomId);
-      socket.emit("getUsersInAuction", roomId);
-    },
-    [socket],
-  );
-
-  return {
-    users,
-    isConnected,
-    joinAuction,
-    leaveAuction,
-    getUsers,
-    lastUpdate,
-  };
+  }, [publicSocket, auctionId, queryClient]);
+  return { isConnected, isConnecting, error, lastReceivedAt };
 };

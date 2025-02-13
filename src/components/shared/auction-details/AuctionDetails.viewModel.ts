@@ -1,12 +1,21 @@
 import useGetBidsByAuctionID from "@/server/bid/getBidsByAuctionID/queries";
 import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
 import { Auction } from "@/types/auctionTypes";
-import { Bid } from "@/types/bidTypes";
+import { DetailedBid } from "@/types/bidTypes";
+import { Socket } from "socket.io-client";
+import { useAuctionSocket } from "@/hooks/useAuctionSocket";
+import React from "react";
 
 export const useAuctionDetailsViewModel = (
   auctionID: string,
   token: string,
+  socket?: Socket | null,
 ) => {
+  const { isConnected, isConnecting, lastReceivedAt } = useAuctionSocket({
+    publicSocket: socket ?? null,
+    auctionId: auctionID,
+  });
+
   const {
     data: auctionData,
     isLoading: isLoadingAuction,
@@ -23,13 +32,29 @@ export const useAuctionDetailsViewModel = (
     enabled: !!token && !!auctionID,
   });
 
+  // Add debug log for bid updates
+  React.useEffect(() => {
+    if (bidsData?.data) {
+      console.log("Bids data updated:", {
+        time: new Date().toISOString(),
+        count: bidsData.data.length,
+        latest: bidsData.data[0],
+      });
+    }
+  }, [bidsData]);
+
   const auction: Auction | undefined = auctionData?.data[0];
-  const bids: Bid[] = bidsData?.data || [];
+  const bids: DetailedBid[] = (bidsData?.data as DetailedBid[]) || [];
 
   return {
     auction,
     bids,
     isLoading: isLoadingAuction || isLoadingBids,
     error: auctionError || bidsError,
+    socketStatus: {
+      isConnected,
+      isConnecting,
+      lastReceivedAt,
+    },
   };
 };

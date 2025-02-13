@@ -34,12 +34,6 @@ export const useSocket = (token?: string) => {
       if (handler) handler(data, queryClient);
     });
 
-    // Handle auction-specific events
-    publicSocketInstance.on("userListUpdate", (users: string[]) => {
-      console.log("Auction users updated:", users);
-      // You can add additional handling here if needed
-    });
-
     publicSocketInstance.on("success", (message: string) => {
       console.log("Socket success:", message);
     });

@@ -9,7 +9,6 @@ import { useAuctionDetailsViewModel } from "./AuctionDetails.viewModel";
 import UserContentSkeleton from "@/components/skeletons/UserContentSkeleton";
 import AdminContentSkeleton from "@/components/skeletons/AdminContentSkeleton";
 import { useSocket } from "@/hooks/use-socket";
-import { useAuctionSocket } from "@/hooks/useAuctionSocket";
 
 interface AuctionDetailsProps {
   isAdmin: boolean;
@@ -22,26 +21,20 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
   token,
   auctionID,
 }) => {
-  // Get socket from hook
-
   const { publicSocket } = useSocket();
-
-  // Use auction socket hook
-  const { users, isConnected } = useAuctionSocket({
-    socket: publicSocket,
-    auctionId: auctionID,
-  });
-
-  const { auction, bids, isLoading, error } = useAuctionDetailsViewModel(
-    auctionID,
-    token,
-  );
+  const {
+    auction,
+    bids,
+    isLoading,
+    error: dataError,
+    socketStatus,
+  } = useAuctionDetailsViewModel(auctionID, token, publicSocket);
 
   if (isLoading) {
     return isAdmin ? <AdminContentSkeleton /> : <UserContentSkeleton />;
   }
 
-  if (error || !auction) {
+  if (dataError || !auction) {
     return <div>Error loading auction details</div>;
   }
 
@@ -53,11 +46,27 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
         <UserHeader title={auction.title} description={auction.description} />
       )}
 
-      {/* Optional: Display connected users if needed */}
       {isAdmin && (
-        <div className="mb-4">
-          <p>Active Users: {users.length}</p>
-          <p>Connection Status: {isConnected ? "Connected" : "Disconnected"}</p>
+        <div className="mb-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <div
+              className={`h-2 w-2 rounded-full ${
+                socketStatus.isConnected ? "bg-green-500" : "bg-red-500"
+              }`}
+            />
+            <span className="text-sm text-gray-600">
+              {socketStatus.isConnecting
+                ? "Connecting..."
+                : socketStatus.isConnected
+                  ? "Connected"
+                  : "Disconnected"}
+            </span>
+          </div>
+          {socketStatus.lastReceivedAt && (
+            <div className="text-sm text-gray-600">
+              Last update: {socketStatus.lastReceivedAt.toLocaleTimeString()}
+            </div>
+          )}
         </div>
       )}
 

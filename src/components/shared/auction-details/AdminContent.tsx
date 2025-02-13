@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Auction } from "@/types/auctionTypes";
-import { Bid } from "@/types/bidTypes";
+import { DetailedBid } from "@/types/bidTypes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -10,6 +10,7 @@ import ImageGallery from "./ImageGallery";
 import { BidHistory } from "./BidHistory";
 import { AuctionParticipant } from "@/types/auctionParticipantTypes";
 import { formatDistanceToNow } from "date-fns";
+import { formatCurrency } from "@/lib/formatCurrency";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -19,7 +20,7 @@ interface GalleryImage {
 }
 interface AdminContentProps {
   auction: Auction;
-  bids: Bid[];
+  bids: DetailedBid[];
   title: string;
   currentBid: string;
   reservePrice: string;
@@ -36,6 +37,15 @@ const AdminContent: React.FC<AdminContentProps> = ({
   bidIncrement,
   images,
 }) => {
+  const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
+
+  useEffect(() => {
+    if (bids?.length) {
+      setLastBidUpdate(new Date());
+      console.log("New bids received:", bids.length);
+    }
+  }, [bids]);
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
@@ -52,21 +62,26 @@ const AdminContent: React.FC<AdminContentProps> = ({
                   <p className="text-sm font-medium">Current Bid</p>
                   <p className="text-2xl font-bold">
                     {Number.parseFloat(currentBid) > 0
-                      ? `Rp. ${Number.parseFloat(currentBid).toLocaleString()}`
+                      ? formatCurrency(currentBid)
                       : "No bids yet"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Reserve Price</p>
                   <p className="text-2xl font-bold">
-                    Rp. {Number.parseFloat(reservePrice.toLocaleString())}
+                    {formatCurrency(reservePrice)}
                   </p>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
-
+        <div className="flex items-center space-x-2 text-sm text-gray-500">
+          <div
+            className={`h-2 w-2 rounded-full ${bids?.length ? "bg-green-500" : "bg-gray-300"}`}
+          />
+          <span>Last bid update: {lastBidUpdate.toLocaleTimeString()}</span>
+        </div>
         <Tabs defaultValue="bids">
           <TabsList>
             <TabsTrigger value="bids">Bid History</TabsTrigger>
@@ -74,8 +89,8 @@ const AdminContent: React.FC<AdminContentProps> = ({
             <TabsTrigger value="logs">Activity Logs</TabsTrigger>
           </TabsList>
           <TabsContent value="bids">
-            <Card>
-              <CardContent className="p-6">
+            <Card className="hover:bg-inherit">
+              <CardContent className="py-2">
                 <BidHistory bids={bids} />
               </CardContent>
             </Card>
