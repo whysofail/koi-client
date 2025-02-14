@@ -9,7 +9,12 @@ import { Button } from "@/components/ui/button";
 import ImageGallery from "./ImageGallery";
 import { BidHistory } from "./BidHistory";
 import { AuctionParticipant } from "@/types/auctionParticipantTypes";
-import { formatDistanceToNow } from "date-fns";
+import {
+  formatDistanceToNow,
+  formatDuration,
+  intervalToDuration,
+  isPast,
+} from "date-fns";
 import { formatCurrency } from "@/lib/formatCurrency";
 interface GalleryImage {
   thumbnailURL: string;
@@ -38,6 +43,34 @@ const AdminContent: React.FC<AdminContentProps> = ({
   images,
 }) => {
   const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
+  const [countdown, setCountdown] = useState<string>("");
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const endTime = new Date(auction.end_datetime);
+
+      if (auction.status !== "STARTED") {
+        setCountdown("Auction has not started yet");
+        return;
+      } else if (isPast(endTime)) {
+        setCountdown("Auction ended");
+        return;
+      }
+
+      const duration = intervalToDuration({
+        start: now,
+        end: endTime,
+      });
+
+      setCountdown(formatDuration(duration, { delimiter: ", " }));
+    };
+
+    updateCountdown(); // Initial update
+    const intervalId = setInterval(updateCountdown, 1000); // Update every second
+
+    return () => clearInterval(intervalId);
+  }, [auction.end_datetime, auction.status]);
 
   useEffect(() => {
     if (bids?.length) {
@@ -45,7 +78,6 @@ const AdminContent: React.FC<AdminContentProps> = ({
       console.log("New bids received:", bids.length);
     }
   }, [bids]);
-
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
@@ -168,14 +200,14 @@ const AdminContent: React.FC<AdminContentProps> = ({
               <Clock className="text-muted-foreground h-4 w-4" />
               <div>
                 <p className="text-sm font-medium">Time Remaining</p>
-                <p>2 days</p>
+                <p>{countdown}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <DollarSign className="text-muted-foreground h-4 w-4" />
               <div>
                 <p className="text-sm font-medium">Bid Increment</p>
-                <p>Rp. {Number.parseFloat(bidIncrement.toLocaleString())}</p>
+                <p>{formatCurrency(bidIncrement)}</p>
               </div>
             </div>
           </CardContent>
