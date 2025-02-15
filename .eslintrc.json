@@ -6,19 +6,6 @@
     "next"
   ],
   "plugins": ["prettier"],
-  "overrides": [
-    {
-      "files": ["__tests__/**/*"],
-      "plugins": ["jest", "jest-formatting", "jest-dom", "prettier"],
-      "extends": [
-        "plugin:jest/recommended",
-        "plugin:jest-formatting/recommended",
-        "plugin:jest-dom/recommended",
-        "plugin:prettier/recommended",
-        "next/typescript"
-      ]
-    }
-  ],
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-explicit-any": "off",
