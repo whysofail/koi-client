@@ -88,6 +88,26 @@ const RegisterForm = () => {
               />
               <FormField
                 control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-zinc-900 dark:text-zinc-50">
+                      Phone Number
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="tel"
+                        placeholder="0812xxxxxx"
+                        {...field}
+                        className="border-zinc-200 bg-zinc-50 text-zinc-900 placeholder-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-50 dark:placeholder-zinc-400"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem className="space-y-2">

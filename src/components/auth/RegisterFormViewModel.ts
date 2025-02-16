@@ -11,6 +11,13 @@ const RegisterFormSchema = z
       .string()
       .min(2, { message: "Name must be at least 2 characters" }),
     email: z.string().email({ message: "Invalid email address" }),
+    phoneNumber: z
+      .string()
+      .min(9, { message: "Phone number must be at least 9 digits" })
+      .max(14, { message: "Phone number must not exceed 14 digits" })
+      .regex(/^(\+62|62|0)[\d]{9,12}$/, {
+        message: "Must be a valid phone number",
+      }),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters" })
@@ -42,6 +49,7 @@ const RegisterFormViewModel = () => {
     defaultValues: {
       username: "",
       email: "",
+      phoneNumber: "",
       password: "",
       confirmPassword: "",
       terms: false,
@@ -52,7 +60,7 @@ const RegisterFormViewModel = () => {
     data,
   ) => {
     try {
-      const { username, email, password } = data;
+      const { username, email, password, phoneNumber } = data;
       const url = `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/user-registration`;
 
       const res = await fetch(url, {
@@ -62,6 +70,7 @@ const RegisterFormViewModel = () => {
           email,
           username,
           password,
+          phone: phoneNumber,
         }),
       });
 

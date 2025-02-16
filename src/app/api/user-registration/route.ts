@@ -1,5 +1,5 @@
 export const POST = async (req: Request) => {
-  const { email, username, password } = await req.json();
+  const { email, username, password, phone } = await req.json();
   try {
     const backendRes = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`,
@@ -10,6 +10,7 @@ export const POST = async (req: Request) => {
           email,
           username,
           password,
+          phone,
         }),
       },
     );

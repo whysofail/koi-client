@@ -25,6 +25,12 @@ Thumbs.db
 # Docker
 Dockerfile
 docker-compose.yml
+.dockerignore
+
+# Tests
+__tests__
+playwright-report
+test-results
 
 # Other unnecessary files for production
 *.md
