@@ -25,6 +25,19 @@ export interface FetchAllAuctionsParams {
   orderBy?: AuctionOrderBy;
   order?: "ASC" | "DESC";
 }
+
+export interface AuctionFilters {
+  title?: string; // Filter by auction title
+  description?: string; // Filter by auction description
+  minReservePrice?: number; // Filter by minimum reserve price
+  maxReservePrice?: number; // Filter by maximum reserve price
+  startDateFrom?: Date; // Filter by auction start date (earliest)
+  startDateTo?: Date; // Filter by auction start date (latest)
+  status?: AuctionStatus;
+  orderBy?: AuctionOrderBy;
+  order?: "ASC" | "DESC";
+}
+
 interface PaginatedResponse<T> {
   status: string;
   message: string;

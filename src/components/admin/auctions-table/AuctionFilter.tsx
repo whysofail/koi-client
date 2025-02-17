@@ -4,11 +4,11 @@ import { useState } from "react";
 import { CalendarIcon, CirclePlusIcon as PlusCircledIcon } from "lucide-react";
 import { format } from "date-fns";
 import {
-  TransactionStatus,
-  TransactionType,
-  TransactionOrderBy,
-  type TransactionFilters,
-} from "@/types/transactionTypes";
+  AuctionStatus,
+  AuctionFilAuctionOrderBy,
+  type AuctionFilters,
+  AuctionOrderBy,
+} from "@/types/auctionTypes";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -33,27 +33,28 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import StatusBadge from "./StatusBadge";
-import TypeBadge from "./TypeBadge";
+// import StatusBadge from "./StatusBadge";
+// import TypeBadge from "./TypeBadge";
 
-interface TransactionFiltersProps {
-  onApply: (filters: TransactionFilters) => void;
+interface AuctionFiltersProps {
+  onApply: (filters: AuctionFilters) => void;
   onReset: () => void;
-  initialFilters?: TransactionFilters;
+  initialFilters?: AuctionFilters;
 }
 
-export default function TransactionFilters({
+export default function AuctionFilters({
   onApply,
   onReset,
   initialFilters,
-}: TransactionFiltersProps) {
-  const [filters, setFilters] = useState<TransactionFilters>({
+}: AuctionFiltersProps) {
+  const [filters, setFilters] = useState<AuctionFilters>({
     order: "DESC",
     ...initialFilters,
   });
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleChange = (field: keyof TransactionFilters, value: any) => {
+  const handleChange = (field: keyof AuctionFilters, value: any) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -78,12 +79,12 @@ export default function TransactionFilters({
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-[425px]">
         <AlertDialogHeader>
-          <AlertDialogTitle>Filter Transactions</AlertDialogTitle>
+          <AlertDialogTitle>Filter Auction</AlertDialogTitle>
         </AlertDialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Date From</Label>
+              <Label>Start Date From</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -91,8 +92,8 @@ export default function TransactionFilters({
                     className={`w-full justify-start text-left font-normal ${!filters.createdAtFrom && "text-muted-foreground"}`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {filters.createdAtFrom
-                      ? format(filters.createdAtFrom, "PPP")
+                    {filters.startDateFrom
+                      ? format(filters.startDateFrom, "PPP")
                       : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
@@ -100,18 +101,18 @@ export default function TransactionFilters({
                   <Calendar
                     mode="single"
                     selected={
-                      filters.createdAtFrom
-                        ? new Date(filters.createdAtFrom)
+                      filters.startDateFrom
+                        ? new Date(filters.startDateFrom)
                         : undefined
                     }
-                    onSelect={(date) => handleChange("createdAtFrom", date)}
+                    onSelect={(date) => handleChange("startDateFrom", date)}
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
             </div>
             <div className="space-y-2">
-              <Label>Date To</Label>
+              <Label>Start Date To</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -119,8 +120,8 @@ export default function TransactionFilters({
                     className={`w-full justify-start text-left font-normal ${!filters.createdAtTo && "text-muted-foreground"}`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {filters.createdAtTo
-                      ? format(filters.createdAtTo, "PPP")
+                    {filters.startDateTo
+                      ? format(filters.startDateTo, "PPP")
                       : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
@@ -128,36 +129,22 @@ export default function TransactionFilters({
                   <Calendar
                     mode="single"
                     selected={
-                      filters.createdAtTo
-                        ? new Date(filters.createdAtTo)
+                      filters.startDateTo
+                        ? new Date(filters.startDateTo)
                         : undefined
                     }
-                    onSelect={(date) => handleChange("createdAtTo", date)}
+                    onSelect={(date) => handleChange("startDateTo", date)}
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label>Transaction Types</Label>
-            <div className="flex flex-wrap gap-2">
-              {Object.values(TransactionType).map((type) => (
-                <TypeBadge
-                  key={type}
-                  type={type}
-                  selected={filters.type === type}
-                  className="cursor-pointer"
-                  onClick={() => handleChange("type", type)}
-                />
-              ))}
-            </div>
-          </div>
         </div>
         <div className="space-y-2">
-          <Label>Transaction Status</Label>
+          <Label>Auction Type</Label>
           <div className="flex flex-wrap gap-2">
-            {Object.values(TransactionStatus).map((status) => (
+            {Object.values(AuctionStatus).map((status) => (
               <StatusBadge
                 key={status}
                 status={status}
@@ -178,7 +165,7 @@ export default function TransactionFilters({
               <SelectValue placeholder="Select order" />
             </SelectTrigger>
             <SelectContent>
-              {Object.values(TransactionOrderBy).map((order) => (
+              {Object.values(AuctionOrderBy).map((order) => (
                 <SelectItem key={order} value={order}>
                   {/* Normalize to human readable string */}
                   {order
