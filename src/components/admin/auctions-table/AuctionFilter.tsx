@@ -32,6 +32,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import StatusBadge from "./StatusBadge";
+import normalizeString from "@/lib/formatString";
 
 interface AuctionFiltersProps {
   onApply: (filters: AuctionFilters) => void;
@@ -165,9 +166,7 @@ export default function AuctionFilters({
               {Object.values(AuctionOrderBy).map((order) => (
                 <SelectItem key={order} value={order}>
                   {/* Normalize to human readable string */}
-                  {order
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (char) => char.toUpperCase())}
+                  {normalizeString(order)}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -34,6 +34,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import StatusBadge from "./StatusBadge";
 import TypeBadge from "./TypeBadge";
+import normalizeString from "@/lib/formatString";
 
 interface TransactionFiltersProps {
   onApply: (filters: TransactionFilters) => void;
@@ -181,9 +182,7 @@ export default function TransactionFilters({
               {Object.values(TransactionOrderBy).map((order) => (
                 <SelectItem key={order} value={order}>
                   {/* Normalize to human readable string */}
-                  {order
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (char) => char.toUpperCase())}
+                  {normalizeString(order)}
                 </SelectItem>
               ))}
             </SelectContent>
