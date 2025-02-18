@@ -5,7 +5,6 @@ import { CalendarIcon, CirclePlusIcon as PlusCircledIcon } from "lucide-react";
 import { format } from "date-fns";
 import {
   AuctionStatus,
-  AuctionFilAuctionOrderBy,
   type AuctionFilters,
   AuctionOrderBy,
 } from "@/types/auctionTypes";
@@ -33,8 +32,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import StatusBadge from "./StatusBadge";
-// import StatusBadge from "./StatusBadge";
-// import TypeBadge from "./TypeBadge";
 
 interface AuctionFiltersProps {
   onApply: (filters: AuctionFilters) => void;
@@ -89,7 +86,7 @@ export default function AuctionFilters({
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={`w-full justify-start text-left font-normal ${!filters.createdAtFrom && "text-muted-foreground"}`}
+                    className={`w-full justify-start text-left font-normal ${!filters.startDateFrom && "text-muted-foreground"}`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.startDateFrom
@@ -117,7 +114,7 @@ export default function AuctionFilters({
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={`w-full justify-start text-left font-normal ${!filters.createdAtTo && "text-muted-foreground"}`}
+                    className={`w-full justify-start text-left font-normal ${!filters.startDateTo && "text-muted-foreground"}`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {filters.startDateTo

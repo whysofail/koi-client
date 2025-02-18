@@ -8,18 +8,20 @@ export enum TransactionOrderBy {
   USER_ID = "user_id",
 }
 
-export interface FetchAllTransactionsParams {
-  token: string;
-  page?: number;
-  limit?: number;
+export interface TransactionFilters {
   userId?: string;
+  type?: string;
   username?: string;
-  type?: TransactionType;
   status?: TransactionStatus;
   createdAtFrom?: Date;
   createdAtTo?: Date;
   orderBy?: TransactionOrderBy;
   order?: "ASC" | "DESC";
+}
+export interface FetchAllTransactionsParams extends TransactionFilters {
+  token: string;
+  page?: number;
+  limit?: number;
 }
 
 interface PaginatedResponse<T> {
@@ -96,17 +98,6 @@ export enum TransactionStatus {
   FAILED = "FAILED",
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
-}
-
-export interface TransactionFilters {
-  userId?: string;
-  type?: string;
-  username?: string;
-  status?: TransactionStatus;
-  createdAtFrom?: string;
-  createdAtTo?: string;
-  orderBy?: TransactionOrderBy;
-  order?: "ASC" | "DESC";
 }
 
 export const transformTransactionToTableData = (

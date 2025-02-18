@@ -6,7 +6,11 @@ import {
   ColumnFiltersState,
   VisibilityState,
 } from "@tanstack/react-table";
-import { AuctionOrderBy, AuctionStatus } from "@/types/auctionTypes";
+import {
+  AuctionFilters,
+  AuctionOrderBy,
+  AuctionStatus,
+} from "@/types/auctionTypes";
 import { format } from "date-fns";
 
 const AuctionsTableViewModel = (token: string) => {
@@ -37,36 +41,83 @@ const AuctionsTableViewModel = (token: string) => {
   const [rowSelection, setRowSelection] = useState({});
 
   const createQueryString = useCallback(
-    (name: string, value: string) => {
+    (updates: Record<string, string | undefined>) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
+
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === undefined || value === "") {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
+
       return params.toString();
     },
     [searchParams],
   );
 
+  const handleFiltersApply = useCallback(
+    (filters: AuctionFilters) => {
+      const queryParams = Object.entries({
+        status: filters.status,
+        startDateFrom: filters.startDateFrom,
+        startDateTo: filters.startDateTo,
+        orderBy: filters.orderBy,
+        order: filters.order,
+      }).reduce(
+        (acc, [key, value]) => {
+          if (value) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
+
+      const queryString = createQueryString(queryParams);
+
+      if (queryString) {
+        router.push(`?${queryString}`);
+      }
+    },
+    [createQueryString, router],
+  );
+
+  const handleResetFilters = useCallback(() => {
+    router.push(window.location.pathname);
+  }, [router]);
+
+  const setStatus = useCallback(
+    (status: AuctionStatus | undefined) => {
+      router.push(`?${createQueryString({ status })}`);
+    },
+    [createQueryString, router],
+  );
+
   const setPageIndex = useCallback(
     (page: number) => {
-      router.push(`?${createQueryString("page", page.toString())}`);
+      router.push(`?${createQueryString({ page: page.toString() })}`);
     },
     [createQueryString, router],
   );
 
   const setPageSize = useCallback(
     (limit: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("limit", limit.toString());
-      params.set("page", "1");
-      router.push(`?${params.toString()}`);
+      router.push(
+        `?${createQueryString({ limit: limit.toString(), page: "1" })}`,
+      );
     },
-    [searchParams, router],
+    [createQueryString, router],
   );
 
   const setStartDateFrom = useCallback(
     (date?: Date) => {
       if (date) {
         router.push(
-          `?${createQueryString("startDateFrom", format(date, "yyyy-MM-dd"))}`,
+          `?${createQueryString({
+            startDateFrom: format(date, "yyyy-MM-dd"),
+          })}`,
         );
       }
     },
@@ -77,7 +128,9 @@ const AuctionsTableViewModel = (token: string) => {
     (date?: Date) => {
       if (date) {
         router.push(
-          `?${createQueryString("startDateTo", format(date, "yyyy-MM-dd"))}`,
+          `?${createQueryString({
+            startDateTo: format(date, "yyyy-MM-dd"),
+          })}`,
         );
       }
     },
@@ -109,19 +162,6 @@ const AuctionsTableViewModel = (token: string) => {
       router.push(`?${params.toString()}`);
     },
     [searchParams, router],
-  );
-
-  const setStatus = useCallback(
-    (newStatus?: AuctionStatus) => {
-      if (newStatus) {
-        router.push(`?${createQueryString("status", newStatus)}`);
-      } else {
-        const params = new URLSearchParams(searchParams.toString());
-        params.delete("status");
-        router.push(`?${params.toString()}`);
-      }
-    },
-    [createQueryString, router, searchParams],
   );
 
   interface IURLSearchParams {
@@ -188,7 +228,16 @@ const AuctionsTableViewModel = (token: string) => {
     setRowSelection,
     status,
     setStatus,
+    handleFiltersApply,
+    handleResetFilters,
     updateAuctionURLSearchParams,
+    currentFilters: {
+      status,
+      startDateFrom: startDateFrom?.toISOString().split("T")[0],
+      startDateTo: startDateTo?.toISOString().split("T")[0],
+      orderBy,
+      order,
+    } as AuctionFilters,
   };
 };
 

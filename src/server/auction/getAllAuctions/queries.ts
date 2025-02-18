@@ -30,13 +30,8 @@ const fetchAllAuctions = async ({
     order,
   });
 
-  if (status) {
-    params.append("status", status);
-  }
-
-  if (startDateFrom) {
-    params.append("startDateFrom", formatDate(startDateFrom));
-  }
+  if (status) params.append("status", status);
+  if (startDateFrom) params.append("startDateFrom", formatDate(startDateFrom));
 
   const { data } = await fetchWithAuth.get<PaginatedAuctionsResponse>(
     `/auctions?${params.toString()}`,

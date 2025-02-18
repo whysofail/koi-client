@@ -15,15 +15,10 @@ export enum AuctionOrderBy {
   UPDATED_AT = "updated_at",
   CREATED_BY_ID = "created_by_id",
 }
-export interface FetchAllAuctionsParams {
+export interface FetchAllAuctionsParams extends AuctionFilters {
   token: string;
   page?: number;
   limit?: number;
-  status?: AuctionStatus;
-  startDateFrom?: Date;
-  startDateTo?: Date;
-  orderBy?: AuctionOrderBy;
-  order?: "ASC" | "DESC";
 }
 
 export interface AuctionFilters {

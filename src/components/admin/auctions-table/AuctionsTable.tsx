@@ -68,7 +68,6 @@ import { AuctionStatus } from "@/types/auctionTypes";
 import AuctionDialog from "../auctions-dialog/AuctionDialog";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatCurrency";
-import TransactionFilters from "../transactions-table/TransactionFilter";
 import AuctionFilters from "./AuctionFilter";
 
 const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
@@ -98,7 +97,10 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     status,
     setStatus,
     updateAuctionURLSearchParams,
+    handleFiltersApply,
+    handleResetFilters,
     handleSort,
+    currentFilters,
   } = AuctionsTableViewModel(token);
 
   const getSortIcon = (columnOrderBy: AuctionOrderBy) => {
@@ -157,7 +159,10 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
         }
         return (
           <div>
-            {formatDate(new Date(row.getValue("start_datetime")), "dd-MM-yyyy")}
+            {formatDate(
+              new Date(row.getValue("start_datetime")),
+              "dd-MM-yyyy HH:mm a",
+            )}
           </div>
         );
       },
@@ -183,7 +188,10 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
         }
         return (
           <div>
-            {formatDate(new Date(row.getValue("end_datetime")), "dd-MM-yyyy")}
+            {formatDate(
+              new Date(row.getValue("end_datetime")),
+              "dd-MM-yyyy HH:mm a ",
+            )}
           </div>
         );
       },
@@ -365,9 +373,9 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <AuctionFilters
-          // onApply={handleFiltersApply}
-          // onReset={handleResetFilters}
-          // initialFilters={currentFilters}
+            onApply={handleFiltersApply}
+            onReset={handleResetFilters}
+            initialFilters={currentFilters}
           />
           {/* Add status filter dropdown before the existing search dropdown */}
           <Select
@@ -434,7 +442,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {startDateFrom
-                  ? formatDate(startDateFrom, "dd-MM-yyyy")
+                  ? formatDate(startDateFrom, "dd-MM-yy")
                   : "From date"}
               </Button>
             </PopoverTrigger>
