@@ -8,8 +8,12 @@ const BackButton = () => {
   const pathname = usePathname();
 
   const handleBack = () => {
-    const basePath = pathname.split("/").slice(0, -1).join("/");
-    router.push(basePath);
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      const basePath = pathname.split("/").slice(0, -1).join("/") || "/";
+      router.push(basePath);
+    }
   };
 
   return (
