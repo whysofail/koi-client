@@ -2,6 +2,7 @@ import React from "react";
 import { getServerSession } from "@/lib/serverSession";
 import KoiDetails from "@/components/admin/koi-details/KoiDetails";
 import KoiAuctionForm from "@/components/admin/koi-auction-form/KoiAuctionForm";
+import { AuctionStatus } from "@/types/auctionTypes";
 
 export default async function UpdateAuctionPage({
   params,
@@ -17,6 +18,7 @@ export default async function UpdateAuctionPage({
     description = "",
     reserve_price = "",
     bid_increment = "",
+    status = "",
   } = await searchParams;
 
   const initialData = {
@@ -25,6 +27,7 @@ export default async function UpdateAuctionPage({
     item: koiID as string,
     reserve_price: parseFloat(reserve_price as string) || 0,
     bid_increment: parseFloat(bid_increment as string) || 0,
+    status: status as AuctionStatus,
   };
 
   const session = await getServerSession();

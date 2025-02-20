@@ -62,6 +62,13 @@ const KoiTable = () => {
 
   const columns: ColumnDef<Koi>[] = [
     {
+      accessorKey: "id",
+      header: "ID",
+      cell: ({ row }) => (
+        <div className="font-medium">{row.getValue("id")}</div>
+      ),
+    },
+    {
       accessorKey: "code",
       header: "Code",
       cell: ({ row }) => (
@@ -87,7 +94,8 @@ const KoiTable = () => {
       header: "Gender",
     },
     {
-      accessorKey: "breeder.name",
+      accessorFn: (row) => row.breeder.name,
+      id: "breederName",
       header: "Breeder",
     },
     {
@@ -151,7 +159,7 @@ const KoiTable = () => {
   const searchableColumns = [
     { id: "code", label: "Code" },
     { id: "nickname", label: "Nickname" },
-    { id: "breeder.name", label: "Breeder" },
+    { id: "breederName", label: "Breeder" },
   ];
 
   return (

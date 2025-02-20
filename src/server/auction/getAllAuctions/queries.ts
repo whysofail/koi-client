@@ -50,7 +50,6 @@ const useGetAllAuctions = ({ token, ...params }: FetchAllAuctionsParams) =>
     queryKey: ["allAuctions", params],
     queryFn: () => fetchAllAuctions({ token, ...params }),
     placeholderData: (previousData) => previousData,
-    staleTime: 5000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });

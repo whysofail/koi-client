@@ -44,4 +44,7 @@ export interface Notification {
 
 export interface GetNotificationResponse {
   data: Notification[];
+  count: number;
+  page: number;
+  limit: number;
 }

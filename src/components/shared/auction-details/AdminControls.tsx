@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Ban, Settings, AlertTriangle, Play, Edit, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const AdminControls: FC<{ auctionID: string }> = ({ auctionID }) => {
   return (
@@ -65,7 +66,9 @@ const AdminControls: FC<{ auctionID: string }> = ({ auctionID }) => {
             <DropdownMenuLabel>Auction Controls</DropdownMenuLabel>
             <DropdownMenuItem>
               <Edit className="mr-2 h-4 w-4" />
-              Edit Details
+              <Link href={`/dashboard/auctions/update/${auctionID}}`}>
+                Edit Details
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Pause className="mr-2 h-4 w-4" />

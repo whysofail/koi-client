@@ -22,6 +22,7 @@ import {
   Upload,
   Pencil,
   ExternalLink,
+  Edit,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -273,7 +274,15 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align="end" avoidCollisions>
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/dashboard/auctions/update/${row.original.auction_id}?koiID=${row.original.item}`}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Details
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
                 href={`/dashboard/auctions/item/${row.original.auction_id}`}

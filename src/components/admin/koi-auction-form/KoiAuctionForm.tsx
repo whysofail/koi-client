@@ -14,6 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import KoiAuctionFormViewModel from "./KoiAuctionForm.viewModel";
+import { AuctionStatus } from "@/types/auctionTypes";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  SelectTrigger,
+} from "@/components/ui/select";
 
 type KoiAuctionFormProps = {
   token: string;
@@ -25,8 +33,14 @@ type KoiAuctionFormProps = {
     item: string;
     reserve_price: number;
     bid_increment: number;
+    status: AuctionStatus;
   };
 };
+
+const allowedStatuses: AuctionStatus[] = [
+  AuctionStatus.DRAFT,
+  AuctionStatus.PUBLISHED,
+];
 
 const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
   token,
@@ -201,6 +215,46 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
                 </FormItem>
               )}
             />
+            {operation === "update" && (
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-foreground">
+                      Auction Status
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select auction status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {allowedStatuses.map((status) => (
+                            <SelectItem
+                              key={status}
+                              value={status}
+                              disabled={status === field.value}
+                            >
+                              {status}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {!form.formState.errors.status && (
+                      <FormDescription>
+                        Select the current status of the auction
+                      </FormDescription>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
         </div>
 

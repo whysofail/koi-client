@@ -9,10 +9,11 @@ const fetchKoiByID = async (koiID: string) => {
   return data;
 };
 
-const useGetKoiByID = (koiID: string) =>
+const useGetKoiByID = (koiID: string, options?: { enabled?: boolean }) =>
   useQuery({
     queryKey: ["koiData", koiID],
     queryFn: () => fetchKoiByID(koiID),
+    enabled: options?.enabled,
   });
 
 export default useGetKoiByID;

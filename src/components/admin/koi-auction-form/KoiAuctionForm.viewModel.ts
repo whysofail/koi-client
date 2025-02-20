@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,6 +10,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import useUpdateKoi from "@/server/koi/updateKoi/mutations";
 import { KoiStatus } from "@/types/koiTypes";
 import { getErrorMessage } from "@/lib/handleApiError";
+import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
+import { AuctionStatus } from "@/types/auctionTypes";
 
 const formSchema = z.object({
   title: z.string().nonempty("Title is required"),
@@ -16,6 +19,7 @@ const formSchema = z.object({
   item: z.string().min(1, "Item is required"),
   reserve_price: z.number().min(1, "Reserve price must be greater than 0"),
   bid_increment: z.number().min(1, "Increment amount must be greater than 0"),
+  status: z.nativeEnum(AuctionStatus).optional(),
 });
 
 const formatDate = (date: Date | string) => {
@@ -57,32 +61,57 @@ const KoiAuctionFormViewModel = (
     item: string;
     reserve_price: number;
     bid_increment: number;
+    status: AuctionStatus;
   },
 ) => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const { mutate: createAuction, isPending: pendingCreate } =
+  const { mutateAsync: createAuction, isPending: pendingCreate } =
     useCreateAuctionDraft(token);
-
-  const { mutate: updateAuction, isPending: pendingUpdate } = useUpdateAuction(
-    token,
-    queryClient,
-  );
-
-  const { mutate: updateKoiStatus, isPending: pendingUpdateKoiStatus } =
+  const { mutateAsync: updateAuction, isPending: pendingUpdate } =
+    useUpdateAuction(token, queryClient);
+  const { mutateAsync: updateKoiStatus, isPending: pendingUpdateKoiStatus } =
     useUpdateKoi(queryClient);
+
+  const { data } = useGetAuctionByID(id, token, {
+    enabled: operation === "update",
+  });
+  const auctionData = data?.data[0];
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
+    defaultValues: {
       title: "",
       description: "",
-      item: id,
+      item: operation === "update" && auctionData ? auctionData.item : id,
       reserve_price: 0,
       bid_increment: 0,
+      status: AuctionStatus.DRAFT as AuctionStatus,
+      ...(operation === "update" && auctionData
+        ? {
+            title: auctionData.title,
+            description: auctionData.description,
+            reserve_price: parseFloat(auctionData.reserve_price),
+            bid_increment: parseFloat(auctionData.bid_increment),
+            status: auctionData.status as AuctionStatus,
+          }
+        : initialData),
     },
   });
+
+  useEffect(() => {
+    if (operation === "update" && auctionData) {
+      form.reset({
+        title: auctionData.title,
+        description: auctionData.description,
+        reserve_price: parseFloat(auctionData.reserve_price),
+        bid_increment: parseFloat(auctionData.bid_increment),
+        item: auctionData.item, // Fix here, previously id (auction ID) was incorrectly assigned
+        status: auctionData.status as AuctionStatus,
+      });
+    }
+  }, [auctionData, operation, form]);
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     if (operation === "create") {
@@ -115,13 +144,14 @@ const KoiAuctionFormViewModel = (
         });
 
         toast.success("Auction created successfully");
-        router.push("/dashboard/auctions");
         queryClient.invalidateQueries({ queryKey: ["koiData", id] });
+        queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
+        router.push("/dashboard/auctions");
       } catch (error) {
         toast.error(getErrorMessage(error));
         console.error("Operation failed:", error);
       }
-    } else {
+    } else if (operation === "update") {
       updateAuction(
         {
           auctionId: id,
@@ -131,13 +161,14 @@ const KoiAuctionFormViewModel = (
             item: data.item,
             reserve_price: data.reserve_price.toString(),
             bid_increment: data.bid_increment.toString(),
+            status: data.status,
           },
         },
         {
           onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
             toast.success("Auction updated successfully");
             router.push("/dashboard/auctions");
-            queryClient.invalidateQueries({ queryKey: ["auction", id] });
           },
           onError: (error: Error) => {
             toast.error(error.message);

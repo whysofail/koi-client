@@ -1,9 +1,11 @@
+import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMarkNotificationAsRead } from "@/server/notifications/markAsRead/mutation";
 import { useMarkAllNotificationsAsRead } from "@/server/notifications/markAllAsRead/mutation";
 import { useUserNotifications } from "@/server/notifications/getNotification/queries";
 import { useNotificationSocket } from "@/hooks/useNotificationSocket";
 import { Socket } from "socket.io-client";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface UseNotificationViewModelProps {
   token: string;
@@ -14,6 +16,28 @@ const useNotificationViewModel = ({
   token,
   authSocket,
 }: UseNotificationViewModelProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pageIndex = Number(searchParams.get("page")) || 1;
+  const pageSize = Number(searchParams.get("limit")) || 10;
+
+  const createQueryString = useCallback(
+    (updates: Record<string, string | undefined>) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === undefined || value === "") {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
+
+      return params.toString();
+    },
+    [searchParams],
+  );
+
   const queryClient = useQueryClient();
   useNotificationSocket({ authSocket });
 
@@ -22,7 +46,11 @@ const useNotificationViewModel = ({
     data: notifications,
     isLoading: isNotificationsLoading,
     error: notificationsError,
-  } = useUserNotifications(token);
+  } = useUserNotifications({
+    token,
+    page: pageIndex,
+    limit: pageSize,
+  });
 
   // Mutation to mark a single notification as read
   const { mutate: markAsRead, isPending: isMarkingAsRead } =
@@ -42,13 +70,29 @@ const useNotificationViewModel = ({
     markAllAsRead();
   };
 
+  const setPageIndex = useCallback(
+    (page: number) => {
+      router.push(`?${createQueryString({ page: page.toString() })}`);
+    },
+    [createQueryString, router],
+  );
+
+  const setPageSize = useCallback(
+    (limit: number) => {
+      router.push(
+        `?${createQueryString({ limit: limit.toString(), page: "1" })}`,
+      );
+    },
+    [createQueryString, router],
+  );
+
   // Optional: Refetch notifications
   const refetchNotifications = () => {
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
   };
 
   return {
-    notifications: notifications?.data || [],
+    notifications: notifications?.data.data || [],
     isNotificationsLoading,
     notificationsError,
     handleMarkAsRead,
@@ -56,6 +100,11 @@ const useNotificationViewModel = ({
     isMarkingAsRead,
     isMarkingAllAsRead,
     refetchNotifications,
+    pageIndex,
+    setPageIndex,
+    pageSize,
+    setPageSize,
+    total: notifications?.data.count || 0,
   };
 };
 
