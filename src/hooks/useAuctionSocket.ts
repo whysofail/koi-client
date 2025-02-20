@@ -15,12 +15,12 @@ interface SocketData {
   data: Auction;
 }
 interface UseAuctionSocketProps {
-  publicSocket: Socket | null;
-  auctionId: string;
+  socket: Socket | null;
+  auctionId?: string;
 }
 
 export const useAuctionSocket = ({
-  publicSocket,
+  socket,
   auctionId,
 }: UseAuctionSocketProps) => {
   const queryClient = useQueryClient();
@@ -30,29 +30,34 @@ export const useAuctionSocket = ({
   const [lastReceivedAt, setLastReceivedAt] = useState<Date | null>(null);
 
   useEffect(() => {
-    if (!publicSocket) return;
+    if (!socket) return;
     setIsConnecting(true);
-    publicSocket.on("connect", () => {
+    socket.on("connect", () => {
+      console.log("Connected to auction socket");
       setIsConnected(true);
       setIsConnecting(false);
     });
-    publicSocket.on("connect_error", (err) => {
+    socket.on("connect_error", (err) => {
       setIsConnected(false);
       setIsConnecting(false);
       setError(err);
     });
-
-    publicSocket.emit("joinAuction", auctionId);
+    console.log(auctionId);
+    socket.emit("joinAuction", auctionId);
 
     const handleUpdate = (data: SocketData) => {
+      console.log("Received update", data);
       if (data.entity !== "auction") return;
       setLastReceivedAt(new Date());
 
       // Invalidate on Socket update
       if (data.type) {
-        console.log("Invalidating queries for new bid", data);
+        console.log("Invalidating queries for auctions", data);
         queryClient.invalidateQueries({
-          queryKey: ["auction", auctionId],
+          queryKey: ["auction", auctionId || data.data.auction_id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["allAuctions"],
         });
       }
 
@@ -88,16 +93,16 @@ export const useAuctionSocket = ({
       );
     };
 
-    publicSocket.on("update", handleUpdate);
+    socket.on("update", handleUpdate);
 
     return () => {
-      if (publicSocket.connected) {
-        publicSocket.emit("leaveAuction", auctionId);
-        publicSocket.off("connect");
-        publicSocket.off("connect_error");
-        publicSocket.off("update", handleUpdate);
+      if (socket.connected) {
+        socket.emit("leaveAuction", auctionId);
+        socket.off("connect");
+        socket.off("connect_error");
+        socket.off("update", handleUpdate);
       }
     };
-  }, [publicSocket, auctionId, queryClient]);
+  }, [socket, auctionId, queryClient]);
   return { isConnected, isConnecting, error, lastReceivedAt };
 };

@@ -69,8 +69,10 @@ import AuctionDialog from "../auctions-dialog/AuctionDialog";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatCurrency";
 import AuctionFilters from "./AuctionFilter";
+import { useSocket } from "@/hooks/use-socket";
 
 const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
+  const { adminSocket } = useSocket(token);
   const {
     orderBy,
     order,
@@ -101,7 +103,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     handleResetFilters,
     handleSort,
     currentFilters,
-  } = AuctionsTableViewModel(token);
+  } = AuctionsTableViewModel({ token: token, socket: adminSocket });
 
   const getSortIcon = (columnOrderBy: AuctionOrderBy) => {
     if (orderBy !== columnOrderBy)

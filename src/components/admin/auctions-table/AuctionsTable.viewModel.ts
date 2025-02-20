@@ -12,8 +12,20 @@ import {
   AuctionStatus,
 } from "@/types/auctionTypes";
 import { format } from "date-fns";
+import { Socket } from "socket.io-client";
+import { useAuctionSocket } from "@/hooks/useAuctionSocket";
 
-const AuctionsTableViewModel = (token: string) => {
+interface UseAuctionsTableViewModelProps {
+  token: string;
+  socket: Socket | null;
+}
+
+const AuctionsTableViewModel = ({
+  token,
+  socket,
+}: UseAuctionsTableViewModelProps) => {
+  useAuctionSocket({ socket });
+
   const router = useRouter();
   const searchParams = useSearchParams();
 

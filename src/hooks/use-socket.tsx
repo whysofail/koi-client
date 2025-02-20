@@ -4,6 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { entityHandlers } from "@/server/socket/handler";
 
 const AUTH_NAMESPACE = "/auth"; // Notifications & user data
+const ADMIN_NAMESPACE = "/admin"; // Notifications & user data
+
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 
 interface SocketData {
@@ -15,6 +17,7 @@ interface SocketData {
 export const useSocket = (token?: string) => {
   const queryClient = useQueryClient();
   const [authSocket, setAuthSocket] = useState<Socket | null>(null);
+  const [adminSocket, setAdminSocket] = useState<Socket | null>(null);
   const [publicSocket, setPublicSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
@@ -82,5 +85,36 @@ export const useSocket = (token?: string) => {
     };
   }, [token, queryClient]);
 
-  return { authSocket, publicSocket };
+  useEffect(() => {
+    if (!token) return; // Skip auth connection if no token
+
+    // Connect to auth namespace
+    const adminSocketInstance = io(`${SOCKET_URL}${ADMIN_NAMESPACE}`, {
+      transports: ["websocket"],
+      auth: { token },
+    });
+
+    setAdminSocket(adminSocketInstance);
+
+    adminSocketInstance.on("connect", () => {
+      console.log("Connected to admin namespace");
+    });
+
+    adminSocketInstance.on("update", (data: SocketData) => {
+      const handler = entityHandlers[data.entity];
+      if (handler) handler(data, queryClient);
+    });
+
+    adminSocketInstance.on("connect_error", (err) => {
+      console.error("Auth connection error:", err.message);
+    });
+
+    return () => {
+      if (adminSocketInstance) {
+        adminSocketInstance.close();
+      }
+    };
+  }, [token, queryClient]);
+
+  return { authSocket, publicSocket, adminSocket };
 };

@@ -12,7 +12,7 @@ export const useAuctionDetailsViewModel = (
   socket?: Socket | null,
 ) => {
   const { isConnected, isConnecting, lastReceivedAt } = useAuctionSocket({
-    publicSocket: socket ?? null,
+    socket: socket ?? null,
     auctionId: auctionID,
   });
 
