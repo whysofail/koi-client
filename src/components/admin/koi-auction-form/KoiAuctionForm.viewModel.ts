@@ -166,9 +166,9 @@ const KoiAuctionFormViewModel = (
         },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
             toast.success("Auction updated successfully");
             router.push("/dashboard/auctions");
+            queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
           },
           onError: (error: Error) => {
             toast.error(error.message);
