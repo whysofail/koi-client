@@ -21,7 +21,8 @@ export default function NotificationList({ token }: { token: string }) {
     handleMarkAsRead,
     handleMarkAllAsRead,
     isMarkingAllAsRead,
-  } = useNotificationViewModel(token);
+    isMarkingAsRead,
+  } = useNotificationViewModel({ token, authSocket: null });
 
   const filteredNotifications = notifications.filter((notification) => {
     if (filter === "all") return true;
@@ -60,6 +61,7 @@ export default function NotificationList({ token }: { token: string }) {
             key={notification.notification_id}
             notification={notification}
             onMarkAsRead={() => handleMarkAsRead(notification.notification_id)}
+            isMarkingAsRead={isMarkingAsRead}
           />
         ))}
       </div>

@@ -1,21 +1,48 @@
 import { formatDistanceToNow } from "date-fns";
 import { Bell } from "lucide-react";
-import { Notification } from "@/types/notificationTypes";
+import { Notification, NotificationType } from "@/types/notificationTypes";
+
+import { useRouter } from "next/navigation";
 
 interface NotificationItemProps {
   notification: Notification;
   onMarkAsRead: (id: string) => void;
+  isMarkingAsRead: boolean;
 }
 
 export default function NotificationItem({
   notification,
   onMarkAsRead,
+  isMarkingAsRead,
 }: NotificationItemProps) {
-  const { notification_id, status, created_at, type, message } = notification;
-
+  const { status, created_at, type, message } = notification;
+  const router = useRouter();
+  const generateUrl = (type: NotificationType, referenceId: string) => {
+    switch (type) {
+      case NotificationType.AUCTION:
+        return `/auction/${referenceId}`;
+      case NotificationType.SYSTEM:
+        return `/dashboard/user/${referenceId}`;
+      case NotificationType.BID:
+        return `/dashboard/auction/${referenceId}`;
+      case NotificationType.TRANSACTION:
+        return `/dashboard/transactions/${referenceId}`;
+      default:
+        return "#"; // Default URL if type does not match any case
+    }
+  };
+  const handleClick = () => {
+    if (!isMarkingAsRead) {
+      onMarkAsRead(notification.notification_id);
+      const notificationUrl = notification.reference_id
+        ? generateUrl(notification.type, notification.reference_id)
+        : "#";
+      router.push(notificationUrl);
+    }
+  };
   return (
     <div
-      onClick={() => status === "UNREAD" && onMarkAsRead(notification_id)}
+      onClick={handleClick}
       className={`cursor-pointer rounded-lg p-4 shadow transition hover:bg-gray-100 ${
         status === "READ" ? "bg-gray-50" : "border-l-4 border-blue-500 bg-white"
       }`}
