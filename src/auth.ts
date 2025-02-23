@@ -36,10 +36,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
           );
 
-          if (!res.ok) return null;
+          // Only handle 401 specifically
+          if (res.status === 401) {
+            throw new Error("CredentialsSignin");
+          }
+
+          if (!res.ok) {
+            throw new Error("Failed to sign in");
+          }
 
           const data = (await res.json()) as LoginResponse;
-
           return {
             accessToken: data.accessToken,
             id: data.user.user_id,
@@ -48,8 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             role: data.user.role,
           };
         } catch (error) {
-          console.error("Auth error:", error);
-          return null;
+          throw error;
         }
       },
     }),
