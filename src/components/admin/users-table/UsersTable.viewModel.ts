@@ -41,23 +41,6 @@ const UsersTableViewModel = (token: string) => {
     [searchParams],
   );
 
-  const setPageIndex = useCallback(
-    (page: number) => {
-      router.push(`?${createQueryString("page", page.toString())}`);
-    },
-    [createQueryString, router],
-  );
-
-  const setPageSize = useCallback(
-    (limit: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("limit", limit.toString());
-      params.set("page", "1");
-      router.push(`?${params.toString()}`);
-    },
-    [searchParams, router],
-  );
-
   const setRegistrationDateFrom = useCallback(
     (date?: Date) => {
       if (date) {
@@ -124,9 +107,33 @@ const UsersTableViewModel = (token: string) => {
     [searchParams, router],
   );
 
+  const handlePreviousPage = useCallback(() => {
+    const newPage = pageIndex - 1;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [pageIndex, searchParams, router]);
+
+  const handleNextPage = useCallback(() => {
+    const newPage = pageIndex + 1;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [pageIndex, searchParams, router]);
+
+  const handlePageSizeChange = useCallback(
+    (newSize: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("limit", newSize.toString());
+      params.set("page", "1");
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router],
+  );
+
   const { data: PaginatedData, isLoading } = useGetAllUsers({
     token,
-    page: pageIndex, // This will now use whatever page is in the URL
+    page: pageIndex,
     limit: pageSize,
     role,
     registrationDateFrom,
@@ -139,9 +146,7 @@ const UsersTableViewModel = (token: string) => {
   return {
     router,
     pageIndex,
-    setPageIndex,
     pageSize,
-    setPageSize,
     registrationDateFrom,
     setRegistrationDateFrom,
     registrationDateTo,
@@ -163,6 +168,10 @@ const UsersTableViewModel = (token: string) => {
     rowSelection,
     setRowSelection,
     handleSort,
+    handlePreviousPage,
+    handleNextPage,
+    handlePageSizeChange,
+    totalPages: Math.ceil((PaginatedData?.count ?? 0) / pageSize),
   };
 };
 

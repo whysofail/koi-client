@@ -36,7 +36,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
           );
 
-          // Only handle 401 specifically
           if (res.status === 401) {
             throw new Error("CredentialsSignin");
           }

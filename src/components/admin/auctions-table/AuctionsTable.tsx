@@ -94,9 +94,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     startDateTo,
     setStartDateFrom,
     setStartDateTo,
-    setPageIndex,
     pageIndex,
-    setPageSize,
     status,
     setStatus,
     updateAuctionURLSearchParams,
@@ -104,6 +102,9 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     handleResetFilters,
     handleSort,
     currentFilters,
+    handlePageSizeChange,
+    handleNextPage,
+    handlePreviousPage,
   } = AuctionsTableViewModel({ token: token, socket: adminSocket });
 
   const getSortIcon = (columnOrderBy: AuctionOrderBy) => {
@@ -577,10 +578,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
         <div className="flex items-center space-x-2">
           <Select
             value={pageSize.toString()}
-            onValueChange={(value) => {
-              setPageSize(Number(value));
-              setPageIndex(1);
-            }}
+            onValueChange={(value) => handlePageSizeChange(Number(value))}
           >
             <SelectTrigger className="w-[100px]">
               <SelectValue />
@@ -596,7 +594,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPageIndex(pageIndex - 1)}
+            onClick={handlePreviousPage}
             disabled={pageIndex === 1 || isLoading}
           >
             Previous
@@ -604,7 +602,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPageIndex(pageIndex + 1)}
+            onClick={handleNextPage}
             disabled={
               pageIndex >= Math.ceil((PaginatedData?.count ?? 0) / pageSize) ||
               isLoading

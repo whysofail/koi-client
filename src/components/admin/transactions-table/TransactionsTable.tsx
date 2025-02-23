@@ -88,15 +88,16 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     createdAtFrom,
     setCreatedAtTo,
     createdAtTo,
-    setPageIndex,
     pageIndex,
-    setPageSize,
     status,
     setStatus,
     PaginatedData,
     handleFiltersApply,
     handleResetFilters,
     currentFilters,
+    handlePageSizeChange,
+    handlePreviousPage,
+    handleNextPage,
   } = TransactionsTableViewModel(user);
 
   const getSortIcon = (columnOrderBy: TransactionOrderBy) => {
@@ -226,14 +227,14 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
       sorting,
       columnFilters,
       columnVisibility: {
-        transaction_id: false, // Hide the transaction_id column by default
+        transaction_id: false,
         ...columnVisibility,
       },
       rowSelection,
     },
     pageCount: Math.ceil((PaginatedData?.count ?? 0) / pageSize),
     manualPagination: true,
-    manualSorting: true, // Add this
+    manualSorting: true,
   });
 
   const searchableColumns = [
@@ -453,10 +454,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
         <div className="flex items-center space-x-2">
           <Select
             value={pageSize.toString()}
-            onValueChange={(value) => {
-              setPageSize(Number(value));
-              setPageIndex(1);
-            }}
+            onValueChange={(value) => handlePageSizeChange(Number(value))}
           >
             <SelectTrigger className="w-[100px]">
               <SelectValue />
@@ -472,7 +470,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPageIndex(pageIndex - 1)}
+            onClick={handlePreviousPage}
             disabled={pageIndex === 1 || isLoading}
           >
             Previous
@@ -480,7 +478,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPageIndex(pageIndex + 1)}
+            onClick={handleNextPage}
             disabled={
               pageIndex >= Math.ceil((PaginatedData?.count ?? 0) / pageSize) ||
               isLoading
