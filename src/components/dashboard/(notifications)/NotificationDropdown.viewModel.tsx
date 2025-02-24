@@ -5,7 +5,7 @@ import { useMarkAllNotificationsAsRead } from "@/server/notifications/markAllAsR
 import { useUserNotifications } from "@/server/notifications/getNotification/queries";
 import { useNotificationSocket } from "@/hooks/useNotificationSocket";
 import { Socket } from "socket.io-client";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 interface UseNotificationViewModelProps {
   token: string;
@@ -18,8 +18,14 @@ const useNotificationViewModel = ({
 }: UseNotificationViewModelProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pageIndex = Number(searchParams.get("page")) || 1;
-  const pageSize = Number(searchParams.get("limit")) || 10;
+  const pathname = usePathname();
+
+  // Only use pagination params if on dashboard
+  const shouldPaginate = pathname === "/dashboard";
+  const pageIndex = shouldPaginate ? Number(searchParams.get("page")) || 1 : 1;
+  const pageSize = shouldPaginate
+    ? Number(searchParams.get("limit")) || 10
+    : 100;
 
   const createQueryString = useCallback(
     (updates: Record<string, string | undefined>) => {
@@ -41,7 +47,7 @@ const useNotificationViewModel = ({
   const queryClient = useQueryClient();
   useNotificationSocket({ authSocket });
 
-  // Fetch user notifications
+  // Fetch user notifications with conditional pagination
   const {
     data: notifications,
     isLoading: isNotificationsLoading,
@@ -72,18 +78,20 @@ const useNotificationViewModel = ({
 
   const setPageIndex = useCallback(
     (page: number) => {
+      if (!shouldPaginate) return;
       router.push(`?${createQueryString({ page: page.toString() })}`);
     },
-    [createQueryString, router],
+    [createQueryString, router, shouldPaginate],
   );
 
   const setPageSize = useCallback(
     (limit: number) => {
+      if (!shouldPaginate) return;
       router.push(
         `?${createQueryString({ limit: limit.toString(), page: "1" })}`,
       );
     },
-    [createQueryString, router],
+    [createQueryString, router, shouldPaginate],
   );
 
   // Optional: Refetch notifications
