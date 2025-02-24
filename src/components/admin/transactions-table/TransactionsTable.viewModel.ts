@@ -145,20 +145,28 @@ const TransactionsTableViewModel = (user: User) => {
     [createQueryString, router],
   );
 
-  const setPageIndex = useCallback(
-    (page: number) => {
-      router.push(`?${createQueryString({ page: page.toString() })}`);
-    },
-    [createQueryString, router],
-  );
+  const handlePreviousPage = useCallback(() => {
+    const newPage = pageIndex - 1;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [pageIndex, searchParams, router]);
 
-  const setPageSize = useCallback(
-    (limit: number) => {
-      router.push(
-        `?${createQueryString({ limit: limit.toString(), page: "1" })}`,
-      );
+  const handleNextPage = useCallback(() => {
+    const newPage = pageIndex + 1;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [pageIndex, searchParams, router]);
+
+  const handlePageSizeChange = useCallback(
+    (newSize: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("limit", newSize.toString());
+      params.set("page", "1");
+      router.push(`?${params.toString()}`, { scroll: false });
     },
-    [createQueryString, router],
+    [searchParams, router],
   );
 
   const handleSort = useCallback(
@@ -192,9 +200,10 @@ const TransactionsTableViewModel = (user: User) => {
   return {
     router,
     pageIndex,
-    setPageIndex,
     pageSize,
-    setPageSize,
+    handlePreviousPage,
+    handleNextPage,
+    handlePageSizeChange,
     orderBy,
     order,
     handleSort,

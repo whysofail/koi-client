@@ -77,15 +77,10 @@ const LoginFormViewModel = () => {
         toast.success("Login successful");
         router.push("/dashboard");
       } else {
-        switch (res.error) {
-          case "CredentialsSignin":
-            toast.error("Invalid email or password");
-            break;
-          case "AccessDenied":
-            toast.error("Access denied. Please contact support.");
-            break;
-          default:
-            toast.error("Failed to sign in");
+        if (res.error === "CredentialsSignin") {
+          toast.error("Invalid email or password");
+        } else {
+          toast.error("Failed to sign in");
         }
 
         if (!data.rememberMe) {

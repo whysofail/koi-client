@@ -45,19 +45,26 @@ const BidsTableViewModel = (token: string, isAdmin: boolean) => {
     [searchParams],
   );
 
-  const setPageIndex = useCallback(
-    (page: number) => {
-      router.push(`?${createQueryString("page", page.toString())}`);
-    },
-    [createQueryString, router],
-  );
+  const handlePreviousPage = useCallback(() => {
+    const newPage = pageIndex - 1;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [pageIndex, searchParams, router]);
 
-  const setPageSize = useCallback(
-    (limit: number) => {
+  const handleNextPage = useCallback(() => {
+    const newPage = pageIndex + 1;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [pageIndex, searchParams, router]);
+
+  const handlePageSizeChange = useCallback(
+    (newSize: number) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set("limit", limit.toString());
+      params.set("limit", newSize.toString());
       params.set("page", "1");
-      router.push(`?${params.toString()}`);
+      router.push(`?${params.toString()}`, { scroll: false });
     },
     [searchParams, router],
   );
@@ -112,9 +119,10 @@ const BidsTableViewModel = (token: string, isAdmin: boolean) => {
 
   return {
     pageIndex,
-    setPageIndex,
     pageSize,
-    setPageSize,
+    handlePreviousPage,
+    handleNextPage,
+    handlePageSizeChange,
     bidTimeFrom,
     setBidTimeFrom,
     bidTimeTo,

@@ -63,9 +63,10 @@ const BidsTable: React.FC<BidsTableProps> = ({ token, isAdmin }) => {
     bidTimeTo,
     setBidTimeFrom,
     setBidTimeTo,
-    setPageIndex,
     pageIndex,
-    setPageSize,
+    handleNextPage,
+    handlePreviousPage,
+    handlePageSizeChange,
     handleSort,
   } = BidsTableViewModel(token, isAdmin);
 
@@ -248,10 +249,7 @@ const BidsTable: React.FC<BidsTableProps> = ({ token, isAdmin }) => {
         <div className="flex items-center space-x-2">
           <Select
             value={pageSize.toString()}
-            onValueChange={(value) => {
-              setPageSize(Number(value));
-              setPageIndex(1);
-            }}
+            onValueChange={(value) => handlePageSizeChange(Number(value))}
           >
             <SelectTrigger className="w-[100px]">
               <SelectValue />
@@ -267,7 +265,7 @@ const BidsTable: React.FC<BidsTableProps> = ({ token, isAdmin }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPageIndex(pageIndex - 1)}
+            onClick={handlePreviousPage}
             disabled={pageIndex === 1}
           >
             Previous
@@ -275,7 +273,7 @@ const BidsTable: React.FC<BidsTableProps> = ({ token, isAdmin }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPageIndex(pageIndex + 1)}
+            onClick={handleNextPage}
             disabled={
               pageIndex >= Math.ceil((PaginatedData?.count ?? 0) / pageSize)
             }

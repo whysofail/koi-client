@@ -76,10 +76,12 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     registrationDateTo,
     setRegistrationDateFrom,
     setRegistrationDateTo,
-    setPageIndex,
     pageIndex,
-    setPageSize,
     role,
+    handlePageSizeChange,
+    handleNextPage,
+    handlePreviousPage,
+    totalPages,
     setRole,
     isBanned,
     setIsBanned,
@@ -411,10 +413,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
         <div className="flex items-center space-x-2">
           <Select
             value={pageSize.toString()}
-            onValueChange={(value) => {
-              setPageSize(Number(value));
-              setPageIndex(1);
-            }}
+            onValueChange={(value) => handlePageSizeChange(Number(value))}
           >
             <SelectTrigger className="w-[100px]">
               <SelectValue />
@@ -430,7 +429,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPageIndex(pageIndex - 1)}
+            onClick={handlePreviousPage}
             disabled={pageIndex === 1 || isLoading}
           >
             Previous
@@ -438,11 +437,8 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPageIndex(pageIndex + 1)}
-            disabled={
-              pageIndex >= Math.ceil((PaginatedData?.count ?? 0) / pageSize) ||
-              isLoading
-            }
+            onClick={handleNextPage}
+            disabled={pageIndex >= totalPages || isLoading}
           >
             Next
           </Button>
