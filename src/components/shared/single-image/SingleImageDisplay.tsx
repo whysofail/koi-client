@@ -61,8 +61,8 @@ const SingleImageDisplay: FC<SingleImageDisplayProps> = ({ title, image }) => {
         >
           <a
             href={displayImage.largeURL}
-            data-pswp-width={displayImage.width}
-            data-pswp-height={displayImage.height}
+            data-pswp-width={displayImage.width || 1200}
+            data-pswp-height={displayImage.height || 800}
             className="absolute inset-0"
           >
             <Image

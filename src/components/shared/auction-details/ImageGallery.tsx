@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import Image from "next/image";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
@@ -11,6 +11,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { ImageIcon } from "lucide-react";
+import GallerySkeleton from "@/components/skeletons/GalleryImageSkeleton";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -28,62 +30,126 @@ interface ImageGalleryProps {
 
 const ImageGallery: FC<ImageGalleryProps> = ({
   title,
-  images,
+  images = [],
   maxImages = 7,
 }) => {
-  const defaultImages: GalleryImage[] = Array(maxImages).fill({
-    thumbnailURL: "/placeholder.webp",
-    largeURL: "/placeholder.webp",
-    width: 1200,
-    height: 800,
-    alt: title,
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  // Validate maxImages
+  const validMaxImages = Math.max(1, Math.min(maxImages, 20));
 
-  const galleryImages = images || defaultImages;
-  const galleryID = `gallery-${title.replace(/\s+/g, "-")}`;
+  // Filter out any images with missing URLs and slice to max length
+  const galleryImages = images
+    .filter((img) => img?.thumbnailURL && img?.largeURL)
+    .slice(0, validMaxImages)
+    .map((img) => ({
+      thumbnailURL: img.thumbnailURL,
+      largeURL: img.largeURL,
+      width: img.width || 1200,
+      height: img.height || 800,
+      alt: img.alt || title || "Gallery Image",
+    }));
+
+  const galleryID = `gallery-${
+    title
+      ?.trim()
+      .replace(/[^a-zA-Z0-9]+/g, "-")
+      .toLowerCase() || "default"
+  }`;
 
   useEffect(() => {
-    const lightbox = new PhotoSwipeLightbox({
-      gallery: "#" + galleryID,
-      children: "a",
-      pswpModule: () => import("photoswipe"),
-      wheelToZoom: true,
-      initialZoomLevel: "fit",
-      secondaryZoomLevel: 2,
-      maxZoomLevel: 4,
-      imageClickAction: "zoom",
-      tapAction: "zoom",
-      doubleTapAction: "zoom",
-    });
-    lightbox.init();
+    if (images !== undefined) {
+      setIsLoading(false);
+    }
+  }, [images]);
+
+  useEffect(() => {
+    if (galleryImages.length === 0) return;
+
+    let lightbox: PhotoSwipeLightbox | null = null;
+
+    try {
+      lightbox = new PhotoSwipeLightbox({
+        gallery: "#" + galleryID,
+        children: "a",
+        pswpModule: () => import("photoswipe"),
+        wheelToZoom: true,
+        initialZoomLevel: "fit",
+        secondaryZoomLevel: 2,
+        maxZoomLevel: 4,
+        imageClickAction: "zoom",
+        tapAction: "zoom",
+        doubleTapAction: "zoom",
+      });
+      lightbox.init();
+    } catch (error) {
+      console.error("Error initializing PhotoSwipe:", error);
+    }
 
     return () => {
-      lightbox.destroy();
+      if (lightbox) {
+        try {
+          lightbox.destroy();
+        } catch (error) {
+          console.error("Error destroying PhotoSwipe:", error);
+        }
+      }
     };
-  }, [galleryID]);
+  }, [galleryID, galleryImages.length]);
+  if (isLoading) {
+    return <GallerySkeleton />;
+  }
+  if (galleryImages.length === 0 && isLoading) {
+    return <GallerySkeleton />;
+  }
+
+  if (galleryImages.length === 0 && !isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="bg-muted relative overflow-hidden rounded-lg border">
+          <div className="relative w-full" style={{ paddingBottom: "50%" }}>
+            {" "}
+            {/* 9:16 Aspect Ratio */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-muted-foreground text-center">
+                <ImageIcon className="mx-auto h-12 w-12" />
+                <p className="mt-2 text-sm">No images available</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       <div className="pswp-gallery" id={galleryID}>
         <div className="space-y-4">
+          {/* Main Image */}
           <div className="bg-muted relative overflow-hidden rounded-lg border">
             <div
               className="relative w-full"
               style={{
-                paddingBottom: `${(galleryImages[0]?.height / galleryImages[0]?.width) * 100}%`,
+                paddingBottom: `${Math.min(
+                  Math.max(
+                    (galleryImages[0].height / galleryImages[0].width) * 100,
+                    100,
+                  ),
+                  75,
+                )}%`,
               }}
             >
               <a
-                href={galleryImages[0]?.largeURL}
-                data-pswp-width={galleryImages[0]?.width}
-                data-pswp-height={galleryImages[0]?.height}
+                href={galleryImages[0].largeURL}
+                data-pswp-width={galleryImages[0].width}
+                data-pswp-height={galleryImages[0].height}
                 className="absolute inset-0"
               >
                 <Image
-                  src={galleryImages[0]?.thumbnailURL}
-                  alt={galleryImages[0]?.alt || title}
+                  src={galleryImages[0].thumbnailURL}
+                  alt={galleryImages[0].alt}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                   className="object-contain"
                   priority
                 />
@@ -91,22 +157,29 @@ const ImageGallery: FC<ImageGalleryProps> = ({
             </div>
           </div>
 
+          {/* Carousel of Additional Images */}
           {galleryImages.length > 1 && (
             <Carousel
               opts={{
                 align: "start",
-                loop: true,
+                loop: galleryImages.length > 4,
               }}
               className="w-full"
             >
               <CarouselContent className="-ml-2 md:-ml-4">
                 {galleryImages.slice(1).map((image, index) => (
-                  <CarouselItem key={index} className="basis-1/4 pl-2 md:pl-4">
+                  <CarouselItem
+                    key={`${image.thumbnailURL}-${index}`}
+                    className="basis-1/2 pl-2 md:basis-1/4 md:pl-4"
+                  >
                     <div className="bg-muted relative overflow-hidden rounded-md border">
                       <div
                         className="relative w-full"
                         style={{
-                          paddingBottom: `${(image.height / image.width) * 100}%`,
+                          paddingBottom: `${Math.min(
+                            Math.max((image.height / image.width) * 100, 50),
+                            100,
+                          )}%`,
                         }}
                       >
                         <a
@@ -117,9 +190,9 @@ const ImageGallery: FC<ImageGalleryProps> = ({
                         >
                           <Image
                             src={image.thumbnailURL}
-                            alt={image.alt || `${title} - ${index + 2}`}
+                            alt={image.alt}
                             fill
-                            sizes="(max-width: 768px) 25vw, 20vw"
+                            sizes="(max-width: 768px) 50vw, 25vw"
                             className="object-contain"
                           />
                         </a>
@@ -128,8 +201,12 @@ const ImageGallery: FC<ImageGalleryProps> = ({
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="-left-4 h-8 w-8" />
-              <CarouselNext className="-right-4 h-8 w-8" />
+              {galleryImages.length > 4 && (
+                <>
+                  <CarouselPrevious className="-left-4 h-8 w-8" />
+                  <CarouselNext className="-right-4 h-8 w-8" />
+                </>
+              )}
             </Carousel>
           )}
         </div>

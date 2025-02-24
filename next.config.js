@@ -24,6 +24,12 @@ const nextConfig = {
         port: "",
         pathname: "/**", // Allows any path under the given hostname
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8000",
+        pathname: "/**", // Allows any path under the given hostname
+      },
     ],
   },
   output: "standalone",

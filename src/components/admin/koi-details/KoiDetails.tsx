@@ -14,6 +14,7 @@ interface KoiData {
   breeder: string | null | undefined;
   variety: string | null | undefined;
   size: string | null | undefined;
+  image?: SingleImage | null | undefined;
 }
 
 interface KoiDetailsProps {
@@ -23,12 +24,7 @@ interface KoiDetailsProps {
   image?: SingleImage;
 }
 
-const KoiDetails: FC<KoiDetailsProps> = ({
-  koiID,
-  koiData,
-  isLoading,
-  image,
-}) => {
+const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
   const query = useGetKoiByID(koiID || "");
 
   if (isLoading || query.isLoading) {
@@ -50,6 +46,18 @@ const KoiDetails: FC<KoiDetailsProps> = ({
     );
   }
 
+  // Map image array to SingleImage type, images is string is seperated by |
+  const imageArray = query.data?.photo?.split("|") || [];
+  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+
+  const koiImage: SingleImage = {
+    largeURL: imageBaseUrl + imageArray[0],
+    thumbnailURL: imageBaseUrl + imageArray[0],
+    height: 800,
+    width: 400,
+    alt: query.data?.nickname || query.data?.code || "Koi",
+  };
+
   const displayData = koiData || {
     code: query.data?.code,
     nickname: query.data?.nickname,
@@ -57,10 +65,17 @@ const KoiDetails: FC<KoiDetailsProps> = ({
     size: query.data?.size,
     breeder: query.data?.breeder.name,
     gender: query.data?.gender,
+    image: koiImage as SingleImage,
   };
 
   const renderValue = (value: string | null | undefined) => {
-    if (value === undefined || value === null) return "-";
+    if (
+      value === undefined ||
+      value === null ||
+      value === "null" ||
+      value === ""
+    )
+      return "-";
     return value;
   };
 
@@ -112,7 +127,7 @@ const KoiDetails: FC<KoiDetailsProps> = ({
       <div className="flex-1 overflow-hidden rounded-lg border dark:border-neutral-700">
         <SingleImageDisplay
           title={displayData.nickname || displayData.code || "Koi"}
-          image={image}
+          image={displayData.image || koiImage}
         />
       </div>
     </div>

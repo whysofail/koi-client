@@ -16,6 +16,7 @@ import {
   isPast,
 } from "date-fns";
 import { formatCurrency } from "@/lib/formatCurrency";
+import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -40,10 +41,23 @@ const AdminContent: React.FC<AdminContentProps> = ({
   currentBid,
   reservePrice,
   bidIncrement,
-  images,
 }) => {
   const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState<string>("");
+
+  const { data } = useGetKoiByID(auction.item);
+  const imageArray = data?.photo?.split("|") || [];
+  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+  // Filter empty string ""
+  const koiImages = imageArray
+    .filter((img) => img !== "")
+    .map((img) => ({
+      thumbnailURL: imageBaseUrl + img,
+      largeURL: imageBaseUrl + img,
+      height: 800,
+      width: 400,
+      alt: title,
+    }));
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -87,7 +101,7 @@ const AdminContent: React.FC<AdminContentProps> = ({
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
-              <ImageGallery title={title} images={images} />
+              <ImageGallery title={title} images={koiImages} />
               <Separator />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
