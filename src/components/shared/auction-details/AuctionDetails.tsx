@@ -9,6 +9,7 @@ import { useAuctionDetailsViewModel } from "./AuctionDetails.viewModel";
 import UserContentSkeleton from "@/components/skeletons/UserContentSkeleton";
 import AdminContentSkeleton from "@/components/skeletons/AdminContentSkeleton";
 import { useSocket } from "@/hooks/use-socket";
+import BackButton from "@/components/dashboard/BackButton";
 
 interface AuctionDetailsProps {
   isAdmin: boolean;
@@ -40,12 +41,12 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
 
   return (
     <div className="container mx-auto p-6">
+      <BackButton />
       {isAdmin ? (
         <AdminControls auctionID={auctionID} />
       ) : (
         <UserHeader title={auction.title} description={auction.description} />
       )}
-
       {isAdmin && (
         <div className="mb-4 space-y-2">
           <div className="flex items-center gap-2">
@@ -69,7 +70,6 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           )}
         </div>
       )}
-
       {isAdmin ? (
         <AdminContent
           auction={auction}

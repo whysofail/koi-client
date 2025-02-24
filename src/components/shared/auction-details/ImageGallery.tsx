@@ -73,12 +73,18 @@ const ImageGallery: FC<ImageGalleryProps> = ({
         children: "a",
         pswpModule: () => import("photoswipe"),
         wheelToZoom: true,
-        initialZoomLevel: "fit",
-        secondaryZoomLevel: 2,
+        initialZoomLevel: "fit", // This ensures image fits in viewport
+        secondaryZoomLevel: 1, // This will show image at actual size
         maxZoomLevel: 4,
         imageClickAction: "zoom",
         tapAction: "zoom",
         doubleTapAction: "zoom",
+        showHideAnimationType: "fade",
+        preloadFirstSlide: true,
+        preload: [1, 2], // Preload next/previous images
+        padding: { top: 20, bottom: 20, left: 20, right: 20 },
+        showAnimationDuration: 300,
+        hideAnimationDuration: 300,
       });
       lightbox.init();
     } catch (error) {
@@ -95,6 +101,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({
       }
     };
   }, [galleryID, galleryImages.length]);
+
   if (isLoading) {
     return <GallerySkeleton />;
   }
@@ -184,8 +191,8 @@ const ImageGallery: FC<ImageGalleryProps> = ({
                       >
                         <a
                           href={image.largeURL}
-                          data-pswp-width={image.width}
-                          data-pswp-height={image.height}
+                          data-pswp-width={540}
+                          data-pswp-height={720}
                           className="absolute inset-0"
                         >
                           <Image

@@ -39,9 +39,13 @@ const AddAuctionPage = async ({
           Add to Auction
         </h1>
       </div>
-      <div className="grid gap-4 md:min-h-[36rem] md:gap-6 lg:grid-cols-2">
-        <KoiDetails koiID={koiID} koiData={koiData} />
-        <KoiAuctionForm id={koiID} token={token} operation="create" />
+      <div className="grid gap-4 md:gap-6 lg:min-h-[36rem] lg:grid-cols-2">
+        <div className="flex h-full flex-col">
+          <KoiDetails koiID={koiID} koiData={koiData} />
+        </div>
+        <div className="flex h-full flex-col">
+          <KoiAuctionForm id={koiID} token={token} operation="create" />
+        </div>
       </div>
     </div>
   );

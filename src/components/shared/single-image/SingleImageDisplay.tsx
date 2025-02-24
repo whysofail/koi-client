@@ -1,9 +1,10 @@
 "use client";
 
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Image from "next/image";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
+import { cn } from "@/lib/utils";
 
 export interface SingleImage {
   thumbnailURL: string;
@@ -16,21 +17,40 @@ export interface SingleImage {
 interface SingleImageDisplayProps {
   title: string;
   image?: SingleImage;
+  className?: string;
 }
 
-const SingleImageDisplay: FC<SingleImageDisplayProps> = ({ title, image }) => {
+const SingleImageDisplay: FC<SingleImageDisplayProps> = ({
+  title,
+  image,
+  className,
+}) => {
+  const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
+
   const defaultImage: SingleImage = {
     thumbnailURL: "/placeholder.webp",
     largeURL: "/placeholder.webp",
-    width: 1200,
-    height: 800,
+    width: dimensions.width,
+    height: dimensions.height,
     alt: title,
   };
 
   const displayImage = image || defaultImage;
   const galleryID = `single-${title.replace(/\s+/g, "-")}`;
 
-  const aspectRatio = (displayImage.height / displayImage.width) * 100;
+  // Get actual image dimensions on load
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    setDimensions({
+      width: img.naturalWidth,
+      height: img.naturalHeight,
+    });
+  };
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = defaultImage.largeURL;
+    setDimensions({ width: 1200, height: 800 }); // Reset to default dimensions
+  };
 
   useEffect(() => {
     const lightbox = new PhotoSwipeLightbox({
@@ -53,25 +73,29 @@ const SingleImageDisplay: FC<SingleImageDisplayProps> = ({ title, image }) => {
   }, [galleryID]);
 
   return (
-    <div className="pswp-gallery h-full" id={galleryID}>
-      <div className="bg-muted relative h-full w-full overflow-hidden rounded-lg border">
-        <div
-          className="relative w-full"
-          style={{ paddingBottom: `${aspectRatio}%` }}
-        >
+    <div className="pswp-gallery h-full w-full" id={galleryID}>
+      <div
+        className={cn(
+          "bg-muted relative aspect-[4/3] h-auto w-full overflow-hidden rounded-lg border md:aspect-auto md:h-full",
+          className,
+        )}
+      >
+        <div className="relative h-full w-full">
           <a
             href={displayImage.largeURL}
-            data-pswp-width={displayImage.width || 1200}
-            data-pswp-height={displayImage.height || 800}
-            className="absolute inset-0"
+            data-pswp-width={dimensions.width}
+            data-pswp-height={dimensions.height}
+            className="relative block h-full w-full"
           >
             <Image
               src={displayImage.thumbnailURL}
               alt={displayImage.alt || title}
               fill
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-contain"
               priority
+              onLoad={handleImageLoad}
+              onError={handleImageError}
             />
           </a>
         </div>

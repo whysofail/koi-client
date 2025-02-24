@@ -49,10 +49,13 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
   // Map image array to SingleImage type, images is string is seperated by |
   const imageArray = query.data?.photo?.split("|") || [];
   const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+  const placeholderImage = "/placeholder.webp"; // Add placeholder image path
 
   const koiImage: SingleImage = {
-    largeURL: imageBaseUrl + imageArray[0],
-    thumbnailURL: imageBaseUrl + imageArray[0],
+    largeURL: imageArray[0] ? imageBaseUrl + imageArray[0] : placeholderImage,
+    thumbnailURL: imageArray[0]
+      ? imageBaseUrl + imageArray[0]
+      : placeholderImage,
     height: 800,
     width: 400,
     alt: query.data?.nickname || query.data?.code || "Koi",
@@ -80,7 +83,7 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
   };
 
   return (
-    <div className="flex min-h-[24rem] flex-col space-y-4 md:h-full">
+    <div className="flex h-full flex-col space-y-4">
       <div className="rounded-xl border p-3 dark:border-neutral-700 md:p-4">
         <h2 className="text-lg font-semibold md:text-xl">Koi Details</h2>
         <dl className="mt-3 space-y-2 md:mt-4">
@@ -124,8 +127,9 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
           )}
         </dl>
       </div>
-      <div className="flex-1 overflow-hidden rounded-lg border dark:border-neutral-700">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-lg border dark:border-neutral-700">
         <SingleImageDisplay
+          className="max-h[500-px]"
           title={displayData.nickname || displayData.code || "Koi"}
           image={displayData.image || koiImage}
         />

@@ -106,7 +106,7 @@ export const useSocket = (token?: string) => {
     });
 
     adminSocketInstance.on("connect_error", (err) => {
-      console.error("Auth connection error:", err.message);
+      console.log("Auth connection error:", err.message);
     });
 
     return () => {
