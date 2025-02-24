@@ -27,10 +27,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { AuctionStatus } from "@/types/auctionTypes";
 
 type AuctionAlertDialogProps = {
-  operation: "publish" | "delete" | "cancel";
+  operation: "publish" | "delete" | "cancel" | "unpublish";
   bid_increment: string;
   reserve_price: string;
   auction_id: string;
@@ -53,7 +52,9 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
     form,
     handlePublishAuction,
     handleDeleteAuction,
+    handleUnpublishAuction,
     handleCancelAuction,
+    pendingCancel,
     pendingDelete,
     pendingUpdate,
   } = useAuctionDialog(token, () => setOpen(false));
@@ -200,12 +201,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
             </Button>
             <Button
               onClick={form.handleSubmit(() =>
-                handlePublishAuction(
-                  auction_id,
-                  AuctionStatus.PUBLISHED,
-                  bid_increment,
-                  reserve_price,
-                ),
+                handlePublishAuction(auction_id, bid_increment, reserve_price),
               )}
               disabled={pendingUpdate}
             >
@@ -247,6 +243,44 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
     );
   }
 
+  if (operation === "unpublish") {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            {children}
+          </DropdownMenuItem>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unpublish Auction</DialogTitle>
+          </DialogHeader>
+          <p className="py-4">
+            Are you sure you want to unpublish this auction?
+          </p>
+          <p className="py-4">
+            This auction will be marked as draft and will not be visible to
+            users
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              No, keep it
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() =>
+                handleUnpublishAuction(auction_id, bid_increment, reserve_price)
+              }
+              disabled={pendingUpdate}
+            >
+              {pendingUpdate ? "Processing..." : "Yes, unpublish it"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -258,14 +292,26 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Cancel Auction</DialogTitle>
         </DialogHeader>
-        <p className="py-4">Are you sure you want to cancel this auction?</p>
+        <p className="py-4">
+          Are you sure you want to cancel this auction? This operation is
+          irreversible
+        </p>
+
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             No, keep it
           </Button>
           <Button
             variant="destructive"
-            onClick={() => handleCancelAuction(auction_id)}
+            onClick={() =>
+              handleCancelAuction(
+                auction_id,
+                bid_increment,
+                reserve_price,
+                koiId!,
+              )
+            }
+            disabled={pendingCancel}
           >
             Yes, cancel it
           </Button>

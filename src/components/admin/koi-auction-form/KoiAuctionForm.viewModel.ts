@@ -107,7 +107,7 @@ const KoiAuctionFormViewModel = (
         description: auctionData.description,
         reserve_price: parseFloat(auctionData.reserve_price),
         bid_increment: parseFloat(auctionData.bid_increment),
-        item: auctionData.item, // Fix here, previously id (auction ID) was incorrectly assigned
+        item: auctionData.item,
         status: auctionData.status as AuctionStatus,
       });
     }

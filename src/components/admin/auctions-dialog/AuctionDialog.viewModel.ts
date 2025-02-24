@@ -86,14 +86,13 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
 
   const handlePublishAuction = async (
     auctionId: string,
-    operation: AuctionStatus,
     bid_increment: string,
     reserve_price: string,
   ) => {
     const { startDateTime, endDateTime } = form.getValues();
 
     const data: UpdateAuctionBody = {
-      status: operation,
+      status: AuctionStatus.PUBLISHED,
       start_datetime: startDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       end_datetime: endDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       bid_increment,
@@ -112,6 +111,76 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
         },
       },
     );
+  };
+
+  const handleUnpublishAuction = async (
+    auctionId: string,
+    bid_increment: string,
+    reserve_price: string,
+  ) => {
+    const data: UpdateAuctionBody = {
+      status: AuctionStatus.DRAFT,
+      bid_increment,
+      reserve_price,
+    };
+
+    updateMutate(
+      { auctionId, data },
+      {
+        onSuccess: () => {
+          toast.success("Auction unpublished");
+          onSuccess?.();
+        },
+        onError: () => {
+          toast.error("Failed to unpublish auction");
+        },
+      },
+    );
+  };
+
+  const handleCancelAuction = async (
+    auctionId: string,
+    bid_increment: string,
+    reserve_price: string,
+    koiId: string,
+  ) => {
+    try {
+      await new Promise((resolve, reject) => {
+        updateKoiStatus(
+          {
+            koiId: koiId,
+            koiStatus: KoiStatus.AUCTION,
+          },
+          {
+            onSuccess: resolve,
+            onError: reject,
+          },
+        );
+      });
+
+      await new Promise((resolve, reject) => {
+        updateMutate(
+          {
+            auctionId,
+            data: {
+              status: AuctionStatus.CANCELLED,
+              bid_increment,
+              reserve_price,
+            },
+          },
+          {
+            onSuccess: resolve,
+            onError: reject,
+          },
+        );
+      });
+
+      toast.success("Auction cancelled");
+      onSuccess?.();
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      console.error("Operation failed to execute", error);
+    }
   };
 
   const handleDeleteAuction = async (auctionId: string, koiId: string) => {
@@ -138,42 +207,23 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
 
       toast.success("Auction deleted");
       onSuccess?.();
-      queryClient.invalidateQueries({ queryKey: ["koiData", koiId] });
     } catch (error) {
       toast.error(getErrorMessage(error));
       console.error("Operation failed to execute", error);
     }
   };
 
-  //TODO: CANCEL OPERATION
-  const handleCancelAuction = async (auctionId: string) => {
-    const data: Pick<UpdateAuctionBody, "status"> = {
-      status: AuctionStatus.CANCELLED,
-    };
-
-    console.log("Cancel auction", auctionId, data);
-    // mutate(
-    //   { auctionId, data },
-    //   {
-    //     onSuccess: () => {
-    //       toast.success("Auction cancelled");
-    //       onSuccess?.();
-    //     },
-    //     onError: () => {
-    //       toast.error("Failed to cancel auction");
-    //     },
-    //   },
-    // );
-  };
-
   const isDeleting = pendingDelete || pendingUpdateKoiStatus;
+  const isCanceling = pendingUpdate || pendingUpdateKoiStatus;
 
   return {
     form,
     handleDeleteAuction,
     handlePublishAuction,
+    handleUnpublishAuction,
     handleCancelAuction,
     pendingDelete: isDeleting,
+    pendingCancel: isCanceling,
     pendingUpdate,
   };
 };
