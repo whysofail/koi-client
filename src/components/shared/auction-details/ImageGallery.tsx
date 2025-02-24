@@ -34,20 +34,42 @@ const ImageGallery: FC<ImageGalleryProps> = ({
   maxImages = 7,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [errorImages, setErrorImages] = useState<Record<string, boolean>>({});
+
   // Validate maxImages
   const validMaxImages = Math.max(1, Math.min(maxImages, 20));
 
-  // Filter out any images with missing URLs and slice to max length
+  const handleImageError = (imageUrl: string) => {
+    setErrorImages((prev) => ({
+      ...prev,
+      [imageUrl]: true,
+    }));
+  };
+
+  const defaultImage = {
+    thumbnailURL: "/placeholder.webp",
+    largeURL: "/placeholder.webp",
+    width: 1200,
+    height: 800,
+    alt: "Image not available",
+  };
+
+  // Filter out error images and handle fallbacks
   const galleryImages = images
     .filter((img) => img?.thumbnailURL && img?.largeURL)
     .slice(0, validMaxImages)
-    .map((img) => ({
-      thumbnailURL: img.thumbnailURL,
-      largeURL: img.largeURL,
-      width: img.width || 1200,
-      height: img.height || 800,
-      alt: img.alt || title || "Gallery Image",
-    }));
+    .map((img) => {
+      if (errorImages[img.thumbnailURL]) {
+        return defaultImage;
+      }
+      return {
+        thumbnailURL: img.thumbnailURL,
+        largeURL: img.largeURL,
+        width: img.width || 1200,
+        height: img.height || 800,
+        alt: img.alt || title || "Gallery Image",
+      };
+    });
 
   const galleryID = `gallery-${
     title
@@ -159,6 +181,10 @@ const ImageGallery: FC<ImageGalleryProps> = ({
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                   className="object-contain"
                   priority
+                  onError={() =>
+                    handleImageError(galleryImages[0].thumbnailURL)
+                  }
+                  unoptimized={errorImages[galleryImages[0].thumbnailURL]}
                 />
               </a>
             </div>
@@ -201,6 +227,8 @@ const ImageGallery: FC<ImageGalleryProps> = ({
                             fill
                             sizes="(max-width: 768px) 50vw, 25vw"
                             className="object-contain"
+                            onError={() => handleImageError(image.thumbnailURL)}
+                            unoptimized={errorImages[image.thumbnailURL]}
                           />
                         </a>
                       </div>

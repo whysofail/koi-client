@@ -26,6 +26,7 @@ const SingleImageDisplay: FC<SingleImageDisplayProps> = ({
   className,
 }) => {
   const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
+  const [imageError, setImageError] = useState(false);
 
   const defaultImage: SingleImage = {
     thumbnailURL: "/placeholder.webp",
@@ -35,7 +36,7 @@ const SingleImageDisplay: FC<SingleImageDisplayProps> = ({
     alt: title,
   };
 
-  const displayImage = image || defaultImage;
+  const displayImage = imageError ? defaultImage : image || defaultImage;
   const galleryID = `single-${title.replace(/\s+/g, "-")}`;
 
   // Get actual image dimensions on load
@@ -48,7 +49,8 @@ const SingleImageDisplay: FC<SingleImageDisplayProps> = ({
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.src = defaultImage.largeURL;
+    setImageError(true);
+    e.currentTarget.src = defaultImage.thumbnailURL;
     setDimensions({ width: 1200, height: 800 }); // Reset to default dimensions
   };
 
@@ -96,6 +98,7 @@ const SingleImageDisplay: FC<SingleImageDisplayProps> = ({
               priority
               onLoad={handleImageLoad}
               onError={handleImageError}
+              unoptimized={imageError} // Disable Next.js image optimization when using fallback
             />
           </a>
         </div>
