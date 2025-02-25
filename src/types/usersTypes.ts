@@ -58,6 +58,7 @@ interface UserData {
   role: string;
   email: string;
   password: string;
+  phone: string;
   registration_date: string;
   last_update: string;
   is_banned: boolean;

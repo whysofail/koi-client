@@ -105,6 +105,11 @@ const userNavigation = [
         href: "/dashboard",
       },
       {
+        title: "My Profile",
+        icon: Users,
+        href: "/dashboard/profile",
+      },
+      {
         title: "Transactions",
         icon: DollarSign,
         href: "/dashboard/transactions",

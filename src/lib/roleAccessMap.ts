@@ -15,6 +15,7 @@ const roleAccessMap = {
   ],
   user: [
     "/dashboard",
+    "/dashboard/profile",
     "/dashboard/profile-settings",
     "/dashboard/transactions",
     "/dashboard/transactions/[transactionsID]",
