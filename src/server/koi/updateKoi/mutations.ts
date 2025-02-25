@@ -37,11 +37,32 @@ const useUpdateKoi = (queryClient: QueryClient) =>
         throw new Error(getErrorMessage(error));
       }
     },
-    onError: (error) => {
-      console.error("Failed to update koi:", error);
+    onMutate: async ({ koiId, koiStatus }) => {
+      await queryClient.cancelQueries({ queryKey: ["koiData"] });
+      const previousKoiData = queryClient.getQueryData(["koiData"]);
+
+      if (previousKoiData) {
+        queryClient.setQueryData(["koiData"], (old: any) => {
+          if (!old || !old.data) return old;
+
+          return {
+            ...old,
+            data: old.data.map((koi: any) =>
+              koi.id === koiId ? { ...koi, status: koiStatus } : koi,
+            ),
+          };
+        });
+      }
+
+      return { previousKoiData };
+    },
+    onError: (_, __, context) => {
+      if (context?.previousKoiData) {
+        queryClient.setQueryData(["koiData"], context.previousKoiData);
+      }
     },
     onSettled: async () => {
-      return await queryClient.invalidateQueries({ queryKey: ["koiData"] });
+      await queryClient.invalidateQueries({ queryKey: ["koiData"] });
     },
   });
 
