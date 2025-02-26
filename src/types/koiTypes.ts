@@ -26,7 +26,7 @@ interface Bloodline {
 }
 
 export interface Koi {
-  id: number;
+  id: string;
   code: string;
   nickname: string | null;
   birthdate: string | null;
@@ -52,7 +52,7 @@ export interface Koi {
   buyer_name: string | null;
   death_date: string | null;
   death_note: string | null;
-  status: "Available" | string;
+  status: KoiStatus;
   created_at: string;
   updated_at: string;
   breeder: Breeder;
@@ -61,9 +61,9 @@ export interface Koi {
   history: any[];
 }
 
-export interface PaginatedResponse {
+export interface PaginatedResponse<T> {
   current_page: number;
-  data: Koi[];
+  data: T[];
   first_page_url: string;
   from: number;
   last_page: number;

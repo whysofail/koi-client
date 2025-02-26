@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import useDeleteAuction from "@/server/auction/deleteAuction/mutations";
 import { useQueryClient } from "@tanstack/react-query";
 import useUpdateKoi from "@/server/koi/updateKoi/mutations";
-import { KoiStatus } from "@/types/koiTypes";
+import { KoiStatus, PaginatedResponse, Koi } from "@/types/koiTypes";
 import { getErrorMessage } from "@/lib/handleApiError";
 
 const auctionFormSchema = z
@@ -86,14 +86,13 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
 
   const handlePublishAuction = async (
     auctionId: string,
-    operation: AuctionStatus,
     bid_increment: string,
     reserve_price: string,
   ) => {
     const { startDateTime, endDateTime } = form.getValues();
 
     const data: UpdateAuctionBody = {
-      status: operation,
+      status: AuctionStatus.PUBLISHED,
       start_datetime: startDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       end_datetime: endDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       bid_increment,
@@ -114,66 +113,256 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     );
   };
 
-  const handleDeleteAuction = async (auctionId: string, koiId: string) => {
+  const handleUnpublishAuction = async (
+    auctionId: string,
+    bid_increment: string,
+    reserve_price: string,
+  ) => {
+    const data: UpdateAuctionBody = {
+      status: AuctionStatus.DRAFT,
+      bid_increment,
+      reserve_price,
+    };
+
+    updateMutate(
+      { auctionId, data },
+      {
+        onSuccess: () => {
+          toast.success("Auction unpublished");
+          onSuccess?.();
+        },
+        onError: () => {
+          toast.error("Failed to unpublish auction");
+        },
+      },
+    );
+  };
+
+  const handleCancelAuction = async (
+    auctionId: string,
+    bid_increment: string,
+    reserve_price: string,
+    koiId: string,
+  ) => {
     try {
-      await new Promise((resolve, reject) => {
-        updateKoiStatus(
-          {
-            koiId: koiId,
-            koiStatus: KoiStatus.AUCTION,
-          },
-          {
-            onSuccess: resolve,
-            onError: reject,
-          },
+      await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
+      await queryClient.cancelQueries({ queryKey: ["koiData"] });
+
+      const previousAuctions =
+        queryClient.getQueryData<any[]>(["allAuctions"]) ?? [];
+      const previousKoiData = queryClient.getQueryData<PaginatedResponse<Koi>>([
+        "koiData",
+      ]);
+
+      // Store original koi status for potential API rollback
+      const originalKoiStatus = previousKoiData?.data?.find(
+        (koi) => koi.id === koiId,
+      )?.status;
+
+      // Perform optimistic updates
+      if (previousKoiData?.data) {
+        queryClient.setQueryData<PaginatedResponse<Koi>>(["koiData"], (old) => {
+          if (!old?.data) return old ?? previousKoiData;
+          return {
+            ...old,
+            data: old.data.map((koi) =>
+              koi.id === koiId ? { ...koi, status: KoiStatus.AUCTION } : koi,
+            ),
+          };
+        });
+      }
+
+      queryClient.setQueryData<any[]>(["allAuctions"], (old) => {
+        return (old ?? []).map((auction) =>
+          auction.id === auctionId
+            ? {
+                ...auction,
+                status: AuctionStatus.CANCELLED,
+                bid_increment,
+                reserve_price,
+              }
+            : auction,
         );
       });
 
-      await new Promise((resolve, reject) => {
-        deleteMutate(auctionId, {
-          onSuccess: resolve,
-          onError: reject,
-        });
-      });
+      let koiUpdateSuccess = false;
 
-      toast.success("Auction deleted");
-      onSuccess?.();
-      queryClient.invalidateQueries({ queryKey: ["koiData", koiId] });
+      try {
+        // First update koi status
+        await new Promise<void>((resolve, reject) =>
+          updateKoiStatus(
+            {
+              koiId,
+              koiStatus: KoiStatus.AUCTION,
+            },
+            {
+              onSuccess: () => {
+                koiUpdateSuccess = true;
+                resolve();
+              },
+              onError: reject,
+            },
+          ),
+        );
+
+        // Then try to update auction status
+        await new Promise<void>((resolve, reject) =>
+          updateMutate(
+            {
+              auctionId,
+              data: {
+                status: AuctionStatus.CANCELLED,
+                bid_increment,
+                reserve_price,
+              },
+            },
+            {
+              onSuccess: resolve,
+              onError: (error) => {
+                // If auction update fails but koi was updated, revert koi status
+                if (koiUpdateSuccess && originalKoiStatus) {
+                  updateKoiStatus(
+                    {
+                      koiId,
+                      koiStatus: originalKoiStatus,
+                    },
+                    {
+                      onSettled: () => reject(error),
+                    },
+                  );
+                } else {
+                  reject(error);
+                }
+              },
+            },
+          ),
+        );
+
+        toast.success("Auction cancelled");
+        onSuccess?.();
+      } catch (error) {
+        // Rollback optimistic updates
+        queryClient.setQueryData(["allAuctions"], previousAuctions);
+        queryClient.setQueryData(["koiData"], previousKoiData);
+        throw error;
+      }
     } catch (error) {
       toast.error(getErrorMessage(error));
       console.error("Operation failed to execute", error);
+    } finally {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["allAuctions"] }),
+        queryClient.invalidateQueries({ queryKey: ["koiData"] }),
+      ]);
     }
   };
 
-  //TODO: CANCEL OPERATION
-  const handleCancelAuction = async (auctionId: string) => {
-    const data: Pick<UpdateAuctionBody, "status"> = {
-      status: AuctionStatus.CANCELLED,
-    };
+  const handleDeleteAuction = async (auctionId: string, koiId: string) => {
+    try {
+      await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
+      await queryClient.cancelQueries({ queryKey: ["koiData"] });
 
-    console.log("Cancel auction", auctionId, data);
-    // mutate(
-    //   { auctionId, data },
-    //   {
-    //     onSuccess: () => {
-    //       toast.success("Auction cancelled");
-    //       onSuccess?.();
-    //     },
-    //     onError: () => {
-    //       toast.error("Failed to cancel auction");
-    //     },
-    //   },
-    // );
+      const previousAuctions =
+        queryClient.getQueryData<any[]>(["allAuctions"]) ?? [];
+      const previousKoiData = queryClient.getQueryData<PaginatedResponse<Koi>>([
+        "koiData",
+      ]);
+
+      // Store original koi status for potential API rollback
+      const originalKoiStatus = previousKoiData?.data?.find(
+        (koi) => koi.id === koiId,
+      )?.status;
+
+      // Perform optimistic updates
+      if (previousKoiData?.data) {
+        queryClient.setQueryData<PaginatedResponse<Koi>>(["koiData"], (old) => {
+          if (!old?.data) return old ?? previousKoiData;
+          return {
+            ...old,
+            data: old.data.map((koi) =>
+              koi.id === koiId ? { ...koi, status: KoiStatus.AUCTION } : koi,
+            ),
+          };
+        });
+      }
+
+      queryClient.setQueryData<any[]>(["allAuctions"], (old) => {
+        return (old ?? []).filter((auction) => auction.id !== auctionId);
+      });
+
+      let koiUpdateSuccess = false;
+
+      try {
+        // First update koi status
+        await new Promise<void>((resolve, reject) =>
+          updateKoiStatus(
+            {
+              koiId,
+              koiStatus: KoiStatus.AUCTION,
+            },
+            {
+              onSuccess: () => {
+                koiUpdateSuccess = true;
+                resolve();
+              },
+              onError: reject,
+            },
+          ),
+        );
+
+        // Then try to delete auction
+        await new Promise<void>((resolve, reject) =>
+          deleteMutate(auctionId, {
+            onSuccess: resolve,
+            onError: (error) => {
+              // If delete fails but koi was updated, we need to revert koi status
+              if (koiUpdateSuccess && originalKoiStatus) {
+                updateKoiStatus(
+                  {
+                    koiId,
+                    koiStatus: originalKoiStatus,
+                  },
+                  {
+                    onSettled: () => reject(error),
+                  },
+                );
+              } else {
+                reject(error);
+              }
+            },
+          }),
+        );
+
+        toast.success("Auction deleted");
+        onSuccess?.();
+      } catch (error) {
+        // Rollback optimistic updates
+        queryClient.setQueryData(["allAuctions"], previousAuctions);
+        queryClient.setQueryData(["koiData"], previousKoiData);
+        throw error;
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      console.error("Operation failed to execute", error);
+    } finally {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["allAuctions"] }),
+        queryClient.invalidateQueries({ queryKey: ["koiData"] }),
+      ]);
+    }
   };
 
   const isDeleting = pendingDelete || pendingUpdateKoiStatus;
+  const isCanceling = pendingUpdate || pendingUpdateKoiStatus;
 
   return {
     form,
     handleDeleteAuction,
     handlePublishAuction,
+    handleUnpublishAuction,
     handleCancelAuction,
     pendingDelete: isDeleting,
+    pendingCancel: isCanceling,
     pendingUpdate,
   };
 };

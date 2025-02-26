@@ -36,11 +36,25 @@ export const useUpdateAuction = (token: string, queryClient: QueryClient) => {
         throw new Error(getErrorMessage(error));
       }
     },
-    onSettled: async () => {
-      return await queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
+    onMutate: async ({ auctionId, data }) => {
+      await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
+      const previousAuctions = queryClient.getQueryData(["allAuctions"]);
+
+      queryClient.setQueryData(["allAuctions"], (old: any[]) => {
+        return old?.map((auction) =>
+          auction.id === auctionId ? { ...auction, ...data } : auction,
+        );
+      });
+
+      return { previousAuctions };
     },
-    onError: (error) => {
-      console.error("Failed to update auction:", error);
+    onError: (_, __, context) => {
+      if (context?.previousAuctions) {
+        queryClient.setQueryData(["allAuctions"], context.previousAuctions);
+      }
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
     },
   });
 };

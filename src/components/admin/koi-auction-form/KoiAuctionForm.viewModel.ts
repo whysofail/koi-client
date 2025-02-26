@@ -8,10 +8,11 @@ import { useRouter } from "next/navigation";
 import { useUpdateAuction } from "@/server/auction/updateAuction/mutations";
 import { useQueryClient } from "@tanstack/react-query";
 import useUpdateKoi from "@/server/koi/updateKoi/mutations";
-import { KoiStatus } from "@/types/koiTypes";
+import { KoiStatus, Koi } from "@/types/koiTypes";
 import { getErrorMessage } from "@/lib/handleApiError";
 import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
 import { AuctionStatus } from "@/types/auctionTypes";
+import { PaginatedResponse } from "@/types/koiTypes";
 
 const formSchema = z.object({
   title: z.string().nonempty("Title is required"),
@@ -107,7 +108,7 @@ const KoiAuctionFormViewModel = (
         description: auctionData.description,
         reserve_price: parseFloat(auctionData.reserve_price),
         bid_increment: parseFloat(auctionData.bid_increment),
-        item: auctionData.item, // Fix here, previously id (auction ID) was incorrectly assigned
+        item: auctionData.item,
         status: auctionData.status as AuctionStatus,
       });
     }
@@ -116,40 +117,90 @@ const KoiAuctionFormViewModel = (
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     if (operation === "create") {
       try {
-        await new Promise((resolve, reject) => {
-          updateKoiStatus(
-            {
-              koiId: id,
-              koiStatus: KoiStatus.IN_AUCTION,
-            },
-            {
-              onSuccess: resolve,
-              onError: reject,
+        await queryClient.cancelQueries({ queryKey: ["koiData"] });
+        await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
+
+        const previousKoiData = queryClient.getQueryData<
+          PaginatedResponse<Koi>
+        >(["koiData"]);
+
+        // Perform optimistic updates
+        if (previousKoiData?.data) {
+          queryClient.setQueryData<PaginatedResponse<Koi>>(
+            ["koiData"],
+            (old) => {
+              if (!old?.data) return old ?? previousKoiData;
+              return {
+                ...old,
+                data: old.data.map((koi) =>
+                  koi.id === id
+                    ? { ...koi, status: KoiStatus.IN_AUCTION }
+                    : koi,
+                ),
+              };
             },
           );
-        });
+        }
 
-        await new Promise((resolve, reject) => {
-          createAuction(
-            {
-              ...data,
-              reserve_price: data.reserve_price,
-              bid_increment: data.bid_increment,
-            },
-            {
-              onSuccess: resolve,
-              onError: reject,
+        try {
+          // First update koi status with Promise wrapper
+          const koiUpdateResult = await new Promise<boolean>(
+            (resolve, reject) => {
+              updateKoiStatus(
+                {
+                  koiId: id,
+                  koiStatus: KoiStatus.IN_AUCTION,
+                },
+                {
+                  onSuccess: () => resolve(true),
+                  onError: reject,
+                },
+              );
             },
           );
-        });
 
-        toast.success("Auction created successfully");
-        queryClient.invalidateQueries({ queryKey: ["koiData", id] });
-        queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
-        router.push("/dashboard/auctions");
+          // Only proceed with auction creation if koi update succeeded
+          if (koiUpdateResult) {
+            await new Promise<void>((resolve, reject) => {
+              createAuction(
+                {
+                  ...data,
+                  reserve_price: data.reserve_price,
+                  bid_increment: data.bid_increment,
+                },
+                {
+                  onSuccess: resolve,
+                  onError: async (error) => {
+                    // If auction creation fails, revert koi status first
+                    await updateKoiStatus(
+                      {
+                        koiId: id,
+                        koiStatus: KoiStatus.AUCTION,
+                      },
+                      {
+                        onSettled: () => reject(error),
+                      },
+                    );
+                  },
+                },
+              );
+            });
+          }
+
+          toast.success("Auction created successfully");
+          router.push("/dashboard/auctions");
+        } catch (error) {
+          queryClient.setQueryData(["koiData"], previousKoiData);
+          throw error;
+        }
       } catch (error) {
         toast.error(getErrorMessage(error));
         console.error("Operation failed:", error);
+      } finally {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["koiData"] }),
+          queryClient.invalidateQueries({ queryKey: ["allAuctions"] }),
+        ]);
       }
     } else if (operation === "update") {
       updateAuction(

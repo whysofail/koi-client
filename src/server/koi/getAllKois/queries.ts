@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { PaginatedResponse } from "@/types/koiTypes";
+import { PaginatedResponse, Koi } from "@/types/koiTypes";
 import axios from "axios";
 
 interface FetchKoiParams {
@@ -11,7 +11,7 @@ const fetchKoiData = async ({
   page = 1,
   per_page = 10,
 }: FetchKoiParams = {}) => {
-  const { data } = await axios.get<PaginatedResponse>(
+  const { data } = await axios.get<PaginatedResponse<Koi>>(
     `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/koi?page=${page}&per_page=${per_page}&status=auction`,
   );
 

@@ -339,6 +339,35 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                 </DropdownMenuItem>
               </>
             )}
+            {row.original.status === "PUBLISHED" && (
+              <AuctionDialog
+                operation="unpublish"
+                auction_id={row.original.auction_id}
+                bid_increment={row.original.bid_increment}
+                reserve_price={row.original.reserve_price}
+                token={token}
+              >
+                <div className="flex w-full items-center">
+                  <Trash className="mr-2 h-4 w-4" />
+                  <span>Unpublish Auction</span>
+                </div>
+              </AuctionDialog>
+            )}
+            {row.original.status === "STARTED" && (
+              <AuctionDialog
+                operation="cancel"
+                auction_id={row.original.auction_id}
+                koiId={row.original.item}
+                bid_increment={row.original.bid_increment}
+                reserve_price={row.original.reserve_price}
+                token={token}
+              >
+                <div className="flex w-full items-center">
+                  <Trash className="mr-2 h-4 w-4" />
+                  <span>Cancel Auction</span>
+                </div>
+              </AuctionDialog>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
