@@ -2,8 +2,14 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
+import { FC } from "react";
 
-const BackButton = () => {
+type BackButtonProps = {
+  className?: string;
+};
+
+const BackButton: FC<BackButtonProps> = ({ className }) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -17,7 +23,10 @@ const BackButton = () => {
   };
 
   return (
-    <Button onClick={handleBack} className="flex items-center space-x-2">
+    <Button
+      onClick={handleBack}
+      className={cn("flex items-center space-x-2", className)}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-4 w-4"

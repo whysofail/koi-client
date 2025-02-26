@@ -1,3 +1,4 @@
+import BackButton from "@/components/dashboard/BackButton";
 import DepositForm from "@/components/user/wallet/deposit-form/DepositForm";
 import { getServerSession } from "@/lib/serverSession";
 
@@ -8,6 +9,7 @@ const page = async () => {
     <>
       <div className="flex items-center justify-between space-y-2">
         <div>
+          <BackButton className="ml-5 mt-5" />
           <h2 className="pl-5 pr-5 pt-5 text-3xl font-bold tracking-tight">
             Deposits
           </h2>

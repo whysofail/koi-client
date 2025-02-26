@@ -14,5 +14,5 @@ export interface GetDetailedWalletResponse {
 
 export interface createDepositBody {
   amount: string;
-  proofOfPayment: File;
+  proof_of_payment: File;
 }

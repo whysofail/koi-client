@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCreateDeposit } from "@/server/wallet/deposit/mutation";
 import { getErrorMessage } from "@/lib/handleApiError";
+import { useRouter } from "next/navigation";
 
 // Define schema with nullable File
 const formSchema = z.object({
@@ -27,6 +28,7 @@ const useDepositFormViewModel = (
   initialData?: DepositFormInputs,
 ) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const { mutateAsync: createDeposit, isPending: pendingCreate } =
     useCreateDeposit(token, queryClient);
 
@@ -46,9 +48,24 @@ const useDepositFormViewModel = (
     }
 
     try {
-      await createDeposit({
-        data: { ...data, proofOfPayment: data.proofOfPayment! },
-      });
+      await createDeposit(
+        {
+          data: {
+            amount: data.amount,
+            proof_of_payment: data.proofOfPayment,
+          },
+        },
+        {
+          onSuccess: () => {
+            form.reset();
+            toast.success("Deposit request submitted successfully");
+            router.push("/dashboard/transactions");
+          },
+          onError: (error) => {
+            toast.error(getErrorMessage(error));
+          },
+        },
+      );
     } catch (error) {
       toast.error(getErrorMessage(error));
     }

@@ -4,9 +4,10 @@ import { createDepositBody } from "@/types/walletTypes";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 
 const createDeposit = async (token: string, data: createDepositBody) => {
-  await fetchWithAuth.post(`/notifications/deposit`, data, {
+  await fetchWithAuth.post(`/wallets/deposit`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     },
   });
 };
@@ -21,12 +22,22 @@ export const useCreateDeposit = (token: string, queryClient: QueryClient) => {
       }
     },
     onSettled: async () => {
+      // Invalidate with the correct query key structure
       return await queryClient.invalidateQueries({
-        queryKey: ["transactions"],
+        queryKey: [
+          "transactions",
+          {
+            token,
+            isAdmin: false,
+            page: 1,
+            limit: 10,
+            // Match default params from your transaction query
+            createdAtTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            orderBy: "CREATED_AT",
+            order: "DESC",
+          },
+        ],
       });
-    },
-    onError: (error) => {
-      console.error("Failed to update auction:", error);
     },
   });
 };
