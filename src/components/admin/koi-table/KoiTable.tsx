@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -58,6 +58,7 @@ const KoiTable = () => {
     rowSelection,
     setRowSelection,
     addToAuctionSearchParams,
+    isError,
   } = KoiTableViewModel();
 
   const columns: ColumnDef<Koi>[] = [
@@ -250,7 +251,19 @@ const KoiTable = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {PaginatedData?.data?.length ? (
+            {isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-red-500"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    <span>Error loading koi data. Please try again later.</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : PaginatedData?.data?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (

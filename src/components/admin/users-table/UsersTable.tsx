@@ -17,6 +17,7 @@ import {
   ArrowDown,
   Eye,
   ExternalLink,
+  AlertCircle,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format as formatDate } from "date-fns";
@@ -69,6 +70,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     columnVisibility,
     rowSelection,
     isLoading,
+    isError,
     pageSize,
     searchColumn,
     setSearchColumn,
@@ -377,7 +379,21 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
             ))}
           </TableHeader>
           <TableBody>
-            {PaginatedData?.data?.length ? (
+            {isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-red-500"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    <span>
+                      Error loading users data. Please try again later.
+                    </span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : PaginatedData?.data?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (

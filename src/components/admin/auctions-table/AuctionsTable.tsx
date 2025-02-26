@@ -23,6 +23,7 @@ import {
   Pencil,
   ExternalLink,
   Edit,
+  AlertCircle,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -105,6 +106,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     handlePageSizeChange,
     handleNextPage,
     handlePreviousPage,
+    isError,
   } = AuctionsTableViewModel({ token: token, socket: adminSocket });
 
   const getSortIcon = (columnOrderBy: AuctionOrderBy) => {
@@ -159,7 +161,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
             row.original.status,
           )
         ) {
-          return <div>-</div>;
+          return;
         }
         return (
           <div>
@@ -572,7 +574,19 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
             ))}
           </TableHeader>
           <TableBody>
-            {PaginatedData?.data?.length ? (
+            {isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-red-500"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    <span>Error loading auctions. Please try again later.</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : PaginatedData?.data?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (

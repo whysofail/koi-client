@@ -211,7 +211,11 @@ const AuctionsTableViewModel = ({
     return url;
   };
 
-  const { data: PaginatedData, isLoading } = useGetAllAuctions({
+  const {
+    data: PaginatedData,
+    isLoading,
+    isError,
+  } = useGetAllAuctions({
     token,
     page: pageIndex,
     limit: pageSize,
@@ -259,6 +263,7 @@ const AuctionsTableViewModel = ({
       orderBy,
       order,
     } as AuctionFilters,
+    isError,
   };
 };
 

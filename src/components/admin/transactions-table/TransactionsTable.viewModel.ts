@@ -184,7 +184,11 @@ const TransactionsTableViewModel = (user: User) => {
     [searchParams, createQueryString, router],
   );
 
-  const { data: PaginatedData, isLoading } = useGetTransactions({
+  const {
+    data: PaginatedData,
+    isLoading,
+    isError,
+  } = useGetTransactions({
     token: user.accessToken,
     isAdmin: user.role === "admin",
     page: pageIndex,
@@ -210,6 +214,7 @@ const TransactionsTableViewModel = (user: User) => {
     searchColumn,
     PaginatedData,
     isLoading,
+    isError,
     sorting,
     setSearchColumn,
     setCreatedAtFrom,

@@ -59,7 +59,11 @@ const KoiTableViewModel = () => {
     [searchParams, router],
   );
 
-  const { data: PaginatedData, isLoading } = useGetKoiData({
+  const {
+    data: PaginatedData,
+    isLoading,
+    isError,
+  } = useGetKoiData({
     page: pageIndex,
     per_page: pageSize,
   });
@@ -100,6 +104,7 @@ const KoiTableViewModel = () => {
     setSearchColumn,
     PaginatedData,
     isLoading,
+    isError,
     sorting,
     setSorting,
     columnFilters,
