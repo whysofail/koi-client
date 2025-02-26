@@ -22,21 +22,9 @@ export const useCreateDeposit = (token: string, queryClient: QueryClient) => {
       }
     },
     onSettled: async () => {
-      // Invalidate with the correct query key structure
       return await queryClient.invalidateQueries({
-        queryKey: [
-          "transactions",
-          {
-            token,
-            isAdmin: false,
-            page: 1,
-            limit: 10,
-            // Match default params from your transaction query
-            createdAtTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            orderBy: "CREATED_AT",
-            order: "DESC",
-          },
-        ],
+        queryKey: ["transactions"],
+        refetchType: "all",
       });
     },
   });
