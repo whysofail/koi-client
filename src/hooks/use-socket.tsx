@@ -42,7 +42,7 @@ export const useSocket = (token?: string) => {
     });
 
     publicSocketInstance.on("connect_error", (err) => {
-      console.error("Public connection error:", err.message);
+      console.log("Public connection error:", err.message);
     });
 
     return () => {
@@ -75,7 +75,7 @@ export const useSocket = (token?: string) => {
     });
 
     authSocketInstance.on("connect_error", (err) => {
-      console.error("Auth connection error:", err.message);
+      console.log("Auth connection error:", err.message);
     });
 
     return () => {

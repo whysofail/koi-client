@@ -46,6 +46,9 @@ interface ImageUploadEditorProps {
   defaultAspectRatio?: AspectRatioKey;
   aspectRatios?: AspectRatioKey[];
   onSave?: (file: File) => void;
+  onFileChange?: (file: File) => void;
+  onFileSelect?: (file: File) => void;
+  onImageEdit?: (file: File) => void;
   onSaveToPC?: (blob: Blob, filename: string) => void;
 }
 
@@ -78,6 +81,9 @@ const ImageUploadEditor = ({
   maxFiles = Infinity,
   aspectRatios = ["1:1", "16:9", "9:16"],
   defaultAspectRatio,
+
+  onFileSelect,
+  onImageEdit,
 }: ImageUploadEditorProps) => {
   // Validate default aspect ratio based on provided aspectRatios
   const validDefaultRatio = aspectRatios.includes(
@@ -104,23 +110,44 @@ const ImageUploadEditor = ({
   // Add helper for checking if we're in original mode
   const isOriginalMode = aspectRatio === "original";
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = event.target.files;
     if (files) {
-      const newImages = Array.from(files).map((file) =>
-        URL.createObjectURL(file),
-      );
+      const file = files[0];
+      const objectUrl = URL.createObjectURL(file);
 
-      if (multiple) {
-        setImages((prevImages) => {
-          const combined = [...prevImages, ...newImages];
-          return combined.slice(0, maxFiles);
-        });
-      } else {
-        // Revoke previous URLs to prevent memory leaks
-        images.forEach((url) => URL.revokeObjectURL(url));
-        setImages([newImages[0]]);
-      }
+      // Process image through canvas to normalize format
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+
+      img.onload = async () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+
+        canvas.toBlob(
+          async (blob) => {
+            if (blob) {
+              const processedFile = new File([blob], file.name, {
+                type: "image/jpeg",
+              });
+
+              // Call onFileSelect with the processed file
+              onFileSelect?.(processedFile);
+
+              // Update component state
+              setImages([objectUrl]);
+            }
+          },
+          "image/jpeg",
+          0.95,
+        );
+      };
+
+      img.src = objectUrl;
     }
   };
 
@@ -418,18 +445,22 @@ const ImageUploadEditor = ({
   }, [selectedImage]);
 
   const handleSave = async () => {
-    if (!selectedImage) return;
+    if (!selectedImage || !containerRef.current || !imageRef.current) return;
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    if (!ctx || !imageRef.current || !containerRef.current) return;
+    if (!ctx) return;
 
     const containerRect = containerRef.current.getBoundingClientRect();
-    canvas.width = containerRect.width;
-    canvas.height = containerRect.height;
+    const cropWidth = containerRect.width - OVERLAY_PADDING;
+    const cropHeight = containerRect.height - OVERLAY_PADDING;
+
+    canvas.width = cropWidth;
+    canvas.height = cropHeight;
 
     const img = new Image();
-    img.onload = async () => {
+    img.onload = () => {
+      // Draw the image with current position and scale
       ctx.drawImage(
         img,
         -position.x / scale,
@@ -438,31 +469,22 @@ const ImageUploadEditor = ({
         img.height / scale,
       );
 
-      const blob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob(resolve),
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const editedFile = new File([blob], "edited-image.jpg", {
+              type: "image/jpeg",
+            });
+
+            // Call onImageEdit with the edited file
+            onImageEdit?.(editedFile);
+
+            closeEditor();
+          }
+        },
+        "image/jpeg",
+        0.95,
       );
-      if (!blob) return;
-
-      const formData = new FormData();
-      formData.append("image", blob, "edited-image.jpg");
-
-      try {
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          console.log("Image uploaded successfully:", result.url);
-        } else {
-          console.error("Failed to upload image");
-        }
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
-
-      closeEditor();
     };
     img.src = selectedImage;
   };

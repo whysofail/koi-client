@@ -24,6 +24,8 @@ import { FC } from "react";
 import UserDetailsSkeleton from "@/components/skeletons/UserDetailsSkeleton";
 import BackButton from "@/components/dashboard/BackButton";
 import { useUserProfileViewModel } from "@/app/(auction-application)/dashboard/(shared)/profile/UserProfile.viewModel";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const UserProfileContent: FC<{
   token: string;
@@ -118,13 +120,13 @@ const UserProfileContent: FC<{
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-lg font-semibold">
               Wallet Information
             </CardTitle>
-            <Wallet className="text-muted-foreground h-4 w-4" />
+            <Wallet className="text-muted-foreground h-5 w-5" />
           </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
+          <CardContent className="pt-4">
+            <div className="space-y-4">
               <div className="grid gap-1.5">
                 <p className="text-muted-foreground text-sm">Balance</p>
                 <p className="text-2xl font-bold">
@@ -136,6 +138,18 @@ const UserProfileContent: FC<{
                 <p className="text-sm font-medium">
                   {format(new Date(user.wallet.updated_at), "PPP")}
                 </p>
+              </div>
+              <div className="grid-flow-row space-x-4">
+                <Button variant="default">
+                  <Link href="/dashboard/transactions/deposit" passHref>
+                    Top Up
+                  </Link>
+                </Button>
+                <Button variant="destructive">
+                  <Link href="/dashboard/transactions" passHref>
+                    View History
+                  </Link>
+                </Button>
               </div>
             </div>
           </CardContent>

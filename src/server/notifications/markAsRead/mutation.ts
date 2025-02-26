@@ -30,8 +30,9 @@ export const useMarkNotificationAsRead = (token: string) => {
       queryClient.setQueryData<GetNotificationResponse>(
         ["notifications"],
         (oldData) => {
-          if (!oldData) return { data: [] };
+          if (!oldData) return { data: [], count: 0, page: 1, limit: 10 };
           return {
+            ...oldData,
             data: oldData.data.map((notification) =>
               notification.notification_id === notificationId
                 ? { ...notification, status: "READ" as NotificationStatus }

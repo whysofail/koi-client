@@ -14,6 +14,7 @@ import {
   Hammer,
   History,
   Bell,
+  WalletMinimal,
 } from "lucide-react";
 import {
   Sidebar,
@@ -110,8 +111,8 @@ const userNavigation = [
         href: "/dashboard/profile",
       },
       {
-        title: "Transactions",
-        icon: DollarSign,
+        title: "Wallet & Transactions",
+        icon: WalletMinimal,
         href: "/dashboard/transactions",
       },
       {

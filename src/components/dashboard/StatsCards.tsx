@@ -60,25 +60,12 @@ const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
           </Link>
         </Card>
         <Card>
-          <Link href="/dashboard/transactions" passHref>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Deposits
-              </CardTitle>
-              <DollarSign className="text-muted-foreground h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {data?.data.depositsTotal}
-              </div>
-              <p className="text-muted-foreground text-xs">
-                +12% from last month
-              </p>
-            </CardContent>
-          </Link>
-        </Card>
-        <Link href={"/dashboard/transactions"} passHref>
-          <Card>
+          <Link
+            href={
+              "/dashboard/transactions?type=DEPOSIT&orderBy=created_at&order=DESC&status=PENDING"
+            }
+            passHref
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Pending Deposits
@@ -93,8 +80,23 @@ const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
                 These deposits are awaiting verification. Action required.
               </p>
             </CardContent>
-          </Card>
-        </Link>
+          </Link>
+        </Card>
+        <Card>
+          <Link href="/dashboard/transactions" passHref>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Deposits
+              </CardTitle>
+              <DollarSign className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {data?.data.depositsTotal}
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
       </div>
     );
   }
