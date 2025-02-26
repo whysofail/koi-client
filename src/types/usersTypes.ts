@@ -1,3 +1,5 @@
+import { Wallet } from "./walletTypes";
+
 export enum UserRole {
   ADMIN = "admin",
   USER = "user",
@@ -20,14 +22,6 @@ export interface FetchAllUsersParams {
   isBanned?: boolean;
   orderBy: UserOrderBy;
   order: "ASC" | "DESC";
-}
-
-interface Wallet {
-  wallet_id: string;
-  user_id: string;
-  balance: string;
-  created_at: string;
-  updated_at: string;
 }
 
 interface BasicWallet {
