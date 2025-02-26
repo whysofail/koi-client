@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import SingleImageDisplay, {
   SingleImage,
 } from "@/components/shared/single-image/SingleImageDisplay";
+import { AlertCircle } from "lucide-react";
 
 interface KoiData {
   code: string | null | undefined;
@@ -29,37 +30,37 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
 
   if (isLoading || query.isLoading) {
     return (
-      <div className="space-y-4">
-        <div className="rounded-xl border p-4 dark:border-neutral-700">
-          <Skeleton className="h-6 w-32" />
-          <div className="mt-4 space-y-2">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="grid grid-cols-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-24" />
+      <div className="flex h-full flex-col space-y-4">
+        <div className="rounded-xl border p-3 dark:border-neutral-700 md:p-4">
+          <Skeleton className="h-7 w-24 md:h-8" />
+          <div className="mt-3 space-y-2 md:mt-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="grid grid-cols-2 gap-4">
+                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-5 w-28" />
               </div>
             ))}
           </div>
         </div>
-        <Skeleton className="aspect-video rounded-lg" />
+        <div className="min-h-0 flex-1 overflow-hidden rounded-lg border dark:border-neutral-700">
+          <Skeleton className="h-full min-h-[300px] w-full" />
+        </div>
       </div>
     );
   }
 
-  // Map image array to SingleImage type, images is string is seperated by |
   const imageArray = query.data?.photo?.split("|") || [];
   const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
-  const placeholderImage = "/placeholder.webp"; // Add placeholder image path
 
-  const koiImage: SingleImage = {
-    largeURL: imageArray[0] ? imageBaseUrl + imageArray[0] : placeholderImage,
-    thumbnailURL: imageArray[0]
-      ? imageBaseUrl + imageArray[0]
-      : placeholderImage,
-    height: 800,
-    width: 400,
-    alt: query.data?.nickname || query.data?.code || "Koi",
-  };
+  const koiImage: SingleImage | undefined = imageArray[0]
+    ? {
+        largeURL: imageBaseUrl + imageArray[0],
+        thumbnailURL: imageBaseUrl + imageArray[0],
+        height: 800,
+        width: 400,
+        alt: query.data?.nickname || query.data?.code || "Koi",
+      }
+    : undefined;
 
   const displayData = koiData || {
     code: query.data?.code,
@@ -68,7 +69,7 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
     size: query.data?.size,
     breeder: query.data?.breeder.name,
     gender: query.data?.gender,
-    image: koiImage as SingleImage,
+    image: koiImage,
   };
 
   const renderValue = (value: string | null | undefined) => {
@@ -86,52 +87,59 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
     <div className="flex h-full flex-col space-y-4">
       <div className="rounded-xl border p-3 dark:border-neutral-700 md:p-4">
         <h2 className="text-lg font-semibold md:text-xl">Koi Details</h2>
-        <dl className="mt-3 space-y-2 md:mt-4">
-          <div className="grid grid-cols-2">
-            <dt className="text-muted-foreground text-sm">Code</dt>
-            <dd className="text-sm font-medium">
-              {renderValue(displayData.code)}
-            </dd>
-          </div>
-          <div className="grid grid-cols-2">
-            <dt className="text-muted-foreground text-sm">Nickname</dt>
-            <dd className="text-sm font-medium">
-              {renderValue(displayData.nickname)}
-            </dd>
-          </div>
-          <div className="grid grid-cols-2">
-            <dt className="text-muted-foreground text-sm">Variety</dt>
-            <dd className="text-sm font-medium">
-              {renderValue(displayData.variety)}
-            </dd>
-          </div>
-          <div className="grid grid-cols-2">
-            <dt className="text-muted-foreground text-sm">Size</dt>
-            <dd className="text-sm font-medium">
-              {renderValue(displayData.size)}
-            </dd>
-          </div>
-          <div className="grid grid-cols-2">
-            <dt className="text-muted-foreground text-sm">Breeder</dt>
-            <dd className="text-sm font-medium">
-              {renderValue(displayData.breeder)}
-            </dd>
-          </div>
-          {displayData.gender && (
+        {query.isError ? (
+          <p className="mt-3 flex min-h-[192px] items-center justify-center gap-2 text-sm text-red-500 md:mt-4">
+            <AlertCircle className="h-4 w-4" />
+            Failed to load koi details. Please try again later.
+          </p>
+        ) : (
+          <dl className="mt-3 space-y-2 md:mt-4">
             <div className="grid grid-cols-2">
-              <dt className="text-muted-foreground text-sm">Gender</dt>
+              <dt className="text-muted-foreground text-sm">Code</dt>
               <dd className="text-sm font-medium">
-                {renderValue(displayData.gender)}
+                {renderValue(displayData.code)}
               </dd>
             </div>
-          )}
-        </dl>
+            <div className="grid grid-cols-2">
+              <dt className="text-muted-foreground text-sm">Nickname</dt>
+              <dd className="text-sm font-medium">
+                {renderValue(displayData.nickname)}
+              </dd>
+            </div>
+            <div className="grid grid-cols-2">
+              <dt className="text-muted-foreground text-sm">Variety</dt>
+              <dd className="text-sm font-medium">
+                {renderValue(displayData.variety)}
+              </dd>
+            </div>
+            <div className="grid grid-cols-2">
+              <dt className="text-muted-foreground text-sm">Size</dt>
+              <dd className="text-sm font-medium">
+                {renderValue(displayData.size)}
+              </dd>
+            </div>
+            <div className="grid grid-cols-2">
+              <dt className="text-muted-foreground text-sm">Breeder</dt>
+              <dd className="text-sm font-medium">
+                {renderValue(displayData.breeder)}
+              </dd>
+            </div>
+            {displayData.gender && (
+              <div className="grid grid-cols-2">
+                <dt className="text-muted-foreground text-sm">Gender</dt>
+                <dd className="text-sm font-medium">
+                  {renderValue(displayData.gender)}
+                </dd>
+              </div>
+            )}
+          </dl>
+        )}
       </div>
       <div className="min-h-0 flex-1 overflow-hidden rounded-lg border dark:border-neutral-700">
         <SingleImageDisplay
           className="max-h[500-px]"
           title={displayData.nickname || displayData.code || "Koi"}
-          image={displayData.image || koiImage}
+          image={displayData.image!}
         />
       </div>
     </div>

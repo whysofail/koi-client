@@ -26,12 +26,11 @@ import Link from "next/link";
 
 const AdminControls: FC<{ auctionID: string }> = ({ auctionID }) => {
   return (
-    <div className="mb-6 flex items-center justify-between">
+    <div className="mb-3 mt-4 flex items-center justify-between">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
           Auction Management
         </h1>
-        <p className="text-muted-foreground">ID: {auctionID}</p>
       </div>
       <div className="flex items-center gap-2">
         <AlertDialog>
