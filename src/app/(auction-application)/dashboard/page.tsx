@@ -2,6 +2,7 @@ import React from "react";
 import StatsCards from "@/components/dashboard/StatsCards";
 import ActiveAuctionsTable from "@/components/dashboard/ActiveAuctionsTable/ActiveAuctionsTable";
 import { getServerSession } from "@/lib/serverSession";
+import LatestAuctions from "@/components/dashboard/LatestAuctions/LatestAuctions";
 
 const Home = async () => {
   const session = await getServerSession();
@@ -16,6 +17,7 @@ const Home = async () => {
       </div>
       <div className="mt-6">
         {isAdmin && (
+          //TODO: ask if user could have something like this but with different stats
           <StatsCards
             isAdmin={isAdmin}
             token={session?.user?.accessToken ?? ""}
@@ -26,7 +28,7 @@ const Home = async () => {
         <div>
           <div className="mb-4">
             <h2 className="text-lg font-semibold">
-              {isAdmin ? "Active Auction" : "Newest Auction"}
+              {isAdmin ? "Active Auction" : "Latest Auctions"}
             </h2>
             <p className="text-muted-foreground text-sm">
               {isAdmin
@@ -34,9 +36,14 @@ const Home = async () => {
                 : "Check out the latest auctions"}
             </p>
           </div>
-          <div className="rounded-lg border">
-            <ActiveAuctionsTable token={session?.user?.accessToken ?? ""} />
-          </div>
+          {/* TODO: SUBJECT TO CHANGE */}
+          {isAdmin ? (
+            <div className="rounded-lg border">
+              <ActiveAuctionsTable token={session?.user?.accessToken ?? ""} />
+            </div>
+          ) : (
+            <LatestAuctions />
+          )}
         </div>
       </div>
     </div>
