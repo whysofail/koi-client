@@ -28,16 +28,25 @@ export const useNotificationSocket = ({
       queryClient.setQueryData<GetNotificationResponse>(
         ["notifications"],
         (oldData) => {
-          if (!oldData) return { data: [] };
+          if (!oldData) return undefined;
+
+          const baseResponse = {
+            count: oldData.count,
+            page: oldData.page,
+            limit: oldData.limit,
+          };
 
           switch (data.type) {
             case "CREATE":
               return {
+                ...baseResponse,
                 data: [data.data, ...oldData.data],
+                count: oldData.count + 1,
               };
 
             case "UPDATE":
               return {
+                ...baseResponse,
                 data: oldData.data.map((notification) =>
                   notification.notification_id === data.data.notification_id
                     ? data.data
@@ -47,10 +56,12 @@ export const useNotificationSocket = ({
 
             case "DELETE":
               return {
+                ...baseResponse,
                 data: oldData.data.filter(
                   (notification) =>
                     notification.notification_id !== data.data.notification_id,
                 ),
+                count: oldData.count - 1,
               };
 
             default:

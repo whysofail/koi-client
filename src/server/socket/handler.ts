@@ -15,6 +15,11 @@ const handleBidUpdate = (data: any, queryClient: any) => {
   queryClient.invalidateQueries({ queryKey });
 };
 
+const handleTransactionUpdate = (data: any, queryClient: any) => {
+  const queryKey = ["transactions", data.transactionId].filter(Boolean);
+  queryClient.invalidateQueries({ queryKey });
+};
+
 // Mapping entity types to their handlers
 export const entityHandlers: Record<
   string,
@@ -23,4 +28,5 @@ export const entityHandlers: Record<
   notification: handleNotificationUpdate,
   auction: handleAuctionUpdate,
   bids: handleBidUpdate,
+  transaction: handleTransactionUpdate,
 };

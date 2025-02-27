@@ -66,8 +66,11 @@ import {
 } from "@/components/ui/popover";
 import { formatCurrency } from "@/lib/formatCurrency";
 import TransactionFilters from "./TransactionFilter";
+import { useSocket } from "@/hooks/use-socket";
 
 const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
+  const { authSocket } = useSocket(user.accessToken);
+
   const {
     router,
     orderBy,
@@ -100,7 +103,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     handlePageSizeChange,
     handlePreviousPage,
     handleNextPage,
-  } = TransactionsTableViewModel(user);
+  } = TransactionsTableViewModel({ user, socket: authSocket });
 
   const getSortIcon = (columnOrderBy: TransactionOrderBy) => {
     if (orderBy !== columnOrderBy)

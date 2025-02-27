@@ -14,8 +14,19 @@ import {
   TransactionFilters,
 } from "@/types/transactionTypes";
 import { User } from "next-auth";
+import { Socket } from "socket.io-client";
+import { useTransactionSocket } from "@/hooks/useTransactionSocket";
 
-const TransactionsTableViewModel = (user: User) => {
+interface UseTransactionsTableViewModelProps {
+  user: User;
+  socket: Socket | null;
+}
+
+const TransactionsTableViewModel = ({
+  user,
+  socket,
+}: UseTransactionsTableViewModelProps) => {
+  useTransactionSocket({ authSocket: socket });
   const router = useRouter();
   const searchParams = useSearchParams();
 
