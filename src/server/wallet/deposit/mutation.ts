@@ -22,9 +22,9 @@ export const useCreateDeposit = (token: string, queryClient: QueryClient) => {
       }
     },
     onSettled: async () => {
-      // Invalidate with the correct query key structure
       return await queryClient.invalidateQueries({
         queryKey: ["transactions"],
+        refetchType: "all",
       });
     },
   });

@@ -45,6 +45,7 @@ const AdminContent: React.FC<AdminContentProps> = ({
   const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState<string>("");
 
+  //TODO: SUBJECT TO OPTIMIZATION: If the we want to get the image from the laravel backend, we don't have to query the UseGetKoiByID right? we just have to copy the name of the image and directly hit the URL
   const { data } = useGetKoiByID(auction.item);
   const imageArray = data?.photo?.split("|") || [];
   const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
@@ -96,7 +97,7 @@ const AdminContent: React.FC<AdminContentProps> = ({
       <div className="space-y-6 lg:col-span-2">
         <Card>
           <CardHeader>
-            <CardTitle>Auction Details</CardTitle>
+            <CardTitle>{title}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">

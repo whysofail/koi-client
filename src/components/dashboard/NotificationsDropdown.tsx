@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { User } from "next-auth";
-import NotificationList from "./(notifications)/NotificationDropdownList";
+import NotificationList from "./Notifications/NotificationDropdownList";
 import { useSocket } from "@/hooks/use-socket";
-import useNotificationViewModel from "./(notifications)/NotificationDropdown.viewModel";
+import useNotificationViewModel from "./Notifications/NotificationDropdown.viewModel";
 import { Notification } from "@/types/notificationTypes";
 import Link from "next/link";
 

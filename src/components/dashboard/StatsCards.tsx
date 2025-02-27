@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import StatsCardsSkeleton from "../skeletons/StatsCardsSkeleton";
+import StatsCardsError from "../skeletons/StatsCardsError";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Users,
@@ -22,8 +24,9 @@ interface StatsCardsProps {
 const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
   const { data, isLoading, isError } = useGetStats(token);
 
-  if (isLoading) return <div>Loading stats...</div>;
-  if (isError) return <div>Failed to load stats. Please try again later.</div>;
+  if (isLoading) return <StatsCardsSkeleton />;
+  if (isError) return <StatsCardsError />;
+
   if (isAdmin) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

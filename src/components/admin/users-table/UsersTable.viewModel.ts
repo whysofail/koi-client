@@ -131,7 +131,11 @@ const UsersTableViewModel = (token: string) => {
     [searchParams, router],
   );
 
-  const { data: PaginatedData, isLoading } = useGetAllUsers({
+  const {
+    data: PaginatedData,
+    isLoading,
+    isError,
+  } = useGetAllUsers({
     token,
     page: pageIndex,
     limit: pageSize,
@@ -161,6 +165,7 @@ const UsersTableViewModel = (token: string) => {
     setSearchColumn,
     PaginatedData,
     isLoading,
+    isError,
     columnFilters,
     setColumnFilters,
     columnVisibility,

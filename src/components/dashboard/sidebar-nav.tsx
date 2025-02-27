@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Users,
   Package,
-  Settings,
   Shield,
   Heart,
   Gavel,
@@ -79,21 +78,6 @@ const adminNavigation = [
       },
     ],
   },
-  {
-    label: "System",
-    items: [
-      {
-        title: "Moderation",
-        icon: Shield,
-        href: "/dashboard/moderation",
-      },
-      {
-        title: "Settings",
-        icon: Settings,
-        href: "/dashboard/settings",
-      },
-    ],
-  },
 ];
 
 const userNavigation = [
@@ -144,16 +128,6 @@ const userNavigation = [
         title: "History",
         icon: History,
         href: "/dashboard/history",
-      },
-    ],
-  },
-  {
-    label: "Account",
-    items: [
-      {
-        title: "Settings",
-        icon: Settings,
-        href: "/dashboard/settings",
       },
     ],
   },

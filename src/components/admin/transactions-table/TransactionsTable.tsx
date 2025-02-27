@@ -19,6 +19,7 @@ import {
   MoreHorizontal,
   Eye,
   Calendar as CalendarIcon,
+  AlertCircle,
 } from "lucide-react";
 import { format as formatDate } from "date-fns";
 
@@ -81,6 +82,7 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
     columnVisibility,
     rowSelection,
     isLoading,
+    isError,
     pageSize,
     searchColumn,
     setSearchColumn,
@@ -419,7 +421,21 @@ const TransactionsTable: React.FC<{ user: Session["user"] }> = ({ user }) => {
             ))}
           </TableHeader>
           <TableBody>
-            {PaginatedData?.data?.length ? (
+            {isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-red-500"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    <span>
+                      Error loading transactions. Please try again later.
+                    </span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : PaginatedData?.data?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (

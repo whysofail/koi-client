@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/pagination";
 
 import NotificationItem from "./NotificationItem";
-import useNotificationViewModel from "@/components/dashboard/(notifications)/NotificationDropdown.viewModel";
+import useNotificationViewModel from "@/components/dashboard/Notifications/NotificationDropdown.viewModel";
 import NotificationListSkeleton from "@/components/skeletons/NotificationListSkeleton";
 
 export default function NotificationList({ token }: { token: string }) {

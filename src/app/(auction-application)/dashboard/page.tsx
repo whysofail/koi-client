@@ -1,8 +1,8 @@
 import React from "react";
 import StatsCards from "@/components/dashboard/StatsCards";
-import ActiveAuctionsTable from "@/components/dashboard/ActiveAuctionsTable";
-import FeaturedAuctions from "@/components/dashboard/FeaturedAuctions";
+import ActiveAuctionsTable from "@/components/dashboard/ActiveAuctionsTable/ActiveAuctionsTable";
 import { getServerSession } from "@/lib/serverSession";
+import LatestAuctions from "@/components/dashboard/LatestAuctions/LatestAuctions";
 
 const Home = async () => {
   const session = await getServerSession();
@@ -17,38 +17,33 @@ const Home = async () => {
       </div>
       <div className="mt-6">
         {isAdmin && (
+          //TODO: ask if user could have something like this but with different stats
           <StatsCards
             isAdmin={isAdmin}
             token={session?.user?.accessToken ?? ""}
           />
         )}
       </div>
-      <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
-          <div>
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold">Active Auctions</h2>
-              <p className="text-muted-foreground text-sm">
-                Monitor and manage ongoing auctions
-              </p>
-            </div>
-            <div className="rounded-lg border">
-              <ActiveAuctionsTable />
-            </div>
+      <div className="mt-6">
+        <div>
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold">
+              {isAdmin ? "Active Auction" : "Latest Auctions"}
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              {isAdmin
+                ? "Monitor and manage ongoing auctions"
+                : "Check out the latest auctions"}
+            </p>
           </div>
-        </div>
-        <div className="col-span-3">
-          <div>
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold">Featured Auctions</h2>
-              <p className="text-muted-foreground text-sm">
-                Premium and highlighted listings
-              </p>
-            </div>
+          {/* TODO: SUBJECT TO CHANGE */}
+          {isAdmin ? (
             <div className="rounded-lg border">
-              <FeaturedAuctions isAdmin={isAdmin} />
+              <ActiveAuctionsTable token={session?.user?.accessToken ?? ""} />
             </div>
-          </div>
+          ) : (
+            <LatestAuctions />
+          )}
         </div>
       </div>
     </div>
