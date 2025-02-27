@@ -89,7 +89,6 @@ const AdminContent: React.FC<AdminContentProps> = ({
   useEffect(() => {
     if (bids?.length) {
       setLastBidUpdate(new Date());
-      console.log("New bids received:", bids.length);
     }
   }, [bids]);
   return (

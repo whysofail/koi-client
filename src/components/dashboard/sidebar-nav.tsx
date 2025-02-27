@@ -111,6 +111,11 @@ const userNavigation = [
         href: "/dashboard/profile",
       },
       {
+        title: "Notifications",
+        icon: Bell,
+        href: "/dashboard/notifications",
+      },
+      {
         title: "Wallet & Transactions",
         icon: WalletMinimal,
         href: "/dashboard/transactions",

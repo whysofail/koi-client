@@ -5,5 +5,5 @@ export interface AuctionParticipant {
     user_id: string;
     username: string;
   };
-  count: number;
+  participants_count: number;
 }

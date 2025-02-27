@@ -79,6 +79,9 @@ export interface Auction {
   bid_increment: string;
   created_at: string;
   updated_at: string;
+  highest_bid_id: string;
+  winner_id: string;
+  final_price: string;
   user: User;
   bids: any[];
   participants: any[];
