@@ -89,6 +89,7 @@ export enum TransactionType {
   WITHDRAWAL = "WITHDRAWAL",
   TRANSFER = "TRANSFER",
   PARTICIPATE = "PARTICIPATE",
+  REFUND = "REFUND",
 }
 
 // Adjusted TransactionStatus enum to match your model (added REJECTED and APPROVED)

@@ -70,7 +70,7 @@ export const useAuctionSocket = ({
               return {
                 ...oldData,
                 participants: Array.isArray(oldData.participants)
-                  ? [...oldData.participants, ...data.data.participants]
+                  ? [...oldData.participants, data.data.participants]
                   : [data.data.participants],
               };
             case "BID_PLACED":
