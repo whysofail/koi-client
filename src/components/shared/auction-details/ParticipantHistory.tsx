@@ -1,8 +1,7 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import type { DetailedBid } from "@/types/bidTypes";
-import { formatCurrency } from "@/lib/formatCurrency";
+import { AuctionParticipant } from "@/types/auctionParticipantTypes";
 import {
   Tooltip,
   TooltipProvider,
@@ -12,18 +11,15 @@ import {
 import { User } from "lucide-react";
 import Link from "next/link";
 
-interface BidHistoryProps {
-  bids: DetailedBid[];
+interface ParticipantHistoryProps {
+  participants: AuctionParticipant[];
 }
 
-export function BidHistory({ bids }: BidHistoryProps) {
-  if (bids.length === 0) {
+export function ParticipantHistory({ participants }: ParticipantHistoryProps) {
+  if (participants.length === 0) {
     return (
       <div className="py-4 text-center">
-        <p className="text-muted-foreground text-sm">No bids yet</p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          Be the first to bid!
-        </p>
+        <p className="text-muted-foreground text-sm">No participants yet</p>
       </div>
     );
   }
@@ -31,10 +27,10 @@ export function BidHistory({ bids }: BidHistoryProps) {
   return (
     <div className="rounded-md ">
       <div className="overflow-y-auto" style={{ maxHeight: "300px" }}>
-        {bids.map((bid) => (
+        {participants.map((participants) => (
           <Link
-            key={bid.bid_id}
-            href={`/dashboard/users/${bid.user.user_id}`}
+            key={participants.auction_participant_id}
+            href={`/dashboard/users/${participants.user.user_id}`}
             passHref
           >
             <div className="flex  items-center space-x-3 border-b p-2 transition-colors last:border-b-0 hover:bg-slate-200/25">
@@ -54,30 +50,23 @@ export function BidHistory({ bids }: BidHistoryProps) {
               </div>
               <div className="min-w-0 flex-grow">
                 <div className="flex items-center space-x-2">
-                  <p className="truncate  font-medium">{bid.user.username}</p>
-                  <p className="text-sm">placed a bid</p>
-                  <p className="text-muted-foreground truncate font-bold">
-                    {formatCurrency(bid.bid_amount)}
+                  <p className="truncate  font-medium">
+                    {participants.user.username}
                   </p>
-                </div>
-                <div>
-                  {/* Bid id */}
-                  <p className="text-muted-foreground text-xs">
-                    Bid ID: {bid.bid_id}
-                  </p>
+                  <p className="text-sm">Joined auction</p>
                 </div>
               </div>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
                     <p className="text-muted-foreground text-xs">
-                      {formatDistanceToNow(new Date(bid.bid_time), {
+                      {formatDistanceToNow(new Date(participants.joined_at), {
                         addSuffix: true,
                       })}
                     </p>
                   </TooltipTrigger>
                   <TooltipContent sideOffset={0} side="top" align="start">
-                    {new Date(bid.bid_time).toLocaleString()}
+                    {new Date(participants.joined_at).toLocaleString()}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

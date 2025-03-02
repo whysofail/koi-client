@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Auction } from "@/types/auctionTypes";
+import { Auction, AuctionStatus } from "@/types/auctionTypes";
 import { DetailedBid } from "@/types/bidTypes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { User, Clock, DollarSign, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { User, Clock, DollarSign, ShieldIcon } from "lucide-react";
 import ImageGallery from "./ImageGallery";
 import { BidHistory } from "./BidHistory";
-import { AuctionParticipant } from "@/types/auctionParticipantTypes";
-import {
-  formatDistanceToNow,
-  formatDuration,
-  intervalToDuration,
-  isPast,
-} from "date-fns";
+import { formatDuration, intervalToDuration, isPast } from "date-fns";
 import { formatCurrency } from "@/lib/formatCurrency";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
+import { ParticipantHistory } from "./ParticipantHistory";
+import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -65,11 +60,17 @@ const AdminContent: React.FC<AdminContentProps> = ({
       const now = new Date();
       const endTime = new Date(auction.end_datetime);
 
-      if (auction.status !== "STARTED") {
+      if (auction.status === AuctionStatus.PENDING) {
+        setCountdown("Auction ended. Pending for payment verification");
+        return;
+      }
+      if (auction.status !== AuctionStatus.STARTED) {
         setCountdown("Auction has not started yet");
         return;
-      } else if (isPast(endTime)) {
-        setCountdown("Auction ended");
+      }
+
+      if (isPast(endTime)) {
+        setCountdown("Auction has ended");
         return;
       }
 
@@ -132,65 +133,18 @@ const AdminContent: React.FC<AdminContentProps> = ({
           <TabsList>
             <TabsTrigger value="bids">Bid History</TabsTrigger>
             <TabsTrigger value="participants">Participants</TabsTrigger>
-            <TabsTrigger value="logs">Activity Logs</TabsTrigger>
           </TabsList>
           <TabsContent value="bids">
             <Card className="hover:bg-inherit">
-              <CardContent className="py-2">
+              <CardContent className="px-0 py-2">
                 <BidHistory bids={bids} />
               </CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="participants">
-            <Card>
-              <CardContent className="p-6">
-                {auction.participants.length > 0 ? (
-                  <div className="grid gap-4">
-                    {auction.participants.map(
-                      (participant: AuctionParticipant) => (
-                        <div
-                          key={participant.auction_participant_id}
-                          className="flex items-center justify-between"
-                        >
-                          <div className="flex items-center gap-2">
-                            <User className="text-muted-foreground h-4 w-4" />
-                            <div>
-                              <p className="text-sm font-medium">
-                                {participant.user.username}
-                              </p>
-                              <p className="text-muted-foreground text-xs">
-                                {participant.user.user_id}
-                              </p>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">Date Joined</p>
-                            <p className="text-muted-foreground text-xs">
-                              {formatDistanceToNow(participant.joined_at, {
-                                addSuffix: true,
-                              })}
-                            </p>
-                          </div>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground text-sm">
-                    No participants yet
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="logs">
-            <Card>
-              <CardContent className="p-6">
-                <div className="py-8 text-center">
-                  <p className="text-muted-foreground text-sm">
-                    No activity logs yet
-                  </p>
-                </div>
+            <Card className="hover:bg-inherit">
+              <CardContent className="px-0 py-2">
+                <ParticipantHistory participants={auction.participants} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -203,6 +157,15 @@ const AdminContent: React.FC<AdminContentProps> = ({
             <CardTitle>Quick Stats</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
+            <div className="flex items-center gap-2">
+              <ShieldIcon className="text-muted-foreground h-4 w-4" />
+              <div>
+                <p className="text-sm font-medium">Status</p>
+                <p>
+                  <StatusBadge status={auction.status as AuctionStatus} />
+                </p>
+              </div>
+            </div>
             <div className="flex items-center gap-2">
               <User className="text-muted-foreground h-4 w-4" />
               <div>
@@ -224,10 +187,17 @@ const AdminContent: React.FC<AdminContentProps> = ({
                 <p>{formatCurrency(bidIncrement)}</p>
               </div>
             </div>
+            <div className="flex items-center gap-2">
+              <DollarSign className="text-muted-foreground h-4 w-4" />
+              <div>
+                <p className="text-sm font-medium">Winner</p>
+                <p>{auction.winner_id || "No winner yet"}</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Moderation</CardTitle>
           </CardHeader>
@@ -249,7 +219,7 @@ const AdminContent: React.FC<AdminContentProps> = ({
               </Button>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );
