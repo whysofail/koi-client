@@ -42,7 +42,6 @@ export const useAuctionDetailsViewModel = (
       });
     }
   }, [bidsData]);
-
   const auction: Auction | undefined = auctionData?.data[0];
   const bids: DetailedBid[] = (bidsData?.data as DetailedBid[]) || [];
 

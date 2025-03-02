@@ -26,6 +26,7 @@ import BackButton from "@/components/dashboard/BackButton";
 import { useUserProfileViewModel } from "@/app/(auction-application)/dashboard/(shared)/profile/UserProfile.viewModel";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 const UserProfileContent: FC<{
   token: string;
@@ -130,7 +131,7 @@ const UserProfileContent: FC<{
               <div className="grid gap-1.5">
                 <p className="text-muted-foreground text-sm">Balance</p>
                 <p className="text-2xl font-bold">
-                  Rp. {Number.parseFloat(user.wallet.balance).toLocaleString()}
+                  {formatCurrency(user.wallet.balance)}
                 </p>
               </div>
               <div className="grid gap-1.5">
