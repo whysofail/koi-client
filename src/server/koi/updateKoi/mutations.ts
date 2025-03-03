@@ -9,7 +9,7 @@ const updateKoi = async (
   buyerName?: string,
 ) => {
   const { data } = await axios.put(
-    `${process.env.NEXT_PUBLIC_APPLICATION_URL}/next-api/koi`,
+    `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/koi`,
     {
       koiId,
       status: koiStatus,

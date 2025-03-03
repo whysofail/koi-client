@@ -14,7 +14,7 @@ export default auth((req) => {
 
   if (!req.auth) return NextResponse.redirect(new URL("/login", req.url));
 
-  if (pathname.startsWith("/next-api")) return NextResponse.next();
+  if (pathname.startsWith("/api")) return NextResponse.next();
 
   const role = req.auth.user.role as Role;
 
@@ -38,6 +38,6 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    "/((?!next-api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

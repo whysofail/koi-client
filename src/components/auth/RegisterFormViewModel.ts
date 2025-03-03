@@ -61,7 +61,7 @@ const RegisterFormViewModel = () => {
   ) => {
     try {
       const { username, email, password, phoneNumber } = data;
-      const url = `${process.env.NEXT_PUBLIC_APPLICATION_URL}/next-api/user-registration`;
+      const url = `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/user-registration`;
 
       const res = await fetch(url, {
         method: "POST",
