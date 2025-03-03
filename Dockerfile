@@ -26,7 +26,7 @@ RUN bun run build
 FROM base AS runner
 WORKDIR /app
 
-ENV APP_ENV production
+ENV NODE_ENV production
 
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
