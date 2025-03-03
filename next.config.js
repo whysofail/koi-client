@@ -16,19 +16,27 @@ const nextConfig = {
     webpackMemoryOptimizations: true,
     typedEnv: true,
   },
+  compiler: {
+    removeConsole:
+      process.env.APP_ENV === "production"
+        ? {
+            exclude: ["error", "warn"],
+          }
+        : false,
+  },
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "nos.wjv-1.neo.id",
         port: "",
-        pathname: "/**", // Allows any path under the given hostname
+        pathname: "/**",
       },
       {
         protocol: "http",
         hostname: "localhost",
         port: "8000",
-        pathname: "/**", // Allows any path under the given hostname
+        pathname: "/**",
       },
     ],
   },
