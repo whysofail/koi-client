@@ -285,6 +285,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
           <Popover>
             <PopoverTrigger asChild>
               <Button
+                data-testid="date-from-button"
                 variant="outline"
                 className="w-[180px] justify-start text-left font-normal"
               >
@@ -294,7 +295,10 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
                   : "From date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent
+              data-testid="date-from-calendar"
+              className="w-auto p-0"
+            >
               <Calendar
                 mode="single"
                 selected={registrationDateFrom}
@@ -307,6 +311,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
           <Popover>
             <PopoverTrigger asChild>
               <Button
+                data-testid="date-to-button"
                 variant="outline"
                 className="w-[180px] justify-start text-left font-normal"
               >
@@ -316,7 +321,10 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
                   : "To date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent
+              data-testid="date-to-calendar"
+              className="w-auto p-0"
+            >
               <Calendar
                 mode="single"
                 selected={registrationDateTo}
@@ -387,7 +395,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <AlertCircle className="h-5 w-5" />
-                    <span>
+                    <span data-testid="error-message">
                       Error loading users data. Please try again later.
                     </span>
                   </div>
