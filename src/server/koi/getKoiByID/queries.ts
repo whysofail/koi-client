@@ -4,7 +4,7 @@ import { Koi } from "@/types/koiTypes";
 
 const fetchKoiByID = async (koiID: string) => {
   const { data } = await axios.get<Koi>(
-    `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/koi?id=${koiID}`,
+    `${process.env.NEXT_PUBLIC_APPLICATION_URL}/next-api/koi?id=${koiID}`,
   );
   return data;
 };
