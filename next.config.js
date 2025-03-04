@@ -38,6 +38,11 @@ const nextConfig = {
         port: "8000",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "dev.arthurkai-koi.com",
+        pathname: "/**",
+      },
     ],
   },
   output: "standalone",

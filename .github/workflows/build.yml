@@ -32,6 +32,12 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest
+          build-args: |
+            NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+            NEXT_PUBLIC_APPLICATION_URL=${{ secrets.NEXT_PUBLIC_APPLICATION_URL }}
+            NEXT_PUBLIC_SOCKET_URL=${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
+            NEXT_PUBLIC_LARAVEL_URL=${{ secrets.NEXT_PUBLIC_LARAVEL_URL }}
+            NEXT_PUBLIC_KOI_IMG_BASE_URL=${{ secrets.NEXT_PUBLIC_KOI_IMG_BASE_URL }}
 
       - name: Rebuild and redeploy app in Coolify
         run: |
