@@ -12,7 +12,7 @@ const fetchKoiData = async ({
   per_page = 10,
 }: FetchKoiParams = {}) => {
   const { data } = await axios.get<PaginatedResponse<Koi>>(
-    `${process.env.NEXT_PUBLIC_APPLICATION_URL}/koi?page=${page}&per_page=${per_page}&status=auction`,
+    `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/koi?page=${page}&per_page=${per_page}&status=auction`,
   );
 
   return data;
