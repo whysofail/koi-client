@@ -16,14 +16,14 @@ const nextConfig = {
     webpackMemoryOptimizations: true,
     typedEnv: true,
   },
-  // compiler: {
-  //   removeConsole:
-  //     process.env.APP_ENV === "production"
-  //       ? {
-  //           exclude: ["error", "warn"],
-  //         }
-  //       : false,
-  // },
+  compiler: {
+    removeConsole:
+      process.env.APP_ENV === "production"
+        ? {
+            exclude: ["error", "warn"],
+          }
+        : false,
+  },
   images: {
     remotePatterns: [
       {
