@@ -301,9 +301,9 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
                   </Button>
                   {registrationDateFrom && (
                     <Button
-                      variant="ghost"
                       size="icon"
                       className="absolute -right-2 -top-2 h-5 w-5 rounded-full"
+                      data-testid="reset-date-from"
                       onClick={(e) => {
                         e.stopPropagation();
                         resetRegistrationDateFrom();
@@ -343,6 +343,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
                   {registrationDateTo && (
                     <Button
                       size="icon"
+                      data-testid="reset-date-to"
                       className="absolute -right-2 -top-2 h-5 w-5 rounded-full"
                       onClick={(e) => {
                         e.stopPropagation();

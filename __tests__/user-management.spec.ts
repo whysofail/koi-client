@@ -1,7 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
 import { test, expect } from "./mockTestFactory";
 
-test.describe.parallel("User Management mock", () => {
+test.describe.parallel("User Management", () => {
   test.use({ storageState: "./playwright/.auth/admin.json" });
 
   test.beforeEach(async ({ page }) => {
@@ -128,62 +128,103 @@ test.describe.parallel("User Management mock", () => {
       await expect(page.getByText("hazel", { exact: true })).not.toBeVisible();
     });
 
-    test("should clear date filter when clicking outside calendar", async ({
-      page,
-    }) => {
-      await page.getByRole("button", { name: "From date" }).click();
+    test("should show all users when clearing date range", async ({ page }) => {
+      await page.goto(
+        "/dashboard/users?registrationDateFrom=2024-01-01&registrationDateTo=2024-01-15",
+      );
 
-      await page.click("body", { position: { x: 0, y: 0 } });
+      await page.getByTestId("reset-date-from").click();
+      await expect(page).toHaveURL(
+        "/dashboard/users?registrationDateTo=2024-01-15",
+      );
 
-      await expect(page.getByRole("dialog")).not.toBeVisible();
-      await expect(
-        page.getByRole("button", { name: "From date" }),
-      ).toBeVisible();
-
+      await page.getByTestId("reset-date-to").click();
       await expect(page).toHaveURL("/dashboard/users");
+
+      await expect(page.getByRole("table")).toBeVisible();
+      await expect(page.getByText("hazel", { exact: true })).toBeVisible();
+      await expect(page.getByText("leo", { exact: true })).toBeVisible();
+    });
+  });
+
+  test.describe("Column visibility feature", () => {
+    test("should show initial checked columns", async ({ page }) => {
+      await expect(page.getByRole("cell", { name: "Username" })).toBeVisible();
+      await expect(page.getByRole("cell", { name: "Email" })).toBeVisible();
+      await expect(page.getByRole("cell", { name: "Balance" })).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "Registration Date" }),
+      ).toBeVisible();
+    });
+  });
+
+  test.describe("Sort feature", () => {
+    test("should sort users by name", async ({ page }) => {
+      page.getByRole("button", { name: "Username", exact: true }).click();
+      await expect(page).toHaveURL(
+        "/dashboard/users?orderBy=username&order=DESC",
+      );
+      await expect(page.getByText("william", { exact: true })).toBeVisible();
+      await expect(page.getByText("hazel", { exact: true })).not.toBeVisible();
+
+      page.getByRole("button", { name: "Username", exact: true }).click();
+      await expect(page).toHaveURL(
+        "/dashboard/users?orderBy=username&order=ASC",
+      );
+      await expect(page.getByText("John", { exact: true })).toBeVisible();
+      await expect(
+        page.getByText("william", { exact: true }),
+      ).not.toBeVisible();
     });
 
-    test("should show all users when clearing date range", async ({ page }) => {
-      await page.getByRole("button", { name: "From date" }).click();
+    test("should sort users by email", async ({ page }) => {
+      page.getByRole("button", { name: "Email", exact: true }).click();
+      await expect(page).toHaveURL("/dashboard/users?orderBy=email&order=DESC");
+      await expect(page.getByText("william", { exact: true })).toBeVisible();
+      await expect(page.getByText("hazel", { exact: true })).not.toBeVisible();
 
-      while (
-        (await page
-          .locator('div[role="dialog"]')
-          .locator("div")
-          .filter({ hasText: /^January 2024$/ })
-          .count()) === 0
-      ) {
-        await page
-          .getByRole("button", { name: "Go to previous month" })
-          .click();
-      }
+      page.getByRole("button", { name: "Email", exact: true }).click();
+      await expect(page).toHaveURL("/dashboard/users?orderBy=email&order=ASC");
+      await expect(page.getByText("John", { exact: true })).toBeVisible();
+      await expect(
+        page.getByText("william", { exact: true }),
+      ).not.toBeVisible();
+    });
 
-      await page
-        .locator('div[role="dialog"]')
-        .getByRole("gridcell", { name: "1" })
-        .first()
+    test("should sort users by balance", async ({ page }) => {
+      page.getByRole("button", { name: "Balance", exact: true }).click();
+      await expect(page).toHaveURL(
+        "/dashboard/users?orderBy=balance&order=DESC",
+      );
+      await expect(page.getByText("liam", { exact: true })).toBeVisible();
+      await expect(page.getByText("John", { exact: true })).not.toBeVisible();
+
+      page.getByRole("button", { name: "Balance", exact: true }).click();
+      await expect(page).toHaveURL(
+        "/dashboard/users?orderBy=balance&order=ASC",
+      );
+      await expect(page.getByText("John", { exact: true })).toBeVisible();
+      await expect(page.getByText("liam", { exact: true })).not.toBeVisible();
+    });
+
+    test("should sort users by registration date", async ({ page }) => {
+      page
+        .getByRole("button", { name: "Registration Date", exact: true })
         .click();
+      await expect(page).toHaveURL(
+        "/dashboard/users?orderBy=registration_date&order=DESC",
+      );
+      await expect(page.getByText("hazel", { exact: true })).toBeVisible();
+      await expect(page.getByText("John", { exact: true })).not.toBeVisible();
 
-      await page.getByRole("button", { name: "To date" }).click();
-      await page
-        .locator('div[role="dialog"]')
-        .getByRole("gridcell", { name: "15" })
-        .first()
+      page
+        .getByRole("button", { name: "Registration Date", exact: true })
         .click();
-
-      await expect(page.getByText("hazel")).not.toBeVisible();
-      await expect(page.getByText("John")).toBeVisible();
-
-      await page
-        .getByRole("button", { name: /\d{2}-\d{2}-\d{4}/ })
-        .first()
-        .click();
-      await page.getByRole("button", { name: "From date" }).click();
-
-      // Verify all users are visible again
-      await expect(page.getByText("admin_sarah")).toBeVisible();
-      await expect(page.getByText("John")).toBeVisible();
-      await expect(page.getByText("hazel")).toBeVisible();
+      await expect(page).toHaveURL(
+        "/dashboard/users?orderBy=registration_date&order=ASC",
+      );
+      await expect(page.getByText("John", { exact: true })).toBeVisible();
+      await expect(page.getByText("hazel", { exact: true })).not.toBeVisible();
     });
   });
 });
