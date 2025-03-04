@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_1: "aliezan/koi-client"
+  IMAGE_NAME: "aliezan/koi-client"
 
 jobs:
   amd64:
@@ -31,4 +31,9 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_1 }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest
+
+      - name: Rebuild and redeploy app in Coolify
+        run: |
+          curl --request GET '${{ secrets.COOLIFY_DEV_WEBHOOK_URL }}' \
+               --header 'Authorization: Bearer ${{ secrets.COOLIFY_WEBHOOK_TOKEN }}'

@@ -118,18 +118,14 @@ test.describe.parallel("User Management mock", () => {
         .click();
 
       await expect(page).toHaveURL(
-        "/dashboard/users?registrationDateFrom=2024-01-01&registrationDateTo=2024-01-15&role=user",
+        "/dashboard/users?registrationDateFrom=2024-01-01&registrationDateTo=2024-01-15",
       );
 
-      // // Verify visible users
-      // await expect(page.getByText("admin_jessica")).toBeVisible();
-      // await expect(page.getByText("John")).toBeVisible();
-      // await expect(page.getByText("Mary")).toBeVisible();
-      // await expect(page.getByText("Peter")).toBeVisible();
+      await expect(page.getByText("John", { exact: true })).toBeVisible();
+      await expect(page.getByText("Mary", { exact: true })).toBeVisible();
 
-      // // Verify hidden users
-      // await expect(page.getByText("admin_sarah")).not.toBeVisible();
-      // await expect(page.getByText("hazel")).not.toBeVisible();
+      await expect(page.getByText("leo", { exact: true })).not.toBeVisible();
+      await expect(page.getByText("hazel", { exact: true })).not.toBeVisible();
     });
 
     test("should clear date filter when clicking outside calendar", async ({

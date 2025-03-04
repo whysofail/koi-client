@@ -66,6 +66,18 @@ const UsersTableViewModel = (token: string) => {
     [createQueryString, router],
   );
 
+  const resetRegistrationDateFrom = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("registrationDateFrom");
+    router.push(`?${params.toString()}`);
+  }, [searchParams, router]);
+
+  const resetRegistrationDateTo = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("registrationDateTo");
+    router.push(`?${params.toString()}`);
+  }, [searchParams, router]);
+
   const handleSort = useCallback(
     (newOrderBy: UserOrderBy) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -155,6 +167,8 @@ const UsersTableViewModel = (token: string) => {
     setRegistrationDateFrom,
     registrationDateTo,
     setRegistrationDateTo,
+    resetRegistrationDateFrom,
+    resetRegistrationDateTo,
     orderBy,
     order,
     role,
