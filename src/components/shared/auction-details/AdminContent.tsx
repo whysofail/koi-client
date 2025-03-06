@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Auction, AuctionStatus } from "@/types/auctionTypes";
 import { DetailedBid } from "@/types/bidTypes";
@@ -40,7 +42,6 @@ const AdminContent: React.FC<AdminContentProps> = ({
   const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState<string>("");
 
-  //TODO: SUBJECT TO OPTIMIZATION: If the we want to get the image from the laravel backend, we don't have to query the UseGetKoiByID right? we just have to copy the name of the image and directly hit the URL
   const { data } = useGetKoiByID(auction.item);
   const imageArray = data?.photo?.split("|") || [];
   const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
@@ -196,30 +197,6 @@ const AdminContent: React.FC<AdminContentProps> = ({
             </div>
           </CardContent>
         </Card>
-
-        {/* <Card>
-          <CardHeader>
-            <CardTitle>Moderation</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="flex items-center gap-2">
-              <Shield className="text-muted-foreground h-4 w-4" />
-              <div>
-                <p className="text-sm font-medium">Reports</p>
-                <p className="text-muted-foreground">No reports filed</p>
-              </div>
-            </div>
-            <Separator />
-            <div className="space-y-2">
-              <Button variant="outline" className="w-full">
-                View Audit Log
-              </Button>
-              <Button variant="outline" className="w-full">
-                Export Data
-              </Button>
-            </div>
-          </CardContent>
-        </Card> */}
       </div>
     </div>
   );

@@ -167,7 +167,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           <div>
             {formatDate(
               new Date(row.getValue("start_datetime")),
-              "dd-MM-yyyy HH:mm a",
+              "dd-MM-yyyy HH:mm",
             )}
           </div>
         );
@@ -196,7 +196,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           <div>
             {formatDate(
               new Date(row.getValue("end_datetime")),
-              "dd-MM-yyyy HH:mm a ",
+              "dd-MM-yyyy HH:mm",
             )}
           </div>
         );

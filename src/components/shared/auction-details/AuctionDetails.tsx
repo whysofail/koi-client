@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import AdminControls from "./AdminControls";
+import AdminControls from "./AdminControls/AdminControls";
 import AdminContent from "./AdminContent";
 import UserContent from "./UserContent";
 import UserHeader from "./UserHeader";
@@ -43,7 +43,13 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
     <div className="container mx-auto p-6">
       <BackButton />
       {isAdmin ? (
-        <AdminControls auctionID={auctionID} />
+        <AdminControls
+          token={token}
+          auctionId={auctionID}
+          bid_increment={auction.bid_increment}
+          reserve_price={auction.reserve_price}
+          koiId={auction.item}
+        />
       ) : (
         <UserHeader title={auction.title} description={auction.description} />
       )}

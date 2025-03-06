@@ -110,7 +110,11 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
                                 field.onChange(newDate);
                               }
                             }}
-                            disabled={(date) => date < new Date()}
+                            disabled={(date) => {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              return date < today;
+                            }}
                             initialFocus
                           />
                         </PopoverContent>
@@ -170,9 +174,16 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
                             }}
                             disabled={(date) => {
                               const startDate = form.getValues("startDateTime");
+                              const startDay = startDate
+                                ? new Date(startDate)
+                                : new Date();
+                              startDay.setHours(0, 0, 0, 0);
+
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+
                               return (
-                                date < new Date() ||
-                                (startDate && date < startDate)
+                                date < today || (startDate && date < startDay)
                               );
                             }}
                             initialFocus
