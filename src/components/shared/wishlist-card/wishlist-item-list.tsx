@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Wishlist } from "@/types/wishlistTypes";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
-import { getTimeRemaining } from "@/lib/utils";
+import { getStartDateTime, getTimeRemaining } from "@/lib/utils";
+import { AuctionStatus } from "@/types/auctionTypes";
 
 interface WishlistItemListProps {
   wishlist: Wishlist;
@@ -23,6 +24,19 @@ export function WishlistItemList({
       onRemoveFromWishlist(wishlist.wishlist_id);
     }
   };
+  let time = "";
+  switch (wishlist.auction.status) {
+    case AuctionStatus.PUBLISHED:
+      time = `Starting ${getStartDateTime(wishlist.auction.start_datetime)}`;
+      break;
+    case AuctionStatus.STARTED:
+      time = `Ending ${getTimeRemaining(wishlist.auction.end_datetime)}`;
+      break;
+    case AuctionStatus.COMPLETED:
+      time = `Ended ${getTimeRemaining(wishlist.auction.end_datetime)}`;
+      break;
+    default:
+  }
 
   return (
     <Card className="overflow-hidden">
@@ -58,18 +72,16 @@ export function WishlistItemList({
           </p>
 
           <div className="mt-auto flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-4">
               <div>
                 <p className="text-sm font-medium">Current bid:</p>
                 <p className="text-lg font-bold">
-                  ${wishlist.auction.current_highest_bid}
+                  ${wishlist.auction.current_highest_bid ?? 0}
                 </p>
               </div>
               <div className="text-muted-foreground flex items-center gap-1 text-sm">
                 <Timer className="h-4 w-4" />
-                <span>
-                  Ending {getTimeRemaining(wishlist.auction.end_datetime)}
-                </span>
+                <span>{time}</span>
               </div>
             </div>
             <Button>View Auction</Button>

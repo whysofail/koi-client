@@ -23,6 +23,7 @@ const roleAccessMap = {
     "/dashboard/notifications",
     "/dashboard/wishlist",
     "/dashboard/bids",
+    "/dashboard/auctions",
   ],
 };
 

@@ -21,7 +21,7 @@ const useGetLoggedInUserWishlist = (
   options?: { enabled?: boolean },
 ) => {
   return useQuery({
-    queryKey: ["Wishlist"],
+    queryKey: ["wishlist"],
     queryFn: () => getLoggedInUserWishlist(token),
     enabled: options?.enabled,
   });

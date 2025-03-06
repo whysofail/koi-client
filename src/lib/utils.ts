@@ -20,6 +20,11 @@ export const getTimeRemaining = (endDatetime: string) => {
   return formatDistanceToNow(endDate, { addSuffix: true });
 };
 
+export const getStartDateTime = (startDatetime: string) => {
+  const startDate = new Date(startDatetime);
+  return formatDistanceToNow(startDate, { addSuffix: true });
+};
+
 export const truncateText = (text: string, maxLength: number) => {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + "...";

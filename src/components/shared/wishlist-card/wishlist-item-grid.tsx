@@ -12,7 +12,9 @@ import {
 } from "@/components/ui/card";
 import type { Wishlist } from "@/types/wishlistTypes";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
-import { getTimeRemaining } from "@/lib/utils";
+import { getStartDateTime, getTimeRemaining } from "@/lib/utils";
+import { AuctionStatus } from "@/types/auctionTypes";
+import Link from "next/link";
 
 interface WishlistItemGridProps {
   wishlist: Wishlist;
@@ -25,9 +27,22 @@ export function WishlistItemGrid({
 }: WishlistItemGridProps) {
   const handleRemoveFromWishlist = () => {
     if (onRemoveFromWishlist) {
-      onRemoveFromWishlist(wishlist.wishlist_id);
+      onRemoveFromWishlist(wishlist.auction_id);
     }
   };
+  let time = "";
+  switch (wishlist.auction.status) {
+    case AuctionStatus.PUBLISHED:
+      time = `Starting ${getStartDateTime(wishlist.auction.start_datetime)}`;
+      break;
+    case AuctionStatus.STARTED:
+      time = `Ending ${getTimeRemaining(wishlist.auction.end_datetime)}`;
+      break;
+    case AuctionStatus.COMPLETED:
+      time = `Ended ${getTimeRemaining(wishlist.auction.end_datetime)}`;
+      break;
+    default:
+  }
 
   return (
     <Card className="flex h-full flex-col overflow-hidden">
@@ -63,7 +78,7 @@ export function WishlistItemGrid({
         </p>
         <div className="text-muted-foreground mb-2 flex items-center gap-1 text-sm">
           <Timer className="h-4 w-4" />
-          <span>Ending {getTimeRemaining(wishlist.auction.end_datetime)}</span>
+          <span>{time}</span>
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-between p-4 pt-0">
@@ -73,7 +88,11 @@ export function WishlistItemGrid({
             ${wishlist.auction.current_highest_bid ?? "0"}
           </p>
         </div>
-        <Button size="sm">View Auction</Button>
+        <Button size="sm">
+          <Link href={`/auctions/${wishlist.auction.auction_id}`}>
+            View Auction
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

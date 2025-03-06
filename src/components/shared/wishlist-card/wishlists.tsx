@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import type { Wishlist } from "@/types/wishlistTypes";
 import { EmptyWishlist } from "./empty-wishlist";
 import { ViewToggle } from "./view-toggle";
 import { GridView } from "./grid-view";
@@ -11,14 +10,11 @@ import WishlistCardViewModel from "./wishlist-card.viewModel";
 
 interface WishlistCardProps {
   user: User;
-  onRemoveFromWishlist?: (wishlistId: string) => void;
 }
 
-export function WishlistCard({
-  user,
-  onRemoveFromWishlist,
-}: WishlistCardProps) {
-  const { wishlistData, isLoading } = WishlistCardViewModel({ user });
+export function WishlistCard({ user }: WishlistCardProps) {
+  const { wishlistData, isLoading, handleRemoveFromWishlist } =
+    WishlistCardViewModel({ user });
   const wishlists = wishlistData?.data ?? [];
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
@@ -44,12 +40,12 @@ export function WishlistCard({
       {viewMode === "grid" ? (
         <GridView
           wishlists={wishlists}
-          onRemoveFromWishlist={onRemoveFromWishlist}
+          onRemoveFromWishlist={handleRemoveFromWishlist}
         />
       ) : (
         <ListView
           wishlists={wishlists}
-          onRemoveFromWishlist={onRemoveFromWishlist}
+          onRemoveFromWishlist={handleRemoveFromWishlist}
         />
       )}
     </div>

@@ -112,7 +112,7 @@ const userNavigation = [
       {
         title: "My Auction",
         icon: Package,
-        href: "/dashboard/listings",
+        href: "/dashboard/auctions",
       },
       {
         title: "My Bids",
@@ -120,7 +120,7 @@ const userNavigation = [
         href: "/dashboard/bids",
       },
       {
-        title: "Watchlist",
+        title: "Wishlist",
         icon: Heart,
         href: "/dashboard/wishlist",
       },
