@@ -1,4 +1,5 @@
 import { AuctionParticipant } from "./auctionParticipantTypes";
+import { PaginatedResponse } from "./baseType";
 
 export enum AuctionOrderBy {
   AUCTION_ID = "auction_id",
@@ -31,15 +32,6 @@ export interface AuctionFilters {
   status?: AuctionStatus;
   orderBy?: AuctionOrderBy;
   order?: "ASC" | "DESC";
-}
-
-interface PaginatedResponse<T> {
-  status: string;
-  message: string;
-  data: T[];
-  count: number;
-  page: number;
-  limit: number;
 }
 
 export type CreateAuctionBody = {
@@ -75,7 +67,7 @@ export interface Auction {
   item: string;
   start_datetime: string;
   end_datetime: string;
-  status: string;
+  status: AuctionStatus;
   current_highest_bid: string;
   reserve_price: string;
   bid_increment: string;

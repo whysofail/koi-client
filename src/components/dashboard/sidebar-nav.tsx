@@ -104,11 +104,6 @@ const userNavigation = [
         icon: WalletMinimal,
         href: "/dashboard/transactions",
       },
-      {
-        title: "My Bids",
-        icon: Gavel,
-        href: "/dashboard/bids",
-      },
     ],
   },
   {
@@ -118,6 +113,11 @@ const userNavigation = [
         title: "My Auction",
         icon: Package,
         href: "/dashboard/listings",
+      },
+      {
+        title: "My Bids",
+        icon: Gavel,
+        href: "/dashboard/bids",
       },
       {
         title: "Watchlist",
