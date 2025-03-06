@@ -156,6 +156,69 @@ test.describe.parallel("User Management", () => {
         page.getByRole("cell", { name: "Registration Date" }),
       ).toBeVisible();
     });
+
+    test("should hide all columns", async ({ page }) => {
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Username" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Email" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Balance" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Status" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page
+        .getByRole("menuitemcheckbox", { name: "Registration Date" })
+        .click();
+
+      await expect(
+        page.getByRole("cell", { name: "Username" }),
+      ).not.toBeVisible();
+      await expect(page.getByRole("cell", { name: "Email" })).not.toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "Balance" }),
+      ).not.toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "Registration Date" }),
+      ).not.toBeVisible();
+    });
+
+    test("should show all columns", async ({ page }) => {
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Username" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Email" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Balance" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Status" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page
+        .getByRole("menuitemcheckbox", { name: "Registration Date" })
+        .click();
+
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "ID" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Username" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Email" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Balance" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page.getByRole("menuitemcheckbox", { name: "Status" }).click();
+      await page.getByRole("button", { name: "Columns" }).click();
+      await page
+        .getByRole("menuitemcheckbox", { name: "Registration Date" })
+        .click();
+
+      await expect(page.getByRole("cell", { name: "Username" })).toBeVisible();
+      await expect(page.getByRole("cell", { name: "Email" })).toBeVisible();
+      await expect(page.getByRole("cell", { name: "Balance" })).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "Registration Date" }),
+      ).toBeVisible();
+    });
   });
 
   test.describe("Sort feature", () => {

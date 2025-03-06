@@ -102,6 +102,17 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     );
   };
 
+  const getColumnLabel = (column: any) => {
+    if (column.id === "is_banned") return "Status";
+    if (column.id === "user_id") return "ID";
+    if (column.id === "wallet_balance") return "Balance";
+    if (column.id === "registration_date") return "Registration Date";
+    if (column.id === "username") return "Username";
+    if (column.id === "email") return "Email";
+    if (column.id === "actions") return "Actions";
+    return column.id;
+  };
+
   const columns: ColumnDef<UsersTableData>[] = [
     {
       accessorKey: "user_id",
@@ -379,21 +390,19 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
+              .filter(
+                (column) => column.getCanHide() && column.id !== "actions",
+              )
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {getColumnLabel(column)}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
