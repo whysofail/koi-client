@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import { Skeleton } from "../ui/skeleton";
 
 const TableSkeleton: FC = () => (
-  <div className="w-full space-y-4">
+  <div className="w-full space-y-4" data-testid="table-skeleton">
     <div className="flex items-center justify-between">
       <Skeleton className="h-10 w-[250px]" />
       <Skeleton className="h-10 w-[110px]" />

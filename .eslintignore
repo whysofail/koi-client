@@ -1,2 +1,3 @@
 src/components/ui
 tailwind.config.ts
+next.config.js

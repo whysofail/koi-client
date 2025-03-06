@@ -18,6 +18,7 @@ import {
   Eye,
   ExternalLink,
   AlertCircle,
+  X,
 } from "lucide-react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format as formatDate } from "date-fns";
@@ -78,6 +79,8 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     registrationDateTo,
     setRegistrationDateFrom,
     setRegistrationDateTo,
+    resetRegistrationDateFrom,
+    resetRegistrationDateTo,
     pageIndex,
     role,
     handlePageSizeChange,
@@ -97,6 +100,17 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
     ) : (
       <ArrowDown className="ml-2 h-4 w-4" />
     );
+  };
+
+  const getColumnLabel = (column: any) => {
+    if (column.id === "is_banned") return "Status";
+    if (column.id === "user_id") return "ID";
+    if (column.id === "wallet_balance") return "Balance";
+    if (column.id === "registration_date") return "Registration Date";
+    if (column.id === "username") return "Username";
+    if (column.id === "email") return "Email";
+    if (column.id === "actions") return "Actions";
+    return column.id;
   };
 
   const columns: ColumnDef<UsersTableData>[] = [
@@ -282,49 +296,89 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
             />
           </div>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-[180px] justify-start text-left font-normal"
+          <div className="flex gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <div className="relative">
+                  <Button
+                    data-testid="date-from-button"
+                    variant="outline"
+                    className="w-[180px] justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {registrationDateFrom
+                      ? formatDate(registrationDateFrom, "dd-MM-yyyy")
+                      : "From date"}
+                  </Button>
+                  {registrationDateFrom && (
+                    <Button
+                      size="icon"
+                      className="absolute -right-2 -top-2 h-5 w-5 rounded-full"
+                      data-testid="reset-date-from"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        resetRegistrationDateFrom();
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                data-testid="date-from-calendar"
+                className="w-auto p-0"
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {registrationDateFrom
-                  ? formatDate(registrationDateFrom, "dd-MM-yyyy")
-                  : "From date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={registrationDateFrom}
-                onSelect={setRegistrationDateFrom}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+                <Calendar
+                  mode="single"
+                  selected={registrationDateFrom}
+                  onSelect={setRegistrationDateFrom}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-[180px] justify-start text-left font-normal"
+            <Popover>
+              <PopoverTrigger asChild>
+                <div className="relative">
+                  <Button
+                    data-testid="date-to-button"
+                    variant="outline"
+                    className="w-[180px] justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {registrationDateTo
+                      ? formatDate(registrationDateTo, "dd-MM-yyyy")
+                      : "To date"}
+                  </Button>
+                  {registrationDateTo && (
+                    <Button
+                      size="icon"
+                      data-testid="reset-date-to"
+                      className="absolute -right-2 -top-2 h-5 w-5 rounded-full"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        resetRegistrationDateTo();
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                data-testid="date-to-calendar"
+                className="w-auto p-0"
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {registrationDateTo
-                  ? formatDate(registrationDateTo, "dd-MM-yyyy")
-                  : "To date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={registrationDateTo}
-                onSelect={setRegistrationDateTo}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+                <Calendar
+                  mode="single"
+                  selected={registrationDateTo}
+                  onSelect={setRegistrationDateTo}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         <DropdownMenu>
@@ -336,21 +390,19 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
+              .filter(
+                (column) => column.getCanHide() && column.id !== "actions",
+              )
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {getColumnLabel(column)}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -387,7 +439,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <AlertCircle className="h-5 w-5" />
-                    <span>
+                    <span data-testid="error-message">
                       Error loading users data. Please try again later.
                     </span>
                   </div>
