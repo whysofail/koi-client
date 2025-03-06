@@ -59,6 +59,8 @@ export type UpdateAuctionBody = {
   reserve_price?: string;
   bid_increment?: string;
   status?: AuctionStatus;
+  winner_id?: string;
+  final_price?: string;
 };
 
 interface User {
