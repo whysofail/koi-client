@@ -15,13 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import KoiAuctionFormViewModel from "./KoiAuctionForm.viewModel";
 import { AuctionStatus } from "@/types/auctionTypes";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-  SelectTrigger,
-} from "@/components/ui/select";
 
 type KoiAuctionFormProps = {
   token: string;
@@ -36,11 +29,6 @@ type KoiAuctionFormProps = {
     status: AuctionStatus;
   };
 };
-
-const allowedStatuses: AuctionStatus[] = [
-  AuctionStatus.DRAFT,
-  AuctionStatus.PUBLISHED,
-];
 
 const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
   token,
@@ -215,7 +203,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
                 </FormItem>
               )}
             />
-            {operation === "update" && (
+            {/* {operation === "update" && (
               <FormField
                 control={form.control}
                 name="status"
@@ -254,7 +242,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
                   </FormItem>
                 )}
               />
-            )}
+            )} */}
           </div>
         </div>
 

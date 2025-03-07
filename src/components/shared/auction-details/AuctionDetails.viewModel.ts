@@ -38,7 +38,6 @@ export const useAuctionDetailsViewModel = (
       console.log("Bids data updated:", {
         time: new Date().toISOString(),
         count: bidsData.data.length,
-        latest: bidsData.data[0],
       });
     }
   }, [bidsData]);

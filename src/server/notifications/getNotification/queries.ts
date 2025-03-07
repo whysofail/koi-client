@@ -30,12 +30,15 @@ const fetchUserNotifications = async ({
 
 export const useUserNotifications = ({
   token,
-  ...params
+  page = 1,
+  limit = 10,
 }: FetchNotificationsParams) => {
   return useQuery({
-    queryKey: ["notifications", params],
-    queryFn: () => fetchUserNotifications({ token, ...params }),
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    placeholderData: (previousData) => previousData, // This replaces keepPreviousData
+    queryKey: ["notifications", { page, limit }], // Simplified query key
+    queryFn: () => fetchUserNotifications({ token, page, limit }),
+    staleTime: 1000 * 60 * 5, // 5 minutes stale time
+    gcTime: 1000 * 60 * 10, // 10 minutes cache time
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
+    refetchOnMount: false, // Prevent refetch on component mount
   });
 };

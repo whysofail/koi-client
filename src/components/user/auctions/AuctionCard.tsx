@@ -12,12 +12,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { Auction } from "@/types/auctionTypes";
-import { DetailedBid } from "@/types/bidTypes";
+import { Bid } from "@/types/bidTypes";
 import { FC } from "react";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 interface AuctionCardProps {
   auction: Omit<Auction, "bids" | "participants" | "user">;
-  userBid: Omit<DetailedBid, "user" | "auction">;
+  userBid?: Bid | null;
   currentUserId: string;
 }
 
@@ -28,13 +29,13 @@ const AuctionCard: FC<AuctionCardProps> = ({ auction, userBid }) => {
     ? "Ended"
     : formatDistanceToNow(endDate, { addSuffix: true });
 
-  const userBidAmount = Number.parseFloat(userBid.bid_amount);
+  const userBidAmount = Number.parseFloat(userBid?.bid_amount ?? "0") || 0;
 
   return (
     <Card className="flex flex-col">
       <div className="relative aspect-square overflow-hidden">
         <Image
-          src="/placeholder.svg"
+          src="/placeholder.webp"
           alt={auction.title}
           fill
           className="object-cover transition-transform hover:scale-105"
@@ -54,7 +55,7 @@ const AuctionCard: FC<AuctionCardProps> = ({ auction, userBid }) => {
           <div className="flex items-center text-sm">
             <DollarSign className="text-muted-foreground mr-2 h-4 w-4" />
             <span className="font-medium">
-              Your bid: Rp. {userBidAmount.toLocaleString()}
+              Your bid: {formatCurrency(userBidAmount)}
             </span>
           </div>
           <div className="flex items-center text-sm">
@@ -66,7 +67,7 @@ const AuctionCard: FC<AuctionCardProps> = ({ auction, userBid }) => {
               <Crown className="text-muted-foreground mr-2 h-4 w-4" />
               <span>
                 Current highest: Rp.{" "}
-                {Number(auction.current_highest_bid).toLocaleString()}
+                {formatCurrency(Number(auction.current_highest_bid))}
               </span>
             </div>
           )}

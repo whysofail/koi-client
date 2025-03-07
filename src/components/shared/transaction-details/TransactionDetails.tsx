@@ -141,9 +141,7 @@ const TransactionDetails = ({
                   <h3 className="mb-4 text-lg font-semibold sm:text-xl">
                     Proof of Payment
                   </h3>
-                  <p className="text-muted-foreground mb-4 break-all text-xs sm:text-sm">
-                    {transaction.proof_of_payment}
-                  </p>
+
                   <Dialog
                     open={isImageExpanded}
                     onOpenChange={setIsImageExpanded}
