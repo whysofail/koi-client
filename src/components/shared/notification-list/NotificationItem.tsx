@@ -44,7 +44,9 @@ export default function NotificationItem({
     <div
       onClick={handleClick}
       className={`cursor-pointer rounded-lg p-4 shadow transition hover:bg-gray-100 ${
-        status === "READ" ? "bg-gray-50" : "border-l-4 border-blue-500 bg-white"
+        status === "READ"
+          ? "bg-gray-50 dark:bg-black"
+          : "dark:bg-dark border-l-4 border-blue-500 bg-white"
       }`}
     >
       <div className="flex items-start">
@@ -59,12 +61,14 @@ export default function NotificationItem({
           <h2>{type}</h2>
           <p
             className={`text-sm font-medium ${
-              status === "READ" ? "text-gray-600" : "text-gray-900"
+              status === "READ"
+                ? "text-gray-600 dark:text-slate-100"
+                : "text-gray-900 dark:text-slate-200"
             }`}
           >
             {message}
           </p>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-500 dark:text-slate-200">
             {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
           </p>
         </div>

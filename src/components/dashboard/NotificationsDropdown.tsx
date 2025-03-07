@@ -1,6 +1,5 @@
 "use client";
-
-import { FC, useEffect, useState } from "react";
+import { FC, useState, useMemo, memo } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,12 +15,14 @@ import { User } from "next-auth";
 import NotificationList from "./Notifications/NotificationDropdownList";
 import { useSocket } from "@/hooks/use-socket";
 import useNotificationViewModel from "./Notifications/NotificationDropdown.viewModel";
-import { Notification } from "@/types/notificationTypes";
 import Link from "next/link";
 
 interface NotificationsDropdownProps {
   user: User;
 }
+
+// Memoized list item to prevent unnecessary renders
+const MemoizedNotificationList = memo(NotificationList);
 
 const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   const accessToken = user.accessToken;
@@ -30,9 +31,10 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   // Socket setup
   const { authSocket } = useSocket(accessToken);
 
-  // Notification ViewModel
+  // Notification ViewModel with memoization
   const {
     notifications,
+    unreadCount,
     isNotificationsLoading,
     notificationsError,
     handleMarkAsRead,
@@ -40,17 +42,10 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
     isMarkingAsRead,
   } = useNotificationViewModel({ token: accessToken, authSocket });
 
-  // State for unread count
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  useEffect(() => {
-    setUnreadCount(
-      notifications.filter((n: Notification) => n.status === "UNREAD").length,
-    );
+  // Memoize displayed notifications to prevent unnecessary calculations
+  const displayedNotifications = useMemo(() => {
+    return notifications.slice(0, 5);
   }, [notifications]);
-
-  // Limit displayed notifications to 5
-  const displayedNotifications = notifications.slice(0, 5);
 
   const handleViewAll = () => {
     setOpen(false);
@@ -101,7 +96,7 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
             No notifications
           </DropdownMenuItem>
         ) : (
-          <NotificationList
+          <MemoizedNotificationList
             notifications={displayedNotifications}
             onMarkAsRead={handleMarkAsRead}
             isMarkingAsRead={isMarkingAsRead}
@@ -124,4 +119,4 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
   );
 };
 
-export default NotificationsDropdown;
+export default memo(NotificationsDropdown);

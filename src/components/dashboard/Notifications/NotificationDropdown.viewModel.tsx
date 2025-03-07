@@ -1,16 +1,21 @@
-import { useCallback } from "react";
+import { useCallback, useMemo, useRef, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Notification } from "@/types/notificationTypes";
+import { fetchUserNotifications } from "@/server/notifications/getNotification/queries";
 import { useMarkNotificationAsRead } from "@/server/notifications/markAsRead/mutation";
 import { useMarkAllNotificationsAsRead } from "@/server/notifications/markAllAsRead/mutation";
 import { useUserNotifications } from "@/server/notifications/getNotification/queries";
 import { useNotificationSocket } from "@/hooks/useNotificationSocket";
 import { Socket } from "socket.io-client";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 interface UseNotificationViewModelProps {
   token: string;
   authSocket: Socket | null;
 }
+
+// Centralized query key generator
+const NOTIFICATIONS_QUERY_KEY = "notifications";
 
 const useNotificationViewModel = ({
   token,
@@ -19,14 +24,25 @@ const useNotificationViewModel = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
 
-  // Only use pagination params if on dashboard
-  const shouldPaginate = pathname === "/dashboard";
-  const pageIndex = shouldPaginate ? Number(searchParams.get("page")) || 1 : 1;
-  const pageSize = shouldPaginate
-    ? Number(searchParams.get("limit")) || 10
-    : 100;
+  // Track previous path to detect navigation
+  const prevPathRef = useRef(pathname);
 
+  // Memoize the pagination decision to prevent unnecessary recalculations
+  const { shouldPaginate, pageIndex, pageSize } = useMemo(() => {
+    const isOnDashboard = pathname === "/dashboard";
+    return {
+      shouldPaginate: isOnDashboard,
+      pageIndex: isOnDashboard ? Number(searchParams.get("page")) || 1 : 1,
+      pageSize: isOnDashboard ? Number(searchParams.get("limit")) || 10 : 100,
+    };
+  }, [pathname, searchParams]);
+
+  // Setup socket listening for real-time updates
+  useNotificationSocket({ authSocket });
+
+  // Memoize the query string creation function
   const createQueryString = useCallback(
     (updates: Record<string, string | undefined>) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -44,10 +60,7 @@ const useNotificationViewModel = ({
     [searchParams],
   );
 
-  const queryClient = useQueryClient();
-  useNotificationSocket({ authSocket });
-
-  // Fetch user notifications with conditional pagination
+  // Fetch user notifications with memoized parameters
   const {
     data: notifications,
     isLoading: isNotificationsLoading,
@@ -58,6 +71,59 @@ const useNotificationViewModel = ({
     limit: pageSize,
   });
 
+  // Effect to prefetch next/prev pages for smoother pagination
+  useEffect(() => {
+    if (shouldPaginate && token) {
+      // Prefetch next page
+      queryClient.prefetchQuery({
+        queryKey: [
+          NOTIFICATIONS_QUERY_KEY,
+          { page: pageIndex + 1, limit: pageSize },
+        ],
+        queryFn: () =>
+          fetchUserNotifications({
+            token,
+            page: pageIndex + 1,
+            limit: pageSize,
+          }),
+      });
+
+      // Prefetch previous page if not on page 1
+      if (pageIndex > 1) {
+        queryClient.prefetchQuery({
+          queryKey: [
+            NOTIFICATIONS_QUERY_KEY,
+            { page: pageIndex - 1, limit: pageSize },
+          ],
+          queryFn: () =>
+            fetchUserNotifications({
+              token,
+              page: pageIndex - 1,
+              limit: pageSize,
+            }),
+        });
+      }
+    }
+  }, [pageIndex, pageSize, shouldPaginate, token, queryClient]);
+
+  // Detect path changes to avoid unnecessary refetches
+  useEffect(() => {
+    if (prevPathRef.current !== pathname) {
+      prevPathRef.current = pathname;
+    }
+  }, [pathname]);
+
+  // Memoize the notifications data to avoid unnecessary rerenders
+  const notificationData = useMemo(() => {
+    return notifications?.data.data || [];
+  }, [notifications]);
+
+  // Memoize unread count calculation
+  const unreadCount = useMemo(() => {
+    return notificationData.filter((n: Notification) => n.status === "UNREAD")
+      .length;
+  }, [notificationData]);
+
   // Mutation to mark a single notification as read
   const { mutate: markAsRead, isPending: isMarkingAsRead } =
     useMarkNotificationAsRead(token);
@@ -66,16 +132,76 @@ const useNotificationViewModel = ({
   const { mutate: markAllAsRead, isPending: isMarkingAllAsRead } =
     useMarkAllNotificationsAsRead(token);
 
-  // Handler for marking a single notification as read
-  const handleMarkAsRead = (notificationId: string) => {
-    markAsRead(notificationId);
-  };
+  // Optimistic update utility for marking a single notification as read
+  const optimisticMarkAsRead = useCallback(
+    (notificationId: string) => {
+      queryClient.setQueriesData(
+        { queryKey: [NOTIFICATIONS_QUERY_KEY] },
+        (oldData: any) => {
+          if (!oldData) return oldData;
 
-  // Handler for marking all notifications as read
-  const handleMarkAllAsRead = () => {
-    markAllAsRead();
-  };
+          return {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              data: oldData.data.data.map((notification: Notification) =>
+                notification.notification_id === notificationId
+                  ? { ...notification, status: "READ" }
+                  : notification,
+              ),
+            },
+          };
+        },
+      );
+    },
+    [queryClient],
+  );
 
+  // Handler for marking a single notification as read with optimistic updates
+  const handleMarkAsRead = useCallback(
+    (notificationId: string) => {
+      optimisticMarkAsRead(notificationId);
+      markAsRead(notificationId, {
+        onError: () => {
+          // Revert optimistic update on error
+          queryClient.invalidateQueries({
+            queryKey: [NOTIFICATIONS_QUERY_KEY],
+          });
+        },
+      });
+    },
+    [markAsRead, optimisticMarkAsRead, queryClient],
+  );
+
+  // Handler for marking all notifications as read with optimistic updates
+  const handleMarkAllAsRead = useCallback(() => {
+    queryClient.setQueriesData(
+      { queryKey: [NOTIFICATIONS_QUERY_KEY] },
+      (oldData: any) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            data: oldData.data.data.map((notification: Notification) => ({
+              ...notification,
+              status: "READ",
+            })),
+          },
+        };
+      },
+    );
+
+    markAllAsRead(undefined, {
+      onError: () => {
+        // Revert optimistic update on error
+        queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] });
+      },
+    });
+  }, [markAllAsRead, queryClient]);
+
+  // Memoized pagination handlers
   const setPageIndex = useCallback(
     (page: number) => {
       if (!shouldPaginate) return;
@@ -94,13 +220,14 @@ const useNotificationViewModel = ({
     [createQueryString, router, shouldPaginate],
   );
 
-  // Optional: Refetch notifications
-  const refetchNotifications = () => {
-    queryClient.invalidateQueries({ queryKey: ["notifications"] });
-  };
+  // Memoized refetch function
+  const refetchNotifications = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] });
+  }, [queryClient]);
 
   return {
-    notifications: notifications?.data.data || [],
+    notifications: notificationData,
+    unreadCount,
     isNotificationsLoading,
     notificationsError,
     handleMarkAsRead,
