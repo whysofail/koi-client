@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Notification } from "@/types/notificationTypes";
 import NotificationItem from "./NotificationDropdownItem";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -7,6 +8,13 @@ interface NotificationListProps {
   onMarkAsRead: (notificationId: string) => void;
   isMarkingAsRead: boolean;
 }
+
+// Empty state component for better reusability
+const EmptyNotifications = () => (
+  <DropdownMenuItem className="text-muted-foreground text-center">
+    No new notifications
+  </DropdownMenuItem>
+);
 
 const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
@@ -25,12 +33,11 @@ const NotificationList: React.FC<NotificationListProps> = ({
           />
         ))
       ) : (
-        <DropdownMenuItem className="text-muted-foreground text-center">
-          No new notifications
-        </DropdownMenuItem>
+        <EmptyNotifications />
       )}
     </>
   );
 };
 
-export default NotificationList;
+// Memoize the component to prevent unnecessary re-renders
+export default memo(NotificationList);

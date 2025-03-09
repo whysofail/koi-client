@@ -1,23 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import { GetNotificationResponse } from "@/types/notificationTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { AxiosResponse } from "axios";
 
 interface FetchNotificationsParams {
   token: string;
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
 }
 
-const fetchUserNotifications = async ({
+export const fetchUserNotifications = async ({
   token,
   page = 1,
   limit = 10,
-}: FetchNotificationsParams) => {
+}: FetchNotificationsParams): Promise<
+  AxiosResponse<GetNotificationResponse>
+> => {
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
   });
-  const response = await fetchWithAuth.get<GetNotificationResponse>(
+
+  return fetchWithAuth.get<GetNotificationResponse>(
     `/notifications/me?${params.toString()}`,
     {
       headers: {
@@ -25,17 +29,25 @@ const fetchUserNotifications = async ({
       },
     },
   );
-  return response;
 };
 
 export const useUserNotifications = ({
   token,
-  ...params
+  page = 1,
+  limit = 10,
 }: FetchNotificationsParams) => {
-  return useQuery({
-    queryKey: ["notifications", params],
-    queryFn: () => fetchUserNotifications({ token, ...params }),
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    placeholderData: (previousData) => previousData, // This replaces keepPreviousData
+  return useQuery<AxiosResponse<GetNotificationResponse>, Error>({
+    queryKey: ["notifications", { token, page, limit }],
+    queryFn: () => fetchUserNotifications({ token, page, limit }),
+    staleTime: 1000 * 60 * 5, // 5 minutes stale time
+    gcTime: 1000 * 60 * 10, // 10 minutes cache time
+
+    placeholderData: (previousData) => {
+      // Return the previous data to avoid loading states during pagination
+      return previousData;
+    },
+
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };

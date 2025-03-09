@@ -1,3 +1,6 @@
+import { Auction } from "./auctionTypes";
+import { Bid } from "./bidTypes";
+
 export interface AuctionParticipant {
   auction_participant_id: string;
   joined_at: string; // ISO date string
@@ -6,4 +9,21 @@ export interface AuctionParticipant {
     username: string;
   };
   participants_count: number;
+}
+
+export interface JoinedAuctionParticipant {
+  auction_participant_id: string;
+  joined_at: string; // ISO date string
+  auction: Auction;
+  bids: Bid[];
+  lastBid: Bid | null;
+}
+
+export interface JoinedAuctionParticipantResponse {
+  status: string;
+  message: string;
+  data: JoinedAuctionParticipant[];
+  count: number;
+  page: number;
+  limit: number;
 }
