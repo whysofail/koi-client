@@ -62,12 +62,12 @@ export function WishlistItemList({
               size="icon"
               onClick={handleRemoveFromWishlist}
             >
-              <Heart className="fill-primary text-primary h-5 w-5" />
+              <Heart className="h-5 w-5 fill-primary text-primary" />
               <span className="sr-only">Remove from wishlist</span>
             </Button>
           </div>
 
-          <p className="text-muted-foreground my-2 line-clamp-2 text-sm md:line-clamp-3">
+          <p className="my-2 line-clamp-2 text-sm text-muted-foreground md:line-clamp-3">
             {wishlist.auction.description}
           </p>
 
@@ -79,7 +79,7 @@ export function WishlistItemList({
                   ${wishlist.auction.current_highest_bid ?? 0}
                 </p>
               </div>
-              <div className="text-muted-foreground flex items-center gap-1 text-sm">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Timer className="h-4 w-4" />
                 <span>{time}</span>
               </div>

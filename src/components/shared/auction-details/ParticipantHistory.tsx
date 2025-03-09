@@ -19,7 +19,7 @@ export function ParticipantHistory({ participants }: ParticipantHistoryProps) {
   if (participants.length === 0) {
     return (
       <div className="py-4 text-center">
-        <p className="text-muted-foreground text-sm">No participants yet</p>
+        <p className="text-sm text-muted-foreground">No participants yet</p>
       </div>
     );
   }
@@ -44,8 +44,8 @@ export function ParticipantHistory({ participants }: ParticipantHistoryProps) {
               ) :
                */}
 
-                <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full">
-                  <User className="text-muted-foreground h-4 w-4" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                  <User className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
               <div className="min-w-0 flex-grow">
@@ -59,7 +59,7 @@ export function ParticipantHistory({ participants }: ParticipantHistoryProps) {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(participants.joined_at), {
                         addSuffix: true,
                       })}

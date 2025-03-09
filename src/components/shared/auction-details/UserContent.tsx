@@ -50,7 +50,7 @@ const UserContent: React.FC<UserContentProps> = ({
           <CardContent className="grid gap-4 p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-muted-foreground text-sm">Current Bid</p>
+                <p className="text-sm text-muted-foreground">Current Bid</p>
                 <p className="text-3xl font-bold">
                   {currentBid > 0
                     ? `Rp. ${currentBid.toLocaleString()}`
@@ -77,11 +77,11 @@ const UserContent: React.FC<UserContentProps> = ({
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 QueryClient
-                <Clock className="text-muted-foreground h-4 w-4" />
+                <Clock className="h-4 w-4 text-muted-foreground" />
                 <span>Ends in 2 days</span>
               </div>
               <div className="flex items-center gap-2">
-                <User className="text-muted-foreground h-4 w-4" />
+                <User className="h-4 w-4 text-muted-foreground" />
                 <span>{auction.participants.length} watching</span>
               </div>
             </div>
@@ -103,19 +103,19 @@ const UserContent: React.FC<UserContentProps> = ({
 
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Truck className="text-muted-foreground h-4 w-4" />
+                <Truck className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="font-medium">Shipping Available</p>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     Calculated at checkout
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <CreditCard className="text-muted-foreground h-4 w-4" />
+                <CreditCard className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="font-medium">Secure Payment</p>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     Major credit cards accepted
                   </p>
                 </div>

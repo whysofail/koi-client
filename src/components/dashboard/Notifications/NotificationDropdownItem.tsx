@@ -75,13 +75,13 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     >
       <div className="flex w-full justify-between">
         <span className="font-medium">{notification.type}</span>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           {formatDistanceToNow(new Date(notification.created_at), {
             addSuffix: true,
           })}
         </span>
       </div>
-      <span className="text-muted-foreground text-sm">
+      <span className="text-sm text-muted-foreground">
         {notification.message}
       </span>
     </DropdownMenuItem>

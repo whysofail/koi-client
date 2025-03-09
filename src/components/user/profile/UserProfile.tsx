@@ -51,23 +51,23 @@ const UserProfileContent: FC<{
             <CardTitle className="text-lg font-semibold">
               User Information
             </CardTitle>
-            <User className="text-muted-foreground h-5 w-5" />
+            <User className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <Users className="text-primary h-5 w-5" />
+                <Users className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-muted-foreground text-sm font-medium">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Username
                   </p>
                   <p className="text-sm font-semibold">{user.username}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Calendar className="text-primary h-5 w-5" />
+                <Calendar className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-muted-foreground text-sm font-medium">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Registration Date
                   </p>
                   <p className="text-sm font-semibold">
@@ -77,7 +77,7 @@ const UserProfileContent: FC<{
               </div>
 
               <div className="flex items-center space-x-3">
-                <Shield className="text-primary h-5 w-5" />
+                <Shield className="h-5 w-5 text-primary" />
                 <div>
                   <p className="text-sm font-semibold">
                     <UserStatusBadge isBanned={user.is_banned} />
@@ -93,23 +93,23 @@ const UserProfileContent: FC<{
             <CardTitle className="text-lg font-semibold">
               Contact Information
             </CardTitle>
-            <Mail className="text-muted-foreground h-5 w-5" />
+            <Mail className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <Mail className="text-primary h-5 w-5" />
+                <Mail className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-muted-foreground text-sm font-medium">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Email
                   </p>
                   <p className="text-sm font-semibold">{user.email}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone className="text-primary h-5 w-5" />
+                <Phone className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="text-muted-foreground text-sm font-medium">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Phone
                   </p>
                   <p className="text-sm font-semibold">{user.phone}</p>
@@ -124,18 +124,18 @@ const UserProfileContent: FC<{
             <CardTitle className="text-lg font-semibold">
               Wallet Information
             </CardTitle>
-            <Wallet className="text-muted-foreground h-5 w-5" />
+            <Wallet className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <div className="space-y-4">
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Balance</p>
+                <p className="text-sm text-muted-foreground">Balance</p>
                 <p className="text-2xl font-bold">
                   {formatCurrency(user.wallet.balance)}
                 </p>
               </div>
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Last Updated</p>
+                <p className="text-sm text-muted-foreground">Last Updated</p>
                 <p className="text-sm font-medium">
                   {format(new Date(user.wallet.updated_at), "PPP")}
                 </p>

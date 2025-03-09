@@ -84,15 +84,15 @@ const NotificationsDropdown: FC<NotificationsDropdownProps> = ({ user }) => {
         </div>
         <DropdownMenuSeparator />
         {isNotificationsLoading ? (
-          <DropdownMenuItem className="text-muted-foreground text-center">
+          <DropdownMenuItem className="text-center text-muted-foreground">
             Loading...
           </DropdownMenuItem>
         ) : notificationsError ? (
-          <DropdownMenuItem className="text-muted-foreground text-center">
+          <DropdownMenuItem className="text-center text-muted-foreground">
             Error fetching notifications
           </DropdownMenuItem>
         ) : displayedNotifications.length === 0 ? (
-          <DropdownMenuItem className="text-muted-foreground text-center">
+          <DropdownMenuItem className="text-center text-muted-foreground">
             No notifications
           </DropdownMenuItem>
         ) : (

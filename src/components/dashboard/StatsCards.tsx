@@ -34,11 +34,11 @@ const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
           <Link href={"/dashboard/users"} passHref>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="text-muted-foreground h-4 w-4" />
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data?.data.userTotal}</div>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 +{data?.data.userTotalThisWeek} new this week
               </p>
             </CardContent>
@@ -50,13 +50,13 @@ const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
               <CardTitle className="text-sm font-medium">
                 Active Auctions
               </CardTitle>
-              <Package className="text-muted-foreground h-4 w-4" />
+              <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {data?.data.auctionsActive}
               </div>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 {data?.data.auctionsEndingSoon} ending today
               </p>
             </CardContent>
@@ -73,13 +73,13 @@ const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
               <CardTitle className="text-sm font-medium">
                 Pending Deposits
               </CardTitle>
-              <DollarSign className="text-muted-foreground h-4 w-4" />
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {data?.data.depositsPendingTotal}
               </div>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 These deposits are awaiting verification. Action required.
               </p>
             </CardContent>
@@ -91,7 +91,7 @@ const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
               <CardTitle className="text-sm font-medium">
                 Total Deposits
               </CardTitle>
-              <DollarSign className="text-muted-foreground h-4 w-4" />
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -109,41 +109,41 @@ const StatsCards = ({ isAdmin, token }: StatsCardsProps) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Active Bids</CardTitle>
-          <Gavel className="text-muted-foreground h-4 w-4" />
+          <Gavel className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">12</div>
-          <p className="text-muted-foreground text-xs">+2 from last week</p>
+          <p className="text-xs text-muted-foreground">+2 from last week</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">My Listings</CardTitle>
-          <Package className="text-muted-foreground h-4 w-4" />
+          <Package className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">8</div>
-          <p className="text-muted-foreground text-xs">+3 new today</p>
+          <p className="text-xs text-muted-foreground">+3 new today</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Watched Items</CardTitle>
-          <Heart className="text-muted-foreground h-4 w-4" />
+          <Heart className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">15</div>
-          <p className="text-muted-foreground text-xs">3 ending soon</p>
+          <p className="text-xs text-muted-foreground">3 ending soon</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Next Ending</CardTitle>
-          <Timer className="text-muted-foreground h-4 w-4" />
+          <Timer className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">2h 15m</div>
-          <p className="text-muted-foreground text-xs">Vintage Watch</p>
+          <p className="text-xs text-muted-foreground">Vintage Watch</p>
         </CardContent>
       </Card>
     </div>

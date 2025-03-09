@@ -58,8 +58,8 @@ const LatestAuctions: FC = () => {
     return (
       <Card>
         <CardContent className="flex items-center justify-center gap-2 pt-6">
-          <Info className="text-muted-foreground h-5 w-5" />
-          <p className="text-muted-foreground text-center">
+          <Info className="h-5 w-5 text-muted-foreground" />
+          <p className="text-center text-muted-foreground">
             No featured auctions available
           </p>
         </CardContent>
@@ -83,7 +83,7 @@ const LatestAuctions: FC = () => {
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="bg-muted relative aspect-square overflow-hidden rounded-md">
+            <div className="relative aspect-square overflow-hidden rounded-md bg-muted">
               <Image
                 src="/placeholder.webp"
                 alt={auction.title}
@@ -97,7 +97,7 @@ const LatestAuctions: FC = () => {
               <div className="text-lg font-bold">
                 {formatCurrency(auction.reserve_price)}
               </div>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Ends {format(new Date(auction.end_datetime), "MMM d, yyyy")}
               </p>
             </div>

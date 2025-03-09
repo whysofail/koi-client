@@ -62,16 +62,16 @@ const UserDetailsContent: FC<{
             <CardTitle className="text-sm font-medium">
               User Information
             </CardTitle>
-            <User className="text-muted-foreground h-4 w-4" />
+            <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Username</p>
+                <p className="text-sm text-muted-foreground">Username</p>
                 <p className="text-sm font-medium">{user.username}</p>
               </div>
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Registration Date
                 </p>
                 <p className="text-sm font-medium">
@@ -90,12 +90,12 @@ const UserDetailsContent: FC<{
             <CardTitle className="text-sm font-medium">
               Contact Information
             </CardTitle>
-            <Mail className="text-muted-foreground h-4 w-4" />
+            <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Email</p>
+                <p className="text-sm text-muted-foreground">Email</p>
                 <p className="text-sm font-medium">{user.email}</p>
               </div>
             </div>
@@ -107,18 +107,18 @@ const UserDetailsContent: FC<{
             <CardTitle className="text-sm font-medium">
               Wallet Information
             </CardTitle>
-            <Wallet className="text-muted-foreground h-4 w-4" />
+            <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Balance</p>
+                <p className="text-sm text-muted-foreground">Balance</p>
                 <p className="text-2xl font-bold">
                   Rp. {Number.parseFloat(user.wallet.balance).toLocaleString()}
                 </p>
               </div>
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Last Updated</p>
+                <p className="text-sm text-muted-foreground">Last Updated</p>
                 <p className="text-sm font-medium">
                   {format(new Date(user.wallet.updated_at), "PPP")}
                 </p>

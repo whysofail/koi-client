@@ -106,7 +106,7 @@ const TransactionDetails = ({
                     key={label}
                     className="grid grid-cols-[1fr_auto] items-center gap-2 sm:gap-4"
                   >
-                    <dt className="text-muted-foreground text-sm sm:text-base">
+                    <dt className="text-sm text-muted-foreground sm:text-base">
                       {label}:
                     </dt>
                     <dd className="text-right text-sm font-medium sm:text-base">

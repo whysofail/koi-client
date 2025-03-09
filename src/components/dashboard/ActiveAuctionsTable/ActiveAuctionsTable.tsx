@@ -48,7 +48,7 @@ const ActiveAuctionsTable: FC<Props> = ({ token }) => {
           ) : isError ? (
             <TableRow>
               <TableCell colSpan={6} className="py-8 text-center">
-                <div className="text-destructive flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-2 text-destructive">
                   <AlertCircle className="h-8 w-8" />
                   <p>Failed to load auctions. Please try again later.</p>
                 </div>
@@ -86,7 +86,7 @@ const ActiveAuctionsTable: FC<Props> = ({ token }) => {
           ) : (
             <TableRow>
               <TableCell colSpan={6} className="py-8 text-center">
-                <div className="text-muted-foreground flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <PackageX className="h-8 w-8" />
                   <p>No active auctions found</p>
                 </div>

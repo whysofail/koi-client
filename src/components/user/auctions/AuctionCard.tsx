@@ -46,25 +46,25 @@ const AuctionCard: FC<AuctionCardProps> = ({ auction, userBid }) => {
         <h3 className="font-semibold leading-none tracking-tight">
           {auction.title}
         </h3>
-        <p className="text-muted-foreground line-clamp-2 text-sm">
+        <p className="line-clamp-2 text-sm text-muted-foreground">
           {auction.description}
         </p>
       </CardHeader>
       <CardContent className="flex-1">
         <div className="space-y-2">
           <div className="flex items-center text-sm">
-            <DollarSign className="text-muted-foreground mr-2 h-4 w-4" />
+            <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
             <span className="font-medium">
               Your bid: {formatCurrency(userBidAmount)}
             </span>
           </div>
           <div className="flex items-center text-sm">
-            <Clock className="text-muted-foreground mr-2 h-4 w-4" />
+            <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>{timeLeft}</span>
           </div>
           {Number(auction.current_highest_bid) > 0 && (
             <div className="flex items-center text-sm">
-              <Crown className="text-muted-foreground mr-2 h-4 w-4" />
+              <Crown className="mr-2 h-4 w-4 text-muted-foreground" />
               <span>
                 Current highest: Rp.{" "}
                 {formatCurrency(Number(auction.current_highest_bid))}

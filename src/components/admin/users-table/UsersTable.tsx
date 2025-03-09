@@ -473,7 +473,7 @@ const UsersTable: React.FC<{ token: string }> = ({ token }) => {
       </div>
 
       <div className="flex items-center justify-between space-x-2">
-        <div className="text-muted-foreground flex-1 text-sm">
+        <div className="flex-1 text-sm text-muted-foreground">
           Page {pageIndex} of{" "}
           {Math.ceil((PaginatedData?.count ?? 0) / pageSize)} | Total{" "}
           {PaginatedData?.count ?? 0} items

@@ -11,7 +11,7 @@ interface NotificationListProps {
 
 // Empty state component for better reusability
 const EmptyNotifications = () => (
-  <DropdownMenuItem className="text-muted-foreground text-center">
+  <DropdownMenuItem className="text-center text-muted-foreground">
     No new notifications
   </DropdownMenuItem>
 );

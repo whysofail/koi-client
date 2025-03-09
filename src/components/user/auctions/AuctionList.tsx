@@ -31,7 +31,7 @@ const AuctionList: FC<MyAuctionListProps> = ({ token, currentUserId }) => {
     return (
       <div className="py-12 text-center">
         <p className="text-lg font-semibold">No auctions found</p>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <p className="mt-1 text-sm text-muted-foreground">
           You haven&apos;t participated in any auctions yet.
         </p>
       </div>
@@ -42,7 +42,7 @@ const AuctionList: FC<MyAuctionListProps> = ({ token, currentUserId }) => {
     return (
       <div className="py-12 text-center">
         <p className="text-lg font-semibold">No auctions found</p>
-        <p className="text-muted-foreground mt-1 text-sm">
+        <p className="mt-1 text-sm text-muted-foreground">
           You haven&apos;t participated in any auctions yet.
         </p>
       </div>
