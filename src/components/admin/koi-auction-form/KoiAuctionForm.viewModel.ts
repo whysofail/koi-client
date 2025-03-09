@@ -17,8 +17,14 @@ import { PaginatedResponse } from "@/types/koiTypes";
 const formSchema = z.object({
   title: z.string().nonempty("Title is required"),
   description: z.string().min(1, "Description is required"),
+  rich_description: z
+    .string({
+      required_error: "Description is required",
+    })
+    .min(1, "Description is required"),
   item: z.string().min(1, "Item is required"),
   reserve_price: z.number().min(1, "Reserve price must be greater than 0"),
+  participation_fee: z.number().min(1, "Reserve price must be greater than 0"),
   bid_increment: z.number().min(1, "Increment amount must be greater than 0"),
   status: z.nativeEnum(AuctionStatus).optional(),
 });
@@ -59,8 +65,10 @@ const KoiAuctionFormViewModel = (
   initialData?: {
     title: string;
     description: string;
+    rich_description: string;
     item: string;
     reserve_price: number;
+    participation_fee: number;
     bid_increment: number;
     status: AuctionStatus;
   },
@@ -85,14 +93,21 @@ const KoiAuctionFormViewModel = (
     defaultValues: {
       title: "",
       description: "",
+      rich_description:
+        operation === "update"
+          ? auctionData?.rich_description || initialData?.rich_description
+          : "babaji brew",
       item: operation === "update" && auctionData ? auctionData.item : id,
       reserve_price: 0,
+      participation_fee: 0,
       bid_increment: 0,
       status: AuctionStatus.DRAFT as AuctionStatus,
       ...(operation === "update" && auctionData
         ? {
             title: auctionData.title,
             description: auctionData.description,
+            rich_description: auctionData.rich_description,
+            participation_fee: parseFloat(auctionData.participation_fee),
             reserve_price: parseFloat(auctionData.reserve_price),
             bid_increment: parseFloat(auctionData.bid_increment),
             status: auctionData.status as AuctionStatus,
@@ -106,6 +121,9 @@ const KoiAuctionFormViewModel = (
       form.reset({
         title: auctionData.title,
         description: auctionData.description,
+        rich_description: auctionData.rich_description,
+
+        participation_fee: parseFloat(auctionData.participation_fee),
         reserve_price: parseFloat(auctionData.reserve_price),
         bid_increment: parseFloat(auctionData.bid_increment),
         item: auctionData.item,
@@ -167,6 +185,7 @@ const KoiAuctionFormViewModel = (
                   ...data,
                   reserve_price: data.reserve_price,
                   bid_increment: data.bid_increment,
+                  rich_description: data.rich_description ?? "",
                 },
                 {
                   onSuccess: resolve,
@@ -209,8 +228,10 @@ const KoiAuctionFormViewModel = (
           data: {
             title: data.title,
             description: data.description,
+            rich_description: data.rich_description ?? "",
             item: data.item,
             reserve_price: data.reserve_price.toString(),
+            participation_fee: data.participation_fee.toString(),
             bid_increment: data.bid_increment.toString(),
             status: data.status,
           },

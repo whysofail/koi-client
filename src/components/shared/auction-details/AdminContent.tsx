@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Auction, AuctionStatus } from "@/types/auctionTypes";
 import { DetailedBid } from "@/types/bidTypes";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@radix-ui/react-separator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { User, Clock, DollarSign, ShieldIcon } from "lucide-react";
 import ImageGallery from "./ImageGallery";
@@ -12,6 +17,7 @@ import { formatCurrency } from "@/lib/formatCurrency";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { ParticipantHistory } from "./ParticipantHistory";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
+import ExpandableSection from "@/components/ui/expandable-section";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -54,6 +60,19 @@ const AdminContent: React.FC<AdminContentProps> = ({
       width: 400,
       alt: title,
     }));
+
+  const preview = (
+    <div className="grid gap-2 sm:grid-cols-2">
+      <div>
+        <p className="text-sm font-medium">Koi Code</p>
+        <p>{data?.code}</p>
+      </div>
+      <div>
+        <p className="text-sm font-medium">Nickname</p>
+        <p>{data?.nickname}</p>
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -99,11 +118,48 @@ const AdminContent: React.FC<AdminContentProps> = ({
         <Card>
           <CardHeader>
             <CardTitle>{title}</CardTitle>
+            <CardDescription>{auction.description}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
               <ImageGallery title={title} images={koiImages} />
-              <Separator />
+              {/* Chevron to expand */}
+              <ExpandableSection
+                title="Koi Information"
+                preview={preview}
+                className="w-full"
+              >
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="text-sm font-medium">Koi Code</p>
+                    <p>{data?.code}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Nickname</p>
+                    <p>{data?.nickname}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Variety</p>
+                    <p>{data?.variety.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Size</p>
+                    <p>{data?.size}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Breeder</p>
+                    <p>{data?.breeder.name}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-sm font-medium">Description</p>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: auction.rich_description,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </ExpandableSection>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-sm font-medium">Current Bid</p>
@@ -158,7 +214,7 @@ const AdminContent: React.FC<AdminContentProps> = ({
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="flex items-center gap-2">
-              <ShieldIcon className="text-muted-foreground h-4 w-4" />
+              <ShieldIcon className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Status</p>
                 <p>
@@ -167,28 +223,28 @@ const AdminContent: React.FC<AdminContentProps> = ({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <User className="text-muted-foreground h-4 w-4" />
+              <User className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Total Participants</p>
                 <p>{auction.participants.length}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="text-muted-foreground h-4 w-4" />
+              <Clock className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Time Remaining</p>
                 <p>{countdown}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <DollarSign className="text-muted-foreground h-4 w-4" />
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Bid Increment</p>
                 <p>{formatCurrency(bidIncrement)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <DollarSign className="text-muted-foreground h-4 w-4" />
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Winner</p>
                 <p>{auction.winner_id || "No winner yet"}</p>

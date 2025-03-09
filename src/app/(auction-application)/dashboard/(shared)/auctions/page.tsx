@@ -24,7 +24,7 @@ const AuctionsPage = async () => {
           </p>
         </div>
       </div>
-      <div className="mt-8 pl-5 pr-5">
+      <div className="mt-8 pb-8 pl-5 pr-5">
         {isAdmin ? (
           <AuctionsTable token={token} />
         ) : (

@@ -37,18 +37,22 @@ export interface AuctionFilters {
 export type CreateAuctionBody = {
   title: string;
   description: string;
+  rich_description: string;
   item: string;
   reserve_price: number;
+  participation_fee: number | undefined | null;
   bid_increment: number;
 };
 
 export type UpdateAuctionBody = {
   title?: string;
   description?: string;
+  rich_description: string;
   item?: string;
   start_datetime?: string;
   end_datetime?: string;
   reserve_price?: string;
+  participation_fee?: string;
   bid_increment?: string;
   status?: AuctionStatus;
   winner_id?: string;
@@ -64,12 +68,14 @@ export interface Auction {
   auction_id: string;
   title: string;
   description: string;
+  rich_description: string;
   item: string;
   start_datetime: string;
   end_datetime: string;
   status: AuctionStatus;
   current_highest_bid: string;
   reserve_price: string;
+  participation_fee: string;
   bid_increment: string;
   created_at: string;
   updated_at: string;
