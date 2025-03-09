@@ -25,50 +25,93 @@ export const useNotificationSocket = ({
     }) => {
       if (data.entity !== "notification") return;
 
-      queryClient.setQueryData<GetNotificationResponse>(
-        ["notifications"],
-        (oldData) => {
-          if (!oldData) return undefined;
+      // Get all notification queries in the cache
+      const queryCache = queryClient.getQueryCache();
+      const notificationQueries = queryCache.findAll({
+        queryKey: ["notifications"],
+      });
 
-          const baseResponse = {
-            count: oldData.count,
-            page: oldData.page,
-            limit: oldData.limit,
-          };
+      // Update all notification query data regardless of pagination
+      notificationQueries.forEach((query) => {
+        // Extract pagination parameters from the query key
+        const queryKey = query.queryKey as [
+          string,
+          { page: number; limit: number },
+        ];
+        const paginationParams = queryKey[1] || { page: 1, limit: 10 };
 
-          switch (data.type) {
-            case "CREATE":
-              return {
-                ...baseResponse,
-                data: [data.data, ...oldData.data],
-                count: oldData.count + 1,
-              };
+        queryClient.setQueryData<{ data: GetNotificationResponse }>(
+          queryKey,
+          (oldDataWrapper) => {
+            if (!oldDataWrapper) return undefined;
+            const oldData = oldDataWrapper.data;
 
-            case "UPDATE":
-              return {
-                ...baseResponse,
-                data: oldData.data.map((notification) =>
-                  notification.notification_id === data.data.notification_id
-                    ? data.data
-                    : notification,
-                ),
-              };
+            const baseResponse = {
+              count: oldData.count,
+              page: oldData.page,
+              limit: oldData.limit,
+            };
 
-            case "DELETE":
-              return {
-                ...baseResponse,
-                data: oldData.data.filter(
-                  (notification) =>
-                    notification.notification_id !== data.data.notification_id,
-                ),
-                count: oldData.count - 1,
-              };
+            switch (data.type) {
+              case "CREATE":
+                // Only add to first page
+                if (paginationParams.page === 1) {
+                  return {
+                    data: {
+                      ...baseResponse,
+                      data: [
+                        data.data,
+                        ...oldData.data.slice(0, oldData.limit - 1),
+                      ],
+                      count: oldData.count + 1,
+                    },
+                  };
+                }
+                return {
+                  data: {
+                    ...baseResponse,
+                    count: oldData.count + 1,
+                    data: oldData.data,
+                  },
+                };
 
-            default:
-              return oldData;
-          }
-        },
-      );
+              case "UPDATE":
+                return {
+                  data: {
+                    ...baseResponse,
+                    data: oldData.data.map((notification) =>
+                      notification.notification_id === data.data.notification_id
+                        ? data.data
+                        : notification,
+                    ),
+                  },
+                };
+
+              case "DELETE":
+                return {
+                  data: {
+                    ...baseResponse,
+                    data: oldData.data.filter(
+                      (notification) =>
+                        notification.notification_id !==
+                        data.data.notification_id,
+                    ),
+                    count: oldData.count - 1,
+                  },
+                };
+
+              default:
+                return oldDataWrapper;
+            }
+          },
+        );
+      });
+
+      // Update the unread count across the application
+      if (data.type === "CREATE" && data.data.status === "UNREAD") {
+        // Could dispatch to a global state manager if you're using one
+        // Or update a specific query for unread counts
+      }
     };
 
     // Subscribe to socket events

@@ -11,7 +11,6 @@ import {
   Gavel,
   DollarSign,
   Hammer,
-  History,
   Bell,
   WalletMinimal,
 } from "lucide-react";
@@ -123,11 +122,6 @@ const userNavigation = [
         title: "Wishlist",
         icon: Heart,
         href: "/dashboard/wishlist",
-      },
-      {
-        title: "History",
-        icon: History,
-        href: "/dashboard/history",
       },
     ],
   },
