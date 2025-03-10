@@ -13,7 +13,7 @@ import { BidHistory } from "./BidHistory";
 import { Auction, AuctionStatus } from "@/types/auctionTypes";
 import { Bid } from "@/types/bidTypes";
 import { Separator } from "@/components/ui/separator";
-import PlaceBidForm from "./PlaceBidForm";
+import PlaceBidForm from "./PlaceBidForm/PlaceBidForm";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;

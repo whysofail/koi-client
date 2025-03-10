@@ -1,6 +1,6 @@
 import React from "react";
 import { getServerSession } from "@/lib/serverSession";
-import AuctionDetails from "@/components/shared/auction-details/AuctionDetails";
+import AuctionDetails from "@/components/shared/auction-details/AuctionDetails/AuctionDetails";
 
 const AuctionItem = async ({
   params,

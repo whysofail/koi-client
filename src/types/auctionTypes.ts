@@ -64,6 +64,13 @@ interface User {
   username: string;
 }
 
+export interface Bid {
+  bid_id: string;
+  bid_amount: string;
+  bid_time: string;
+  user: User;
+}
+
 export interface Auction {
   auction_id: string;
   title: string;
@@ -79,20 +86,25 @@ export interface Auction {
   bid_increment: string;
   created_at: string;
   updated_at: string;
+  deleted_at: string | null;
   highest_bid_id: string;
-  winner_id: string;
-  final_price: string;
+  winner_id: string | null;
+  final_price: string | null;
   user: User;
-  bids: any[];
+  bids: Bid[];
   participants: any[];
+  highest_bid: Bid | null;
+  winner: User | null;
+  participants_count: number;
 }
 
 export type PaginatedAuctionsResponse = PaginatedResponse<Auction>;
 
-export type AuctionByIDResponse = Omit<
-  PaginatedResponse<Auction>,
-  "count" | "page" | "limit"
->;
+export interface AuctionByIDResponse {
+  status: string;
+  message: string;
+  data: Auction[];
+}
 
 export interface AuctionTableData {
   auction_id: string;

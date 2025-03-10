@@ -1,25 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { Auction, AuctionStatus } from "@/types/auctionTypes";
 import { DetailedBid } from "@/types/bidTypes";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@radix-ui/react-separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { User, Clock, DollarSign, ShieldIcon } from "lucide-react";
-import ImageGallery from "./ImageGallery";
-import { BidHistory } from "./BidHistory";
-import { formatDuration, intervalToDuration, isPast } from "date-fns";
+import { Button } from "@/components/ui/button";
+import ImageGallery from "../ImageGallery";
+import { BidHistory } from "../BidHistory";
 import { formatCurrency } from "@/lib/formatCurrency";
-import useGetKoiByID from "@/server/koi/getKoiByID/queries";
-import { ParticipantHistory } from "./ParticipantHistory";
+import { ParticipantHistory } from "../ParticipantHistory";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
-import ExpandableSection from "@/components/ui/expandable-section";
+import { useAdminContentViewModel } from "./AdminContent.viewModel";
+import Link from "next/link";
+
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -27,6 +22,7 @@ interface GalleryImage {
   height: number;
   alt: string;
 }
+
 interface AdminContentProps {
   auction: Auction;
   bids: DetailedBid[];
@@ -37,130 +33,42 @@ interface AdminContentProps {
   images?: GalleryImage[];
 }
 
-const AdminContent: React.FC<AdminContentProps> = ({
-  auction,
-  bids,
-  title,
-  currentBid,
-  reservePrice,
-  bidIncrement,
-}) => {
-  const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
-  const [countdown, setCountdown] = useState<string>("");
+const AdminContent: React.FC<AdminContentProps> = (props) => {
+  const { auction, bids, title, currentBid, reservePrice, bidIncrement } =
+    props;
+  const {
+    koiImages,
+    lastBidUpdate,
+    countdown,
+    showVerifyButton,
+    showVerifiedButton,
+  } = useAdminContentViewModel(props);
 
-  const { data } = useGetKoiByID(auction.item);
-  const imageArray = data?.photo?.split("|") || [];
-  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
-  // Filter empty string ""
-  const koiImages = imageArray
-    .filter((img) => img !== "")
-    .map((img) => ({
-      thumbnailURL: imageBaseUrl + img,
-      largeURL: imageBaseUrl + img,
-      height: 800,
-      width: 400,
-      alt: title,
-    }));
+  const auctionData = {
+    title,
+    description: auction.description,
+    item: auction.item,
+    start_datetime: auction.start_datetime,
+    end_datetime: auction.end_datetime,
+    reserve_price: auction.reserve_price,
+    bid_increment: auction.bid_increment,
+    status: auction.status,
+  };
 
-  const preview = (
-    <div className="grid gap-2 sm:grid-cols-2">
-      <div>
-        <p className="text-sm font-medium">Koi Code</p>
-        <p>{data?.code}</p>
-      </div>
-      <div>
-        <p className="text-sm font-medium">Nickname</p>
-        <p>{data?.nickname}</p>
-      </div>
-    </div>
-  );
+  const auctionParams = new URLSearchParams(auctionData).toString();
+  const verifyAuctionHref = `/dashboard/auctions/verify/${auction.auction_id}?${auctionParams}`;
 
-  useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date();
-      const endTime = new Date(auction.end_datetime);
-
-      if (auction.status === AuctionStatus.PENDING) {
-        setCountdown("Auction ended. Pending for payment verification");
-        return;
-      }
-      if (auction.status !== AuctionStatus.STARTED) {
-        setCountdown("Auction has not started yet");
-        return;
-      }
-
-      if (isPast(endTime)) {
-        setCountdown("Auction has ended");
-        return;
-      }
-
-      const duration = intervalToDuration({
-        start: now,
-        end: endTime,
-      });
-
-      setCountdown(formatDuration(duration, { delimiter: ", " }));
-    };
-
-    updateCountdown(); // Initial update
-    const intervalId = setInterval(updateCountdown, 1000); // Update every second
-
-    return () => clearInterval(intervalId);
-  }, [auction.end_datetime, auction.status]);
-
-  useEffect(() => {
-    if (bids?.length) {
-      setLastBidUpdate(new Date());
-    }
-  }, [bids]);
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
         <Card>
           <CardHeader>
             <CardTitle>{title}</CardTitle>
-            <CardDescription>{auction.description}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
               <ImageGallery title={title} images={koiImages} />
-              {/* Chevron to expand */}
-              <ExpandableSection
-                title="Koi Information"
-                preview={preview}
-                className="w-full"
-              >
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <p className="text-sm font-medium">Koi Code</p>
-                    <p>{data?.code}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Nickname</p>
-                    <p>{data?.nickname}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Variety</p>
-                    <p>{data?.variety.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Size</p>
-                    <p>{data?.size}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Breeder</p>
-                    <p>{data?.breeder.name}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-sm font-medium">Description</p>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: auction.rich_description,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </ExpandableSection>
+              <Separator />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-sm font-medium">Current Bid</p>
@@ -251,6 +159,39 @@ const AdminContent: React.FC<AdminContentProps> = ({
                 <p>{auction.winner_id || "No winner yet"}</p>
               </div>
             </div>
+
+            {showVerifyButton && (
+              <div className="pt-2">
+                <Button
+                  asChild
+                  className="w-full"
+                  style={{ backgroundColor: "green", color: "white" }}
+                >
+                  <Link
+                    href={verifyAuctionHref}
+                    className="text-bold uppercase"
+                  >
+                    Verify Winner
+                  </Link>
+                </Button>
+              </div>
+            )}
+
+            {showVerifiedButton && (
+              <div className="pt-2">
+                <Button
+                  className="w-full"
+                  disabled
+                  style={{
+                    color: "green",
+                    border: "1px solid green",
+                    backgroundColor: "transparent",
+                  }}
+                >
+                  <p className="text-bold uppercase">Auction Winner Verified</p>
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

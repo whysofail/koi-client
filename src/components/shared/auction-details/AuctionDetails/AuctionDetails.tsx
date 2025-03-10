@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import AdminControls from "./AdminControls/AdminControls";
-import AdminContent from "./AdminContent";
-import UserContent from "./UserContent";
-import UserHeader from "./UserHeader";
+import AdminControls from "../AdminControls/AdminControls";
+import AdminContent from "../AdminContent/AdminContent";
+import UserContent from "../UserContent";
+import UserHeader from "../UserHeader";
 import { useAuctionDetailsViewModel } from "./AuctionDetails.viewModel";
 import UserContentSkeleton from "@/components/skeletons/UserContentSkeleton";
 import AdminContentSkeleton from "@/components/skeletons/AdminContentSkeleton";
