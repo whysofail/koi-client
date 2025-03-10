@@ -2,16 +2,14 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
+import HomeHeader from "@/components/home/HomeHeader";
+import Footer from "@/components/home/Footer";
 
 type PathCheckerProps = {
   children: React.ReactNode;
-  nonDashboardContent?: React.ReactNode;
 };
 
-const PathChecker: React.FC<PathCheckerProps> = ({
-  children,
-  nonDashboardContent,
-}) => {
+const PathChecker: React.FC<PathCheckerProps> = ({ children }) => {
   const pathname = usePathname();
   const excludedPaths = [
     "/login",
@@ -31,12 +29,17 @@ const PathChecker: React.FC<PathCheckerProps> = ({
     );
   }
 
-  return (
-    <main className="min-h-screen">
-      {!isDashboard && nonDashboardContent}
-      {children}
-    </main>
-  );
+  if (!isDashboard) {
+    return (
+      <main className="min-h-screen">
+        <HomeHeader />
+        {children}
+        <Footer />
+      </main>
+    );
+  }
+
+  return <main className="min-h-screen">{children}</main>;
 };
 
 export default PathChecker;

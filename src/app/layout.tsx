@@ -24,22 +24,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
           disableTransitionOnChange
         >
           <ReactQueryProvider>
-            <PathChecker
-              nonDashboardContent={
-                <>
-                  <h1>
-                    This reusable comps will only be rendered on the non-app
-                    pages (e.g landing page), not in the app pages
-                  </h1>
-                  <h1>
-                    Use this for reusable components in the landing pages or any
-                    non-application pages/routes
-                  </h1>
-                </>
-              }
-            >
-              {children}
-            </PathChecker>
+            <PathChecker>{children}</PathChecker>
             <Toaster richColors position="top-right" />
           </ReactQueryProvider>
         </ThemeProvider>
