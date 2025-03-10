@@ -24,16 +24,16 @@ const WalletCard: FC<WalletCardProps> = ({ token }) => {
         <CardTitle className="text-lg font-semibold">
           Wallet Information
         </CardTitle>
-        <Wallet className="text-muted-foreground h-5 w-5" />
+        <Wallet className="h-5 w-5 text-muted-foreground" />
       </CardHeader>
       <CardContent className="pt-4">
         <div className="space-y-4">
           <div className="grid gap-1.5">
-            <p className="text-muted-foreground text-sm">Balance</p>
+            <p className="text-sm text-muted-foreground">Balance</p>
             <p className="text-2xl font-bold">{formatCurrency(data.balance)}</p>
           </div>
           <div className="grid gap-1.5">
-            <p className="text-muted-foreground text-sm">Last Updated</p>
+            <p className="text-sm text-muted-foreground">Last Updated</p>
             <p className="text-sm font-medium">
               {format(new Date(data.updated_at), "PPPPpp")}
             </p>

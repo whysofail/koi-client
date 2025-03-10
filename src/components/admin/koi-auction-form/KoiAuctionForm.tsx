@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import KoiAuctionFormViewModel from "./KoiAuctionForm.viewModel";
 import { AuctionStatus } from "@/types/auctionTypes";
+import { MinimalTiptapEditor } from "@/components/shared/minimal-tiptap";
+import { cn } from "@/lib/utils";
 
 type KoiAuctionFormProps = {
   token: string;
@@ -23,8 +25,10 @@ type KoiAuctionFormProps = {
   initialData?: {
     title: string;
     description: string;
+    rich_description: string;
     item: string;
     reserve_price: number;
+    participation_fee: number;
     bid_increment: number;
     status: AuctionStatus;
   };
@@ -102,6 +106,32 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
 
             <FormField
               control={form.control}
+              name="rich_description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="">Description</FormLabel>
+                  <FormControl>
+                    <MinimalTiptapEditor
+                      {...field}
+                      throttleDelay={0}
+                      className={cn("h-full min-h-56 w-full rounded-xl", {
+                        "border-destructive focus-within:border-destructive":
+                          form.formState.errors.description,
+                      })}
+                      editorContentClassName="overflow-auto h-full flex grow"
+                      placeholder="Type your description here..."
+                      editable={true}
+                      editorClassName="focus:outline-none px-5 py-4 h-full grow"
+                      immediatelyRender={false}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="item"
               render={({ field }) => (
                 <FormItem>
@@ -156,7 +186,46 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
                   </FormControl>
                   {!form.formState.errors.reserve_price && (
                     <FormDescription>
-                      The minimum price at which the auction will start
+                      The buy now price for the auction
+                    </FormDescription>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="participation_fee"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel className="text-foreground">
+                    Participation Fee
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                        Rp
+                      </span>
+                      <Input
+                        type="text"
+                        placeholder="Enter participation fee"
+                        {...field}
+                        className="pl-9"
+                        value={
+                          field.value === 0 ? "" : formatCurrency(field.value)
+                        }
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\./g, "");
+                          if (/^\d*$/.test(value)) {
+                            field.onChange(Number(value));
+                          }
+                        }}
+                      />
+                    </div>
+                  </FormControl>
+                  {!form.formState.errors.participation_fee && (
+                    <FormDescription>
+                      The participation fee for the user to join auction
                     </FormDescription>
                   )}
                   <FormMessage />

@@ -18,7 +18,7 @@ const Watchlist: FC = () => {
             <div className="h-8 w-5 bg-slate-400" />
             <div className="mt-2">
               <div className="text-lg font-bold">Rp. 400.000</div>
-              <p className="text-muted-foreground text-sm">Ends in 2d 5h</p>
+              <p className="text-sm text-muted-foreground">Ends in 2d 5h</p>
             </div>
           </CardContent>
         </Card>

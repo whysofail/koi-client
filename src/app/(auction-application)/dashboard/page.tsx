@@ -30,7 +30,7 @@ const Home = async () => {
             <h2 className="text-lg font-semibold">
               {isAdmin ? "Active Auction" : "Latest Auctions"}
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               {isAdmin
                 ? "Monitor and manage ongoing auctions"
                 : "Check out the latest auctions"}

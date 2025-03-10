@@ -3,6 +3,7 @@ import { getServerSession } from "@/lib/serverSession";
 import KoiDetails from "@/components/admin/koi-details/KoiDetails";
 import KoiAuctionForm from "@/components/admin/koi-auction-form/KoiAuctionForm";
 import { AuctionStatus } from "@/types/auctionTypes";
+import BackButton from "@/components/dashboard/BackButton";
 
 export default async function UpdateAuctionPage({
   params,
@@ -28,6 +29,8 @@ export default async function UpdateAuctionPage({
     reserve_price: parseFloat(reserve_price as string) || 0,
     bid_increment: parseFloat(bid_increment as string) || 0,
     status: status as AuctionStatus,
+    rich_description: "",
+    participation_fee: 0,
   };
 
   const session = await getServerSession();
@@ -35,6 +38,7 @@ export default async function UpdateAuctionPage({
 
   return (
     <div className="container mx-auto space-y-6 p-4 md:p-6">
+      <BackButton />
       <div>
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
           Update Auction Item

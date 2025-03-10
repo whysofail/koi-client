@@ -68,13 +68,13 @@ const SingleImageDisplay: FC<SingleImageDisplayProps> = ({
       <div className="pswp-gallery h-full w-full rounded-xl">
         <div
           className={cn(
-            "bg-muted relative aspect-[4/3] h-auto w-full overflow-hidden rounded-xl md:aspect-auto md:h-full",
+            "relative aspect-[4/3] h-auto w-full overflow-hidden rounded-xl bg-muted md:aspect-auto md:h-full",
             className,
           )}
         >
           <div className="relative h-full w-full rounded-xl">
             <div className="absolute inset-0 flex items-center justify-center rounded-xl">
-              <div className="text-muted-foreground text-center">
+              <div className="text-center text-muted-foreground">
                 <ImageIcon className="mx-auto h-12 w-12" />
                 <p className="mt-2 text-sm">No images available</p>
               </div>
@@ -89,7 +89,7 @@ const SingleImageDisplay: FC<SingleImageDisplayProps> = ({
     <div className="pswp-gallery h-full w-full" id={galleryID}>
       <div
         className={cn(
-          "bg-muted relative aspect-[4/3] h-auto w-full overflow-hidden rounded-lg border md:aspect-auto md:h-full",
+          "relative aspect-[4/3] h-auto w-full overflow-hidden rounded-lg border bg-muted md:aspect-auto md:h-full",
           className,
         )}
       >

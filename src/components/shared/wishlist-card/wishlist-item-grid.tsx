@@ -59,7 +59,7 @@ export function WishlistItemGrid({
           className="absolute right-2 top-2 rounded-full bg-white/80 hover:bg-white/90"
           onClick={handleRemoveFromWishlist}
         >
-          <Heart className="fill-primary text-primary h-5 w-5" />
+          <Heart className="h-5 w-5 fill-primary text-primary" />
           <span className="sr-only">Remove from wishlist</span>
         </Button>
         <StatusBadge
@@ -73,10 +73,10 @@ export function WishlistItemGrid({
         </h3>
       </CardHeader>
       <CardContent className="flex-grow p-4 pt-2">
-        <p className="text-muted-foreground mb-2 line-clamp-2 text-sm">
+        <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
           {wishlist.auction.description}
         </p>
-        <div className="text-muted-foreground mb-2 flex items-center gap-1 text-sm">
+        <div className="mb-2 flex items-center gap-1 text-sm text-muted-foreground">
           <Timer className="h-4 w-4" />
           <span>{time}</span>
         </div>

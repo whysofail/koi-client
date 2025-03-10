@@ -95,38 +95,38 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
         ) : (
           <dl className="mt-3 space-y-2 md:mt-4">
             <div className="grid grid-cols-2">
-              <dt className="text-muted-foreground text-sm">Code</dt>
+              <dt className="text-sm text-muted-foreground">Code</dt>
               <dd className="text-sm font-medium">
                 {renderValue(displayData.code)}
               </dd>
             </div>
             <div className="grid grid-cols-2">
-              <dt className="text-muted-foreground text-sm">Nickname</dt>
+              <dt className="text-sm text-muted-foreground">Nickname</dt>
               <dd className="text-sm font-medium">
                 {renderValue(displayData.nickname)}
               </dd>
             </div>
             <div className="grid grid-cols-2">
-              <dt className="text-muted-foreground text-sm">Variety</dt>
+              <dt className="text-sm text-muted-foreground">Variety</dt>
               <dd className="text-sm font-medium">
                 {renderValue(displayData.variety)}
               </dd>
             </div>
             <div className="grid grid-cols-2">
-              <dt className="text-muted-foreground text-sm">Size</dt>
+              <dt className="text-sm text-muted-foreground">Size</dt>
               <dd className="text-sm font-medium">
                 {renderValue(displayData.size)}
               </dd>
             </div>
             <div className="grid grid-cols-2">
-              <dt className="text-muted-foreground text-sm">Breeder</dt>
+              <dt className="text-sm text-muted-foreground">Breeder</dt>
               <dd className="text-sm font-medium">
                 {renderValue(displayData.breeder)}
               </dd>
             </div>
             {displayData.gender && (
               <div className="grid grid-cols-2">
-                <dt className="text-muted-foreground text-sm">Gender</dt>
+                <dt className="text-sm text-muted-foreground">Gender</dt>
                 <dd className="text-sm font-medium">
                   {renderValue(displayData.gender)}
                 </dd>

@@ -552,7 +552,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       </div>
       <div className="relative rounded-md border dark:border-neutral-700">
         {isLoading && (
-          <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center bg-background/50">
             <Loader2 className="h-6 w-6 animate-spin" />
           </div>
         )}
@@ -613,7 +613,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
         </Table>
       </div>
       <div className="flex items-center justify-between space-x-2">
-        <div className="text-muted-foreground flex-1 text-sm">
+        <div className="flex-1 text-sm text-muted-foreground">
           Page {pageIndex} of{" "}
           {Math.ceil((PaginatedData?.count ?? 0) / pageSize)} | Total{" "}
           {PaginatedData?.count ?? 0} items

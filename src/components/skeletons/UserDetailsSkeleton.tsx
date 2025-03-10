@@ -24,16 +24,16 @@ const UserDetailsSkeleton: FC = () => {
             <CardTitle className="text-sm font-medium">
               User Information
             </CardTitle>
-            <User className="text-muted-foreground h-4 w-4" />
+            <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Username</p>
+                <p className="text-sm text-muted-foreground">Username</p>
                 <Skeleton className="h-5 w-32" />
               </div>
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Registration Date
                 </p>
                 <Skeleton className="h-5 w-40" />
@@ -50,12 +50,12 @@ const UserDetailsSkeleton: FC = () => {
             <CardTitle className="text-sm font-medium">
               Contact Information
             </CardTitle>
-            <Mail className="text-muted-foreground h-4 w-4" />
+            <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Email</p>
+                <p className="text-sm text-muted-foreground">Email</p>
                 <Skeleton className="h-5 w-48" />
               </div>
             </div>
@@ -67,16 +67,16 @@ const UserDetailsSkeleton: FC = () => {
             <CardTitle className="text-sm font-medium">
               Wallet Information
             </CardTitle>
-            <Wallet className="text-muted-foreground h-4 w-4" />
+            <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Balance</p>
+                <p className="text-sm text-muted-foreground">Balance</p>
                 <Skeleton className="h-8 w-36" />
               </div>
               <div className="grid gap-1.5">
-                <p className="text-muted-foreground text-sm">Last Updated</p>
+                <p className="text-sm text-muted-foreground">Last Updated</p>
                 <Skeleton className="h-5 w-40" />
               </div>
             </div>

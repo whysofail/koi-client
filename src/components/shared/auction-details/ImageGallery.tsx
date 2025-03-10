@@ -134,12 +134,12 @@ const ImageGallery: FC<ImageGalleryProps> = ({
   if (galleryImages.length === 0 && !isLoading) {
     return (
       <div className="space-y-4">
-        <div className="bg-muted relative overflow-hidden rounded-lg border">
+        <div className="relative overflow-hidden rounded-lg border bg-muted">
           <div className="relative w-full" style={{ paddingBottom: "50%" }}>
             {" "}
             {/* 9:16 Aspect Ratio */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-muted-foreground text-center">
+              <div className="text-center text-muted-foreground">
                 <ImageIcon className="mx-auto h-12 w-12" />
                 <p className="mt-2 text-sm">No images available</p>
               </div>
@@ -155,7 +155,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({
       <div className="pswp-gallery" id={galleryID}>
         <div className="space-y-4">
           {/* Main Image */}
-          <div className="bg-muted relative overflow-hidden rounded-lg border">
+          <div className="relative overflow-hidden rounded-lg border bg-muted">
             <div
               className="relative w-full"
               style={{
@@ -205,7 +205,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({
                     key={`${image.thumbnailURL}-${index}`}
                     className="basis-1/2 pl-2 md:basis-1/4 md:pl-4"
                   >
-                    <div className="bg-muted relative overflow-hidden rounded-md border">
+                    <div className="relative overflow-hidden rounded-md border bg-muted">
                       <div
                         className="relative w-full"
                         style={{

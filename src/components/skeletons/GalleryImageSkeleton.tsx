@@ -4,7 +4,7 @@ const GallerySkeleton = () => {
   return (
     <div className="space-y-4">
       {/* Main Image Skeleton */}
-      <div className="bg-muted relative overflow-hidden rounded-lg border">
+      <div className="relative overflow-hidden rounded-lg border bg-muted">
         <div
           className="relative w-full"
           style={{
@@ -22,7 +22,7 @@ const GallerySkeleton = () => {
         {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
-            className="bg-muted relative overflow-hidden rounded-md border"
+            className="relative overflow-hidden rounded-md border bg-muted"
           >
             <div
               className="relative w-full"
