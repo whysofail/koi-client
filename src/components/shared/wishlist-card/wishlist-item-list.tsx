@@ -9,6 +9,8 @@ import type { Wishlist } from "@/types/wishlistTypes";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import { getStartDateTime, getTimeRemaining } from "@/lib/utils";
 import { AuctionStatus } from "@/types/auctionTypes";
+import { formatCurrency } from "@/lib/formatCurrency";
+import Link from "next/link";
 
 interface WishlistItemListProps {
   wishlist: Wishlist;
@@ -74,9 +76,9 @@ export function WishlistItemList({
           <div className="mt-auto flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex flex-col gap-4">
               <div>
-                <p className="text-sm font-medium">Current bid:</p>
+                <p className="text-sm font-medium">Current highest bid:</p>
                 <p className="text-lg font-bold">
-                  ${wishlist.auction.current_highest_bid ?? 0}
+                  {formatCurrency(wishlist.auction.current_highest_bid)}
                 </p>
               </div>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -84,7 +86,11 @@ export function WishlistItemList({
                 <span>{time}</span>
               </div>
             </div>
-            <Button>View Auction</Button>
+            <Button>
+              <Link href={`/auctions/${wishlist.auction.auction_id}`}>
+                View Auction
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

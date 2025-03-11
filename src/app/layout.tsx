@@ -25,7 +25,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         >
           <ReactQueryProvider>
             <PathChecker>{children}</PathChecker>
-            <Toaster richColors position="top-right" />
+            <Toaster richColors position="bottom-right" />
           </ReactQueryProvider>
         </ThemeProvider>
       </body>

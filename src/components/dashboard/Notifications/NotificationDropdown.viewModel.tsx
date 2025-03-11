@@ -136,7 +136,7 @@ const useNotificationViewModel = ({
   const optimisticMarkAsRead = useCallback(
     (notificationId: string) => {
       queryClient.setQueriesData(
-        { queryKey: [NOTIFICATIONS_QUERY_KEY] },
+        { queryKey: "notifications" },
         (oldData: any) => {
           if (!oldData) return oldData;
 

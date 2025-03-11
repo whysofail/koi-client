@@ -15,6 +15,7 @@ import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import { getStartDateTime, getTimeRemaining } from "@/lib/utils";
 import { AuctionStatus } from "@/types/auctionTypes";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 interface WishlistItemGridProps {
   wishlist: Wishlist;
@@ -83,9 +84,9 @@ export function WishlistItemGrid({
       </CardContent>
       <CardFooter className="flex items-center justify-between p-4 pt-0">
         <div>
-          <p className="text-sm font-medium">Current bid:</p>
+          <p className="text-sm font-medium">Current highest bid:</p>
           <p className="text-lg font-bold">
-            ${wishlist.auction.current_highest_bid ?? "0"}
+            {formatCurrency(wishlist.auction.current_highest_bid) ?? "0"}
           </p>
         </div>
         <Button size="sm">
