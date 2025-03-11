@@ -58,7 +58,7 @@ export default function NotificationItem({
           />
         </div>
         <div className="ml-3 flex-1">
-          <h2>{type}</h2>
+          <span>{type}</span>
           <p
             className={`text-sm font-medium ${
               status === "READ"

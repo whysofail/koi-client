@@ -54,43 +54,49 @@ export const useAuctionSocket = ({
       if (data.type) {
         console.log("Invalidating queries for auctions", data);
         queryClient.invalidateQueries({
-          queryKey: ["auction", auctionId || data.data.auction_id],
+          queryKey: ["auction"],
         });
         queryClient.invalidateQueries({
           queryKey: ["allAuctions"],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["bidsByID", data.data.auction_id],
+        });
       }
 
-      queryClient.setQueryData<Auction>(
-        ["auction", data.data.auction_id],
-        (oldData) => {
-          if (!oldData) return data.data;
-          switch (data.type) {
-            case "PARTICIPANT_JOINED":
-              return {
-                ...oldData,
-                participants: Array.isArray(oldData.participants)
-                  ? [...oldData.participants, data.data.participants]
-                  : [data.data.participants],
-              };
-            case "BID_PLACED":
-              return {
-                ...oldData,
-                current_highest_bid: data.data.current_highest_bid,
-                bids: data.data.bids, // Replace with new bids data
-              };
-            case "STATUS_CHANGED":
-              return {
-                ...oldData,
-                status: data.data.status,
-              };
-            case "AUCTION_UPDATED":
-              return data.data;
-            default:
-              return oldData;
-          }
-        },
-      );
+      // queryClient.setQueryData<Auction>(
+      //   ["auction", data.data.auction_id],
+      //   (oldData) => {
+      //     if (!oldData) return data.data;
+      //     switch (data.type) {
+      //       case "PARTICIPANT_JOINED":
+      //         return {
+      //           ...oldData,
+      //           participants: Array.isArray(oldData.participants)
+      //             ? [...oldData.participants, data.data.participants]
+      //             : [data.data.participants],
+      //         };
+      //       case "BID_PLACED":
+      //         queryClient.invalidateQueries({
+      //           queryKey: ["bidsByID", data.data.auction_id],
+      //         });
+      //         return {
+      //           ...oldData,
+      //           current_highest_bid: data.data.current_highest_bid,
+      //           bids: data.data.bids, // Replace with new bids data
+      //         };
+      //       case "STATUS_CHANGED":
+      //         return {
+      //           ...oldData,
+      //           status: data.data.status,
+      //         };
+      //       case "AUCTION_UPDATED":
+      //         return data.data;
+      //       default:
+      //         return oldData;
+      //     }
+      //   },
+      // );
     };
 
     socket.on("update", handleUpdate);

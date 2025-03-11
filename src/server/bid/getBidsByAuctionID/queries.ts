@@ -24,8 +24,8 @@ const useGetBidsByAuctionID = (
     queryKey: ["bidsByID", auctionID],
     queryFn: () => fetchBidsByAuctionID(auctionID, token),
     enabled: options?.enabled,
-    refetchInterval: 5000, // Backup polling every 5 seconds
-    staleTime: 1000, // Mark data as stale after 1 second
+    // refetchInterval: 5000, // Backup polling every 5 seconds
+    // staleTime: 1000, // Mark data as stale after 1 second
     refetchOnWindowFocus: true,
   });
 };

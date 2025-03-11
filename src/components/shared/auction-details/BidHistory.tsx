@@ -11,12 +11,21 @@ import {
 } from "@radix-ui/react-tooltip";
 import { User } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 interface BidHistoryProps {
   bids: DetailedBid[];
 }
 
 export function BidHistory({ bids }: BidHistoryProps) {
+  useEffect(() => {
+    if (bids.length > 0) {
+      console.log("Bids History data updated:", {
+        time: new Date().toISOString(),
+        count: bids.length,
+      });
+    }
+  }, [bids]);
   if (bids.length === 0) {
     return (
       <div className="py-4 text-center">
