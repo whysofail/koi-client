@@ -186,11 +186,6 @@ const AuctionsTableViewModel = ({
 
   interface IURLSearchParams {
     koiID: string;
-    title: string;
-    description: string;
-    item: string;
-    reserve_price: string;
-    bid_increment: string;
   }
 
   const updateAuctionURLSearchParams = (
@@ -199,11 +194,6 @@ const AuctionsTableViewModel = ({
   ) => {
     const searchParams = new URLSearchParams({
       koiID: params.koiID,
-      title: params.title,
-      description: params.description,
-      item: params.item,
-      reserve_price: params.reserve_price,
-      bid_increment: params.bid_increment,
     });
 
     const url = `/dashboard/auctions/update/${auctionId}?${searchParams.toString()}`;

@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { VerifyAuctionView } from "@/components/admin/verify-auction/VerifyAuctionView";
+import VerifyAuction from "@/components/admin/verify-auction/VerifyAuction";
 import { AuctionStatus } from "@/types/auctionTypes";
 import { getServerSession } from "@/lib/serverSession";
 
@@ -38,11 +38,22 @@ const VerifyPage: FC<VerifyPageProps> = async ({ params, searchParams }) => {
   const token = session?.user?.accessToken ?? "";
 
   return (
-    <VerifyAuctionView
-      auctionId={auctionId}
-      auctionDetails={auctionDetails}
-      token={token}
-    />
+    <div className="container mx-auto px-4 py-6">
+      <div className="mb-8 flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Verify Auction</h1>
+          <p className="text-muted-foreground">
+            Verify the highest bid and winner for this auction.
+          </p>
+        </div>
+      </div>
+
+      <VerifyAuction
+        auctionId={auctionId}
+        auctionDetails={auctionDetails}
+        token={token}
+      />
+    </div>
   );
 };
 

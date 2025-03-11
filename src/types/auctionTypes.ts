@@ -1,5 +1,5 @@
-import { AuctionParticipant } from "./auctionParticipantTypes";
 import { PaginatedResponse } from "./baseType";
+import { AuctionParticipantInfo } from "./auctionParticipantTypes";
 
 export enum AuctionOrderBy {
   AUCTION_ID = "auction_id",
@@ -47,7 +47,7 @@ export type CreateAuctionBody = {
 export type UpdateAuctionBody = {
   title?: string;
   description?: string;
-  rich_description: string;
+  rich_description?: string;
   item?: string;
   start_datetime?: string;
   end_datetime?: string;
@@ -92,7 +92,7 @@ export interface Auction {
   final_price: string | null;
   user: User;
   bids: Bid[];
-  participants: any[];
+  participants: AuctionParticipantInfo[];
   highest_bid: Bid | null;
   winner: User | null;
   participants_count: number;
@@ -121,7 +121,7 @@ export interface AuctionTableData {
   updated_at: string;
   user: string;
   bids: number;
-  participants: AuctionParticipant[];
+  participants: AuctionParticipantInfo[];
 }
 
 export enum AuctionStatus {

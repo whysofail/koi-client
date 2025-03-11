@@ -20,7 +20,6 @@ import {
   MoreHorizontal,
   Trash,
   Upload,
-  Pencil,
   ExternalLink,
   Edit,
   AlertCircle,
@@ -280,17 +279,9 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
           <DropdownMenuContent align="end" avoidCollisions>
             <DropdownMenuItem asChild>
               <Link
-                href={`/dashboard/auctions/update/${row.original.auction_id}?koiID=${row.original.item}`}
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Details
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
                 href={`/dashboard/auctions/item/${row.original.auction_id}`}
               >
-                <ExternalLink className="mr-2 h-4 w-4" />
+                <ExternalLink />
                 View Details
               </Link>
             </DropdownMenuItem>
@@ -327,15 +318,10 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                       row.original.auction_id,
                       {
                         koiID: row.original.item,
-                        title: row.original.title,
-                        description: row.original.description,
-                        item: row.original.item,
-                        reserve_price: row.original.reserve_price.toString(),
-                        bid_increment: row.original.bid_increment.toString(),
                       },
                     )}
                   >
-                    <Pencil className="mr-2 h-4 w-4" />
+                    <Edit />
                     Update Auction
                   </Link>
                 </DropdownMenuItem>

@@ -62,16 +62,6 @@ const KoiAuctionFormViewModel = (
   token: string,
   id: string,
   operation: "create" | "update",
-  initialData?: {
-    title: string;
-    description: string;
-    rich_description: string;
-    item: string;
-    reserve_price: number;
-    participation_fee: number;
-    bid_increment: number;
-    status: AuctionStatus;
-  },
 ) => {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -94,25 +84,12 @@ const KoiAuctionFormViewModel = (
       title: "",
       description: "",
       rich_description:
-        operation === "update"
-          ? auctionData?.rich_description || initialData?.rich_description
-          : "babaji brew",
-      item: operation === "update" && auctionData ? auctionData.item : id,
+        operation === "update" ? auctionData?.rich_description : "",
+      item: operation === "update" ? auctionData?.item : id,
       reserve_price: 0,
       participation_fee: 0,
       bid_increment: 0,
       status: AuctionStatus.DRAFT as AuctionStatus,
-      ...(operation === "update" && auctionData
-        ? {
-            title: auctionData.title,
-            description: auctionData.description,
-            rich_description: auctionData.rich_description,
-            participation_fee: parseFloat(auctionData.participation_fee),
-            reserve_price: parseFloat(auctionData.reserve_price),
-            bid_increment: parseFloat(auctionData.bid_increment),
-            status: auctionData.status as AuctionStatus,
-          }
-        : initialData),
     },
   });
 
@@ -122,7 +99,6 @@ const KoiAuctionFormViewModel = (
         title: auctionData.title,
         description: auctionData.description,
         rich_description: auctionData.rich_description,
-
         participation_fee: parseFloat(auctionData.participation_fee),
         reserve_price: parseFloat(auctionData.reserve_price),
         bid_increment: parseFloat(auctionData.bid_increment),

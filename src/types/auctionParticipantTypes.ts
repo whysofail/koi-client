@@ -8,7 +8,15 @@ export interface AuctionParticipant {
     user_id: string;
     username: string;
   };
-  participants_count: number;
+}
+
+export interface AuctionParticipantInfo {
+  auction_participant_id: string;
+  joined_at: string;
+  user: {
+    user_id: string;
+    username: string;
+  };
 }
 
 export interface JoinedAuctionParticipant {

@@ -36,7 +36,6 @@ export const BidsTable: React.FC<BidsTableProps> = ({
     );
   }
 
-  // Sort bids by amount in descending order
   const sortedBids = [...bids].sort(
     (a, b) => parseFloat(b.bid_amount) - parseFloat(a.bid_amount),
   );

@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import KoiAuctionFormViewModel from "./KoiAuctionForm.viewModel";
-import { AuctionStatus } from "@/types/auctionTypes";
 import { MinimalTiptapEditor } from "@/components/shared/minimal-tiptap";
 import { cn } from "@/lib/utils";
 
@@ -22,24 +21,9 @@ type KoiAuctionFormProps = {
   token: string;
   id: string;
   operation: "create" | "update";
-  initialData?: {
-    title: string;
-    description: string;
-    rich_description: string;
-    item: string;
-    reserve_price: number;
-    participation_fee: number;
-    bid_increment: number;
-    status: AuctionStatus;
-  };
 };
 
-const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
-  token,
-  id,
-  operation,
-  initialData,
-}) => {
+const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
   const {
     form,
     onSubmit,
@@ -47,7 +31,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
     pendingUpdate,
     formatCurrency,
     isUpdate,
-  } = KoiAuctionFormViewModel(token, id, operation, initialData);
+  } = KoiAuctionFormViewModel(token, id, operation);
 
   return (
     <Form {...form}>
@@ -272,46 +256,6 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({
                 </FormItem>
               )}
             />
-            {/* {operation === "update" && (
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-foreground">
-                      Auction Status
-                    </FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select auction status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {allowedStatuses.map((status) => (
-                            <SelectItem
-                              key={status}
-                              value={status}
-                              disabled={status === field.value}
-                            >
-                              {status}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    {!form.formState.errors.status && (
-                      <FormDescription>
-                        Select the current status of the auction
-                      </FormDescription>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )} */}
           </div>
         </div>
 

@@ -38,6 +38,27 @@
   height: 100%;
 }
 
+.active-menu {
+  position: relative;
+  background-color: #a30022; /* Red background for active menu */
+  clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+  margin-top: -2px; /* Connect with the red strip exactly */
+  border-bottom-left-radius: 26px;
+  border-bottom-right-radius: 26px;
+}
+
+/* Use a different approach - create a pseudo-element that extends up to cover any gap */
+.active-menu::before {
+  content: "";
+  position: absolute;
+  top: -10px; /* Extend well above to ensure no gap */
+  left: 0;
+  right: 0;
+  height: 12px; /* Taller than needed to ensure overlap */
+  background-color: #a30022;
+  z-index: -1; /* Behind the text but in front of any white space */
+}
+
 @layer utilities {
   .shimmer {
     background: linear-gradient(

@@ -1,88 +1,180 @@
 "use client";
 
-import React from "react";
+import React, { memo, useMemo } from "react";
 import { Bid } from "@/types/auctionTypes";
 import { formatCurrency } from "@/lib/formatCurrency";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 
 interface VerifyBidsTableProps {
   bids: Bid[];
   selectedBidId: string | undefined;
   onSelectBid: (bid: Bid) => void;
+  isVerified?: boolean;
 }
 
-const VerifyBidsTable: React.FC<VerifyBidsTableProps> = ({
-  bids,
-  selectedBidId,
-  onSelectBid,
-}) => {
-  if (!bids || bids.length === 0) {
-    return (
-      <Card className="p-4 text-center text-muted-foreground">
-        No bids found for this auction
-      </Card>
-    );
+const formatDateSafe = (dateString: string) => {
+  try {
+    return format(new Date(dateString), "dd-MM-yy HH:mm:ss");
+  } catch {
+    return dateString || "Invalid date";
   }
+};
 
-  // Sort bids by amount in descending order
-  const sortedBids = [...bids].sort(
-    (a, b) => parseFloat(b.bid_amount) - parseFloat(a.bid_amount),
-  );
+const VerifyBidsTable: React.FC<VerifyBidsTableProps> = memo(
+  ({ bids, selectedBidId, onSelectBid, isVerified = false }) => {
+    const sortedBids = useMemo(() => {
+      return [...(bids || [])].sort(
+        (a, b) => parseFloat(b.bid_amount) - parseFloat(a.bid_amount),
+      );
+    }, [bids]);
 
-  return (
-    <Table>
-      <TableCaption>
-        All bids for this auction - Click on a row to select as winner
-      </TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead></TableHead>
-          <TableHead>Bidder</TableHead>
-          <TableHead>Amount</TableHead>
-          <TableHead>Time</TableHead>
-          <TableHead>Bid ID</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sortedBids.map((bid) => (
-          <TableRow
-            key={bid.bid_id}
-            className={cn(
-              "cursor-pointer hover:bg-muted/50",
-              selectedBidId === bid.bid_id ? "bg-primary/10" : "",
-            )}
-            onClick={() => onSelectBid(bid)}
-          >
-            <TableCell>
-              {selectedBidId === bid.bid_id && (
+    const highestBid = useMemo(() => {
+      return sortedBids.length > 0 ? sortedBids[0] : null;
+    }, [sortedBids]);
+
+    const columns = useMemo<ColumnDef<Bid>[]>(
+      () => [
+        {
+          id: "status",
+          header: "",
+          cell: ({ row }) => (
+            <div className="flex items-center">
+              {row.original.bid_id === highestBid?.bid_id && (
+                <Trophy className="h-5 w-5 text-yellow-500" />
+              )}
+              {selectedBidId === row.original.bid_id && (
                 <CheckCircle2 className="h-5 w-5 text-primary" />
               )}
-            </TableCell>
-            <TableCell className="font-medium">{bid.user.username}</TableCell>
-            <TableCell>{formatCurrency(bid.bid_amount)}</TableCell>
-            <TableCell>
-              {format(new Date(bid.bid_time), "dd-MM-yy HH:mm:ss")}
-            </TableCell>
-            <TableCell className="text-xs text-muted-foreground">
-              {bid.bid_id}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-};
+            </div>
+          ),
+        },
+        {
+          accessorKey: "user.username",
+          header: "Bidder",
+          cell: ({ row }) => (
+            <div className="font-medium">{row.original.user.username}</div>
+          ),
+        },
+        {
+          accessorKey: "bid_amount",
+          header: "Amount",
+          cell: ({ row }) => (
+            <div>{formatCurrency(row.original.bid_amount)}</div>
+          ),
+        },
+        {
+          accessorKey: "bid_time",
+          header: "Time",
+          cell: ({ row }) => <div>{formatDateSafe(row.original.bid_time)}</div>,
+        },
+        {
+          id: "actions",
+          header: "Actions",
+          cell: ({ row }) => {
+            const isSelected = selectedBidId === row.original.bid_id;
+            return (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onSelectBid(row.original)}
+                className={isSelected ? "bg-primary/20" : ""}
+                disabled={isVerified}
+              >
+                {isSelected && isVerified ? (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Winner
+                  </>
+                ) : (
+                  "Select as Winner"
+                )}
+              </Button>
+            );
+          },
+        },
+      ],
+      [highestBid, onSelectBid, selectedBidId, isVerified],
+    );
+
+    // Use React Table - memoized
+    const table = useReactTable({
+      data: sortedBids,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    if (!bids || bids.length === 0) {
+      return (
+        <Card className="p-4 text-center text-muted-foreground">
+          No bids found for this auction
+        </Card>
+      );
+    }
+
+    return (
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                className={cn(
+                  "hover:bg-muted/50",
+                  row.original.bid_id === highestBid?.bid_id
+                    ? "bg-yellow-50 dark:bg-yellow-900/20"
+                    : "",
+                  selectedBidId === row.original.bid_id ? "bg-primary/10" : "",
+                )}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  },
+);
+
+// Display name for debugging
+VerifyBidsTable.displayName = "VerifyBidsTable";
 
 export default VerifyBidsTable;
