@@ -13,6 +13,7 @@ import { getErrorMessage } from "@/lib/handleApiError";
 import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
 import { AuctionStatus } from "@/types/auctionTypes";
 import { PaginatedResponse } from "@/types/koiTypes";
+import { format } from "date-fns";
 
 const formSchema = z.object({
   title: z.string().nonempty("Title is required"),
@@ -23,35 +24,14 @@ const formSchema = z.object({
     })
     .min(1, "Description is required"),
   item: z.string().min(1, "Item is required"),
-  reserve_price: z.number().min(1, "Reserve price must be greater than 0"),
+  buynow_price: z.number().min(1, "Buy now price must be greater than 0"),
   participation_fee: z.number().min(1, "Reserve price must be greater than 0"),
   bid_increment: z.number().min(1, "Increment amount must be greater than 0"),
   status: z.nativeEnum(AuctionStatus).optional(),
 });
 
 const formatDate = (date: Date | string) => {
-  const d = new Date(date);
-  const day = d.getDate().toString().padStart(2, "0");
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const month = monthNames[d.getMonth()];
-  const year = d.getFullYear();
-  const hours = d.getHours().toString().padStart(2, "0");
-  const minutes = d.getMinutes().toString().padStart(2, "0");
-
-  return `${day} ${month} ${year} ${hours}:${minutes}`;
+  return format(new Date(date), "dd MMMM yyyy HH:mm");
 };
 
 const formatCurrency = (value: number): string => {
@@ -86,7 +66,7 @@ const KoiAuctionFormViewModel = (
       rich_description:
         operation === "update" ? auctionData?.rich_description : "",
       item: operation === "update" ? auctionData?.item : id,
-      reserve_price: 0,
+      buynow_price: 0,
       participation_fee: 0,
       bid_increment: 0,
       status: AuctionStatus.DRAFT as AuctionStatus,
@@ -100,7 +80,7 @@ const KoiAuctionFormViewModel = (
         description: auctionData.description,
         rich_description: auctionData.rich_description,
         participation_fee: parseFloat(auctionData.participation_fee),
-        reserve_price: parseFloat(auctionData.reserve_price),
+        buynow_price: parseFloat(auctionData.buynow_price),
         bid_increment: parseFloat(auctionData.bid_increment),
         item: auctionData.item,
         status: auctionData.status as AuctionStatus,
@@ -159,7 +139,7 @@ const KoiAuctionFormViewModel = (
               createAuction(
                 {
                   ...data,
-                  reserve_price: data.reserve_price,
+                  buynow_price: data.buynow_price,
                   bid_increment: data.bid_increment,
                   rich_description: data.rich_description ?? "",
                 },
@@ -206,7 +186,7 @@ const KoiAuctionFormViewModel = (
             description: data.description,
             rich_description: data.rich_description ?? "",
             item: data.item,
-            reserve_price: data.reserve_price.toString(),
+            buynow_price: data.buynow_price.toString(),
             participation_fee: data.participation_fee.toString(),
             bid_increment: data.bid_increment.toString(),
             status: data.status,

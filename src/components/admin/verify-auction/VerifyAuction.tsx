@@ -42,7 +42,7 @@ interface VerifyAuctionViewProps {
     item: string;
     start_datetime: string;
     end_datetime: string;
-    reserve_price: string;
+    buynow_price: string;
     bid_increment: string;
     status: AuctionStatus;
   };
@@ -195,7 +195,7 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                         Reserve Price
                       </dt>
                       <dd className="mt-1 font-medium text-primary">
-                        {formatCurrency(auctionDetails.reserve_price)}
+                        {formatCurrency(auctionDetails.buynow_price)}
                       </dd>
                     </div>
                     <div>

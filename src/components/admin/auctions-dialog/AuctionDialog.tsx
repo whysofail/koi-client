@@ -31,7 +31,7 @@ import {
 type AuctionAlertDialogProps = {
   operation: "publish" | "delete" | "cancel" | "unpublish";
   bid_increment: string;
-  reserve_price: string;
+  buynow_price: string;
   auction_id: string;
   token: string;
   koiId?: string;
@@ -41,7 +41,7 @@ type AuctionAlertDialogProps = {
 const AuctionDialog: FC<AuctionAlertDialogProps> = ({
   operation,
   bid_increment,
-  reserve_price,
+  buynow_price,
   auction_id,
   token,
   koiId,
@@ -212,7 +212,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
             </Button>
             <Button
               onClick={form.handleSubmit(() =>
-                handlePublishAuction(auction_id, bid_increment, reserve_price),
+                handlePublishAuction(auction_id, bid_increment, buynow_price),
               )}
               disabled={pendingUpdate}
             >
@@ -280,7 +280,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
             <Button
               variant="destructive"
               onClick={() =>
-                handleUnpublishAuction(auction_id, bid_increment, reserve_price)
+                handleUnpublishAuction(auction_id, bid_increment, buynow_price)
               }
               disabled={pendingUpdate}
             >
@@ -318,7 +318,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
               handleCancelAuction(
                 auction_id,
                 bid_increment,
-                reserve_price,
+                buynow_price,
                 koiId!,
               )
             }

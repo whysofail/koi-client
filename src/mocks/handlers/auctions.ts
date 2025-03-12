@@ -80,9 +80,9 @@ export const auctionsHandlers = [
           compareA = parseFloat(a.current_highest_bid);
           compareB = parseFloat(b.current_highest_bid);
           break;
-        case AuctionOrderBy.RESERVE_PRICE:
-          compareA = parseFloat(a.reserve_price);
-          compareB = parseFloat(b.reserve_price);
+        case AuctionOrderBy.BUYNOW_PRICE:
+          compareA = parseFloat(a.buynow_price);
+          compareB = parseFloat(b.buynow_price);
           break;
         case AuctionOrderBy.BID_INCREMENT:
           compareA = parseFloat(a.bid_increment);

@@ -17,7 +17,7 @@ const VerifyPage: FC<VerifyPageProps> = async ({ params, searchParams }) => {
     item = "",
     start_datetime = "",
     end_datetime = "",
-    reserve_price = "",
+    buynow_price = "",
     bid_increment = "",
     status = "",
   } = await searchParams;
@@ -29,7 +29,7 @@ const VerifyPage: FC<VerifyPageProps> = async ({ params, searchParams }) => {
     item: item as string,
     start_datetime: start_datetime as string,
     end_datetime: end_datetime as string,
-    reserve_price: reserve_price as string,
+    buynow_price: buynow_price as string,
     bid_increment: bid_increment as string,
     status: status as AuctionStatus,
   };

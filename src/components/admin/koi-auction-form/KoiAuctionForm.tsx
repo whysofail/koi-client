@@ -140,11 +140,11 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
 
             <FormField
               control={form.control}
-              name="reserve_price"
+              name="buynow_price"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel className="text-foreground">
-                    Reserve Price
+                    Buy Now Price
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -153,7 +153,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
                       </span>
                       <Input
                         type="text"
-                        placeholder="Enter reserve price"
+                        placeholder="Enter buy now price"
                         {...field}
                         className="pl-9"
                         value={
@@ -168,7 +168,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
                       />
                     </div>
                   </FormControl>
-                  {!form.formState.errors.reserve_price && (
+                  {!form.formState.errors.buynow_price && (
                     <FormDescription>
                       The buy now price for the auction
                     </FormDescription>

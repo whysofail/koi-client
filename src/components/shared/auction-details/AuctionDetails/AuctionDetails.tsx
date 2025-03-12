@@ -82,7 +82,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           token={token}
           auctionId={auctionID}
           bid_increment={auction.bid_increment}
-          reserve_price={auction.reserve_price}
+          buynow_price={auction.buynow_price}
           koiId={auction.item}
         />
       ) : (
@@ -117,7 +117,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           bids={bids}
           title={auction.title}
           currentBid={auction.current_highest_bid}
-          reservePrice={auction.reserve_price}
+          buynow_price={auction.buynow_price}
           bidIncrement={auction.bid_increment}
         />
       ) : (

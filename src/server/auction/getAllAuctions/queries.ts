@@ -14,7 +14,6 @@ const fetchAllAuctions = async ({
   token,
   page = 1,
   limit = 10,
-  //TODO: Ask if we can add multiple statuses
   status,
   startDateFrom,
   startDateTo = nextWeek,

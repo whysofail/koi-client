@@ -1,12 +1,10 @@
-import { useSession } from "next-auth/react";
 import useGetAllAuctions from "@/server/auction/getAllAuctions/queries";
 import { AuctionOrderBy, AuctionStatus } from "@/types/auctionTypes";
 
-const useLatestAuctionsViewModel = () => {
-  const { data: session } = useSession();
+const useLatestAuctionsViewModel = (token: string) => {
   const { data: auctionsData, isLoading } = useGetAllAuctions({
-    token: session?.user?.accessToken ?? "",
-    status: AuctionStatus.PUBLISHED,
+    token,
+    status: AuctionStatus.STARTED,
     limit: 3,
     orderBy: AuctionOrderBy.CREATED_AT,
     order: "DESC",

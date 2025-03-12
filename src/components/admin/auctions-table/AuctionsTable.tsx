@@ -231,18 +231,18 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       },
     },
     {
-      accessorKey: "reserve_price",
+      accessorKey: "buynow_price",
       header: () => (
         <Button
           variant="ghost"
-          onClick={() => handleSort(AuctionOrderBy.RESERVE_PRICE)}
+          onClick={() => handleSort(AuctionOrderBy.BUYNOW_PRICE)}
         >
-          Reserve Price
-          {getSortIcon(AuctionOrderBy.RESERVE_PRICE)}
+          Buy Now Price
+          {getSortIcon(AuctionOrderBy.BUYNOW_PRICE)}
         </Button>
       ),
       cell: ({ row }) => {
-        const value = row.original.reserve_price;
+        const value = row.original.buynow_price;
         return <div>{formatCurrency(value ?? 0)}</div>;
       },
     },
@@ -290,7 +290,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                 <AuctionDialog
                   operation="publish"
                   bid_increment={row.original.bid_increment}
-                  reserve_price={row.original.reserve_price}
+                  buynow_price={row.original.buynow_price}
                   auction_id={row.original.auction_id}
                   token={token}
                 >
@@ -303,7 +303,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                   operation="delete"
                   auction_id={row.original.auction_id}
                   bid_increment={row.original.bid_increment}
-                  reserve_price={row.original.reserve_price}
+                  buynow_price={row.original.buynow_price}
                   token={token}
                   koiId={row.original.item}
                 >
@@ -332,7 +332,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                 operation="unpublish"
                 auction_id={row.original.auction_id}
                 bid_increment={row.original.bid_increment}
-                reserve_price={row.original.reserve_price}
+                buynow_price={row.original.buynow_price}
                 token={token}
               >
                 <div className="flex w-full items-center">
@@ -347,7 +347,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                 auction_id={row.original.auction_id}
                 koiId={row.original.item}
                 bid_increment={row.original.bid_increment}
-                reserve_price={row.original.reserve_price}
+                buynow_price={row.original.buynow_price}
                 token={token}
               >
                 <div className="flex w-full items-center">

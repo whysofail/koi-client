@@ -87,7 +87,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
   const handlePublishAuction = async (
     auctionId: string,
     bid_increment: string,
-    reserve_price: string,
+    buynow_price: string,
   ) => {
     const { startDateTime, endDateTime } = form.getValues();
 
@@ -96,7 +96,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
       start_datetime: startDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       end_datetime: endDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       bid_increment,
-      reserve_price,
+      buynow_price,
     };
 
     updateMutate(
@@ -116,12 +116,12 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
   const handleUnpublishAuction = async (
     auctionId: string,
     bid_increment: string,
-    reserve_price: string,
+    buynow_price: string,
   ) => {
     const data: UpdateAuctionBody = {
       status: AuctionStatus.DRAFT,
       bid_increment,
-      reserve_price,
+      buynow_price,
     };
 
     updateMutate(
@@ -141,7 +141,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
   const handleCancelAuction = async (
     auctionId: string,
     bid_increment: string,
-    reserve_price: string,
+    buynow_price: string,
     koiId: string,
   ) => {
     try {
@@ -179,7 +179,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
                 ...auction,
                 status: AuctionStatus.CANCELLED,
                 bid_increment,
-                reserve_price,
+                buynow_price,
               }
             : auction,
         );
@@ -213,7 +213,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
               data: {
                 status: AuctionStatus.CANCELLED,
                 bid_increment,
-                reserve_price,
+                buynow_price,
               },
             },
             {

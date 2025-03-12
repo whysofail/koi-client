@@ -11,7 +11,7 @@ export interface Bid {
     end_datetime: string;
     status: string;
     current_highest_bid: string;
-    reserve_price: string;
+    buynow_price: string;
     bid_increment: string;
     created_at: string;
     updated_at: string;
@@ -71,7 +71,7 @@ interface DetailedAuctionInBid {
   end_datetime: string;
   status: string;
   current_highest_bid: string;
-  reserve_price: string;
+  buynow_price: string;
   bid_increment: string;
   created_at: string;
   updated_at: string;
