@@ -2,11 +2,15 @@ import { QueryClient, useMutation } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const joinAuction = async (token: string, auctionID: string) => {
-  const { data } = await fetchWithAuth.post(`/auctions/${auctionID}/join`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const { data } = await fetchWithAuth.post(
+    `/auctions/${auctionID}/join`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
   return data;
 };
 

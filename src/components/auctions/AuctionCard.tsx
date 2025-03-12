@@ -42,7 +42,7 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
             alt={auction.title || "Koi fish"}
             width={400}
             height={400}
-            className="rounded-lg bg-blue-500"
+            className="h-full w-full rounded-lg bg-blue-500 object-cover"
           />
         )}
       </div>

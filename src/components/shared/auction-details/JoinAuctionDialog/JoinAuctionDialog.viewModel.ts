@@ -1,14 +1,15 @@
-import { QueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import useJoinAuction from "@/server/auction/joinAuction/mutation";
 import { toast } from "sonner";
 
 const useJoinAuctionDialogViewModel = (token: string, auctionID: string) => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient(); // ✅ Use the existing QueryClient
 
   const { mutateAsync: joinAuction, isPending } = useJoinAuction(
     token,
-    queryClient,
+    queryClient, // ✅ Pass the correct queryClient
   );
+
   const handleJoinAuction = async () => {
     try {
       await joinAuction({ auctionID });

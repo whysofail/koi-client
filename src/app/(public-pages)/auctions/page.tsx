@@ -1,6 +1,6 @@
 "use client";
 import useGetAllAuctions from "@/server/auction/getAllAuctions/queries";
-import { AuctionOrderBy } from "@/types/auctionTypes";
+import { AuctionOrderBy, AuctionStatus } from "@/types/auctionTypes";
 import { useState } from "react";
 import AuctionCard from "@/components/auctions/AuctionCard";
 
@@ -15,6 +15,7 @@ export default function AuctionPage() {
     limit: 8,
     orderBy: AuctionOrderBy.CREATED_AT,
     order: "DESC",
+    status: [AuctionStatus.PUBLISHED, AuctionStatus.STARTED],
   });
 
   if (isLoading) return <div>Loading...</div>;

@@ -28,7 +28,7 @@ export interface AuctionFilters {
   maxBuyNowPrice?: number; // Filter by maximum reserve price
   startDateFrom?: Date; // Filter by auction start date (earliest)
   startDateTo?: Date; // Filter by auction start date (latest)
-  status?: AuctionStatus;
+  status?: AuctionStatus | AuctionStatus[]; // Support multiple statuses
   orderBy?: AuctionOrderBy;
   order?: "ASC" | "DESC";
 }

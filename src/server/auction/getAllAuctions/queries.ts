@@ -13,7 +13,6 @@ const nextWeek = new Date(dateNow.getTime() + 7 * 24 * 60 * 60 * 1000);
 const fetchAllAuctions = async ({
   page = 1,
   limit = 10,
-  //TODO: Ask if we can add multiple statuses
   status,
   startDateFrom,
   startDateTo = nextWeek,
@@ -30,8 +29,17 @@ const fetchAllAuctions = async ({
     order,
   });
 
-  if (status) params.append("status", status);
-  if (startDateFrom) params.append("startDateFrom", formatDate(startDateFrom));
+  if (status) {
+    if (Array.isArray(status)) {
+      status.forEach((s) => params.append("status[]", s)); // Handle multiple statuses
+    } else {
+      params.append("status", status);
+    }
+  }
+
+  if (startDateFrom) {
+    params.append("startDateFrom", formatDate(startDateFrom));
+  }
 
   const { data } = await fetchWithAuth.get<PaginatedAuctionsResponse>(
     `/auctions?${params.toString()}`,
