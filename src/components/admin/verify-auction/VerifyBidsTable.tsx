@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useState } from "react";
 import { Bid } from "@/types/auctionTypes";
 import { formatCurrency } from "@/lib/formatCurrency";
 import {
@@ -22,6 +22,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface VerifyBidsTableProps {
   bids: Bid[];
@@ -32,11 +39,36 @@ interface VerifyBidsTableProps {
 
 const VerifyBidsTable: React.FC<VerifyBidsTableProps> = memo(
   ({ bids, selectedBidId, onSelectBid, isVerified = false }) => {
+    const [pageSize, setPageSize] = useState(10);
+    const [pageIndex, setPageIndex] = useState(1);
+
     const sortedBids = useMemo(() => {
       return [...(bids || [])].sort(
         (a, b) => parseFloat(b.bid_amount) - parseFloat(a.bid_amount),
       );
     }, [bids]);
+
+    const paginatedBids = useMemo(() => {
+      const start = (pageIndex - 1) * pageSize;
+      const end = start + pageSize;
+      return sortedBids.slice(start, end);
+    }, [sortedBids, pageIndex, pageSize]);
+
+    const handlePageSizeChange = (size: number) => {
+      setPageSize(size);
+      setPageIndex(1); // Reset to first page when changing page size
+    };
+
+    const handlePreviousPage = () => {
+      setPageIndex((prev) => Math.max(1, prev - 1));
+    };
+
+    const handleNextPage = () => {
+      setPageIndex((prev) => {
+        const maxPage = Math.ceil(sortedBids.length / pageSize);
+        return Math.min(maxPage, prev + 1);
+      });
+    };
 
     const highestBid = useMemo(() => {
       return sortedBids.length > 0 ? sortedBids[0] : null;
@@ -114,9 +146,8 @@ const VerifyBidsTable: React.FC<VerifyBidsTableProps> = memo(
       [highestBid, onSelectBid, selectedBidId, isVerified],
     );
 
-    // Use React Table - memoized
     const table = useReactTable({
-      data: sortedBids,
+      data: paginatedBids,
       columns,
       getCoreRowModel: getCoreRowModel(),
     });
@@ -130,45 +161,97 @@ const VerifyBidsTable: React.FC<VerifyBidsTableProps> = memo(
     }
 
     return (
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Trophy className="h-4 w-4 text-yellow-500" />
+          <span>Highest Bidder</span>
+        </div>
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  className={cn(
+                    "hover:bg-muted/50",
+                    row.original.bid_id === highestBid?.bid_id
+                      ? "bg-yellow-50 dark:bg-yellow-900/20"
+                      : "",
+                    selectedBidId === row.original.bid_id
+                      ? "bg-primary/10"
+                      : "",
+                  )}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="flex items-center justify-between space-x-2">
+          <div className="flex-1 text-sm text-muted-foreground">
+            Page {pageIndex} of {Math.ceil(sortedBids.length / pageSize)} |
+            Total {sortedBids.length} bids
+          </div>
+          <div className="flex items-center space-x-2">
+            <Select
+              value={pageSize.toString()}
+              onValueChange={(value) => handlePageSizeChange(Number(value))}
+            >
+              <SelectTrigger className="w-[100px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[5, 10, 20, 30, 40, 50].map((size) => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size} rows
+                  </SelectItem>
                 ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className={cn(
-                  "hover:bg-muted/50",
-                  row.original.bid_id === highestBid?.bid_id
-                    ? "bg-yellow-50 dark:bg-yellow-900/20"
-                    : "",
-                  selectedBidId === row.original.bid_id ? "bg-primary/10" : "",
-                )}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePreviousPage}
+              disabled={pageIndex === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNextPage}
+              disabled={pageIndex >= Math.ceil(sortedBids.length / pageSize)}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       </div>
     );
   },

@@ -5,7 +5,14 @@ import { DetailedBid } from "@/types/bidTypes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { User, Clock, DollarSign, ShieldIcon } from "lucide-react";
+import {
+  User,
+  Clock,
+  DollarSign,
+  ShieldIcon,
+  Trophy,
+  ExternalLink,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ImageGallery from "../ImageGallery";
 import { BidHistory } from "../BidHistory";
@@ -58,6 +65,8 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
   const auctionParams = new URLSearchParams(auctionData).toString();
   const verifyAuctionHref = `/dashboard/auctions/verify/${auction.auction_id}?${auctionParams}`;
 
+  console.log(auction);
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
@@ -79,7 +88,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Reserve Price</p>
+                  <p className="text-sm font-medium">Buy Now Price</p>
                   <p className="text-2xl font-bold">
                     {formatCurrency(buynow_price)}
                   </p>
@@ -153,10 +162,17 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <Trophy className="h-4 w-4 text-yellow-500" />
               <div>
                 <p className="text-sm font-medium">Winner</p>
-                <p>{auction.winner_id || "No winner yet"}</p>
+                {auction.winner?.username ? (
+                  <Link href={`/dashboard/users/${auction.winner.user_id}`}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {auction.winner?.username}
+                  </Link>
+                ) : (
+                  <p>No winner yet</p>
+                )}
               </div>
             </div>
 

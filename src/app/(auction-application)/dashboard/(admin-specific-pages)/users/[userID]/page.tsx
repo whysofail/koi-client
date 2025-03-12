@@ -1,8 +1,12 @@
 import { getServerSession } from "@/lib/serverSession";
 import UserDetailsContent from "@/components/admin/user-details-content/UserDetailsContent";
 
-const UserDetails = async ({ params }: { params: { userID: string } }) => {
-  const userId = params.userID;
+const UserDetails = async ({
+  params,
+}: {
+  params: Promise<{ userID: string }>;
+}) => {
+  const userId = (await params).userID;
   const session = await getServerSession();
   const token = session?.user?.accessToken ?? "";
 
