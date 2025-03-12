@@ -23,7 +23,10 @@ export function usePlaceBidForm(
 
   const queryClient = useQueryClient();
 
-  const placeBidMutation = usePlaceBid(token, queryClient);
+  const { mutateAsync: placeBidMutation, isError } = usePlaceBid(
+    token,
+    queryClient,
+  );
 
   const form = useForm<PlaceBidFormData>({
     resolver: zodResolver(formSchema),
@@ -34,7 +37,7 @@ export function usePlaceBidForm(
 
   const onSubmit = (values: PlaceBidFormData) => {
     setIsSubmitting(true);
-    placeBidMutation.mutate(
+    placeBidMutation(
       {
         auctionID,
         bid_amount: values.amount,
@@ -59,5 +62,6 @@ export function usePlaceBidForm(
     isSubmitting,
     minBid,
     onSubmit,
+    isError,
   };
 }

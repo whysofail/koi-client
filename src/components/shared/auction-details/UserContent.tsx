@@ -18,6 +18,7 @@ import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { AuctionItemCard } from "./auction-item-card";
 import { format } from "date-fns";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
+import useGetLoggedInUser from "@/server/user/getLoggedInUser/queries";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -33,6 +34,7 @@ interface UserContentProps {
   bids: DetailedBid[];
   title: string;
   images?: GalleryImage[];
+  userID?: string;
 }
 
 const UserContent: React.FC<UserContentProps> = ({
@@ -65,6 +67,7 @@ const UserContent: React.FC<UserContentProps> = ({
       alt: title,
     }));
 
+  const user = useGetLoggedInUser(token || "");
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-6">
@@ -138,6 +141,8 @@ const UserContent: React.FC<UserContentProps> = ({
                   auction.status === AuctionStatus.COMPLETED
                 }
                 status={auction.status}
+                participationFee={Number(auction.participation_fee)}
+                userBalance={Number(user.data?.data.wallet.balance)}
                 hasJoined={auction.hasJoined}
               />
             ) : (

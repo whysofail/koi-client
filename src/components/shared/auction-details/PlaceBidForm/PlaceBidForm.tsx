@@ -1,6 +1,7 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Loader2, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { usePlaceBidForm } from "./PlaceBidForm.viewModel";
 import { AuctionStatus } from "@/types/auctionTypes";
+import { JoinAuctionDialog } from "../JoinAuctionDialog/join-auction-dialog";
+import { cn } from "@/lib/utils";
 
 interface PlaceBidFormProps {
   token: string;
@@ -22,6 +25,8 @@ interface PlaceBidFormProps {
   isEnded: boolean;
   hasJoined: boolean;
   status: AuctionStatus;
+  participationFee: number;
+  userBalance: number;
 }
 
 const PlaceBidForm = ({
@@ -32,6 +37,8 @@ const PlaceBidForm = ({
   isEnded,
   hasJoined,
   status,
+  participationFee,
+  userBalance,
 }: PlaceBidFormProps) => {
   const { form, isSubmitting, minBid, onSubmit } = usePlaceBidForm(
     token,
@@ -39,6 +46,27 @@ const PlaceBidForm = ({
     currentBid,
     minIncrement,
   );
+
+  const [isFocused, setIsFocused] = useState(false);
+
+  const currentAmount = form.watch("amount") || 0;
+  const isValidBid = currentAmount >= minBid;
+
+  const formatAmount = (value: number) => {
+    return value.toLocaleString("id-ID");
+  };
+
+  const handleIncrement = (amount: number) => {
+    const newValue = (currentAmount || minBid) + amount;
+    form.setValue("amount", newValue);
+    form.trigger("amount");
+  };
+
+  const handleQuickBid = (multiplier: number) => {
+    const quickBidAmount = minBid + minIncrement * multiplier;
+    form.setValue("amount", quickBidAmount);
+    form.trigger("amount");
+  };
 
   if (isEnded) {
     return (
@@ -49,13 +77,17 @@ const PlaceBidForm = ({
   }
 
   if (
-    (!hasJoined && !isEnded && status === AuctionStatus.PUBLISHED) ||
-    status === AuctionStatus.STARTED
+    !hasJoined &&
+    !isEnded &&
+    (status === AuctionStatus.PUBLISHED || status === AuctionStatus.STARTED)
   ) {
     return (
-      <Button className="w-full" disabled>
-        Join the auction to place a bid
-      </Button>
+      <JoinAuctionDialog
+        token={token}
+        auctionID={auctionID}
+        participationFee={participationFee}
+        walletBalance={userBalance}
+      />
     );
   }
 
@@ -67,25 +99,101 @@ const PlaceBidForm = ({
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Enter bid amount"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
-              </FormControl>
-              <FormDescription>
-                Minimum bid: Rp. {minBid.toLocaleString()}
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="h-10 rounded-r-none"
+                    onClick={() => handleIncrement(-minIncrement)}
+                    disabled={currentAmount <= minBid}
+                  >
+                    <Minus className="h-4 w-4" />
+                    <span className="sr-only">Decrease bid</span>
+                  </Button>
+                  <FormControl>
+                    <div className="relative flex-1">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                        Rp
+                      </div>
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        className={cn(
+                          "rounded-none pl-9 pr-4 text-right",
+                          isFocused && "ring-2 ring-ring",
+                          !isValidBid &&
+                            "border-destructive focus-visible:ring-destructive",
+                        )}
+                        value={field.value ? formatAmount(field.value) : ""}
+                        onChange={(e) => {
+                          // Remove non-numeric characters and convert to number
+                          const value = e.target.value.replace(/[^\d]/g, "");
+                          field.onChange(value ? Number(value) : "");
+                        }}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                      />
+                    </div>
+                  </FormControl>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="h-10 rounded-l-none"
+                    onClick={() => handleIncrement(minIncrement)}
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span className="sr-only">Increase bid</span>
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => form.setValue("amount", minBid)}
+                    className="flex-1 text-xs"
+                  >
+                    Min: Rp {formatAmount(minBid)}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuickBid(1)}
+                    className="flex-1 text-xs"
+                  >
+                    +{formatAmount(minIncrement)}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuickBid(4)}
+                    className="flex-1 text-xs"
+                  >
+                    +{formatAmount(minIncrement * 4)}
+                  </Button>
+                </div>
+              </div>
+
+              <FormDescription
+                className={cn(!isValidBid && "text-destructive")}
+              >
+                Minimum bid: Rp {formatAmount(minBid)}
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <Button
           type="submit"
           className="w-full"
-          disabled={isSubmitting || form.watch("amount") < minBid}
+          disabled={isSubmitting || !isValidBid}
         >
           {isSubmitting ? (
             <>
@@ -93,7 +201,7 @@ const PlaceBidForm = ({
               Placing Bid...
             </>
           ) : (
-            "Place Bid"
+            `Place Bid: Rp ${formatAmount(currentAmount || 0)}`
           )}
         </Button>
       </form>

@@ -5,6 +5,7 @@ import React from "react";
 const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";
+  const userId = session?.user.id;
   const isAdmin = session?.user.role === "admin";
   const auctionId = (await params).id;
   return (
@@ -15,6 +16,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
           token={token}
           isAdmin={isAdmin}
           withBack={false}
+          userId={userId}
         />
       </div>
     </div>

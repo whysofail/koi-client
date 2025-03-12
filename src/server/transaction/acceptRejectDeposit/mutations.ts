@@ -39,6 +39,9 @@ const useAcceptRejectDeposit = (token: string, queryClient: QueryClient) => {
       await queryClient.invalidateQueries({
         queryKey: ["transaction", transactionId],
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["transaction", transactionId, "user"],
+      });
     },
     onError: (error) => {
       console.error("Failed to update transaction status:", error);

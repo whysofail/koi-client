@@ -17,6 +17,7 @@ interface AuctionDetailsProps {
   token: string;
   auctionID: string;
   withBack?: boolean;
+  userId?: string;
 }
 
 const AuctionDetails: React.FC<AuctionDetailsProps> = ({

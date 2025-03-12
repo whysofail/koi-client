@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import useDepositFormViewModel from "./DepositForm.viewModel";
-import ImageUploadEditor from "@/app/(public-pages)/test/ImageDropZone";
+import ImageUploadEditor from "@/components/ui/image-dropzone";
 
 type DepositFormProps = {
   token: string;
