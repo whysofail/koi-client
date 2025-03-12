@@ -21,9 +21,11 @@ import {
   differenceInHours,
   parseISO,
 } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VerifyAuctionSkeleton from "@/components/skeletons/VerifyAuctionSkeleton";
 import { Clock, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +34,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface VerifyAuctionViewProps {
   auctionId: string;
@@ -90,29 +98,25 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
     );
   }
 
-  const getStatusBadge = (status: AuctionStatus) => {
-    switch (status) {
-      case "PENDING":
-        return <Badge>PENDING</Badge>;
-      case "COMPLETED":
-        return <Badge>COMPLETED</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
+  const getDuration = () => {
+    const start = parseISO(auctionDetails.start_datetime);
+    const end = parseISO(auctionDetails.end_datetime);
+    const diffDays = differenceInDays(end, start);
+    const diffHours = differenceInHours(end, start) % 24;
+    return `${diffDays} days, ${diffHours} hours`;
   };
+
+  const highestBid =
+    auction.bids.length > 0
+      ? auction.bids.reduce(
+          (max, bid) =>
+            parseFloat(bid.bid_amount) > parseFloat(max.bid_amount) ? bid : max,
+          auction.bids[0],
+        )
+      : null;
 
   return (
     <div className="space-y-6">
-      {updateSuccess && (
-        <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-900 dark:bg-green-950 dark:text-green-300">
-          <CheckCircle className="h-5 w-5" />
-          <AlertTitle>Winner Verified Successfully</AlertTitle>
-          <AlertDescription>
-            The winner has been successfully verified for this auction.
-          </AlertDescription>
-        </Alert>
-      )}
-
       {updateError && (
         <Alert variant="destructive">
           <AlertCircle className="h-5 w-5" />
@@ -127,10 +131,14 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
             <DialogTitle>Confirm Winner Selection</DialogTitle>
             <DialogDescription>
               Are you sure you want to select{" "}
-              {bidToConfirm?.user.username || "this bidder"} as the winner with
-              a bid of{" "}
-              {bidToConfirm ? formatCurrency(bidToConfirm.bid_amount) : "$0"}?
-              This action cannot be undone.
+              <strong className="text-black dark:text-white">
+                {bidToConfirm?.user.username}
+              </strong>{" "}
+              as the winner with a bid of{" "}
+              <strong className="text-black dark:text-white">
+                {formatCurrency(bidToConfirm?.bid_amount ?? "")}
+              </strong>
+              ? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:justify-end">
@@ -159,107 +167,164 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
         </DialogContent>
       </Dialog>
 
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-muted/30">
-          <div className="flex flex-col justify-between sm:flex-row sm:items-center">
+      <Card className="overflow-hidden border shadow-sm">
+        {updateSuccess && (
+          <Alert className="rounded-none border-0 border-b border-green-200 bg-green-50 text-green-800 dark:border-green-900 dark:bg-green-950 dark:text-green-300">
+            <CheckCircle className="h-4 w-4" />
+            <AlertTitle>Auction Verified</AlertTitle>
+            <AlertDescription>
+              This auction has been verified and the winner has been selected.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <CardHeader className="bg-muted/30 pb-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-2xl">{auctionDetails.title}</CardTitle>
+              <CardTitle className="text-xl font-bold sm:text-2xl">
+                {auctionDetails.title}
+              </CardTitle>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <Badge variant="outline" className="font-mono">
+                  #{auctionDetails.auction_id}
+                </Badge>
+                <StatusBadge status={auctionDetails.status} />
+              </div>
             </div>
-            <div>{getStatusBadge(auctionDetails.status)}</div>
+
+            {highestBid && (
+              <div className="mt-2 rounded-lg bg-primary/10 p-3 sm:mt-0">
+                <div className="text-sm font-medium text-muted-foreground">
+                  Highest Bid
+                </div>
+                <div className="text-xl font-bold text-primary">
+                  {formatCurrency(highestBid.bid_amount)}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  by {highestBid.user.username}
+                </div>
+              </div>
+            )}
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <div className="space-y-4">
-              <h3 className="flex items-center gap-2 text-lg font-semibold">
-                <Info className="h-5 w-5 text-muted-foreground" />
-                Auction Details
-              </h3>
-              <div className="rounded-lg bg-muted/20 p-4">
-                <dl className="space-y-3">
-                  <div>
-                    <dt className="text-sm font-medium text-muted-foreground">
-                      Description
-                    </dt>
-                    <dd className="mt-1">{auctionDetails.description}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-muted-foreground">
-                      Item
-                    </dt>
-                    <dd className="mt-1">{auctionDetails.item}</dd>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <dt className="text-sm font-medium text-muted-foreground">
-                        Reserve Price
-                      </dt>
-                      <dd className="mt-1 font-medium text-primary">
-                        {formatCurrency(auctionDetails.buynow_price)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm font-medium text-muted-foreground">
-                        Bid Increment
-                      </dt>
-                      <dd className="mt-1">
-                        {formatCurrency(auctionDetails.bid_increment)}
-                      </dd>
-                    </div>
-                  </div>
-                </dl>
-              </div>
+
+        <CardContent className="p-0">
+          <Tabs defaultValue="details" className="w-full">
+            <div className="border-b px-6 pt-2">
+              <TabsList className="w-full justify-start gap-4">
+                <TabsTrigger
+                  value="details"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                >
+                  <Info className="mr-2 h-4 w-4" />
+                  Details
+                </TabsTrigger>
+                <TabsTrigger
+                  value="timeline"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                >
+                  <Clock className="mr-2 h-4 w-4" />
+                  Timeline
+                </TabsTrigger>
+              </TabsList>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="flex items-center gap-2 text-lg font-semibold">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                Auction Timeline
-              </h3>
-              <div className="rounded-lg bg-muted/20 p-4">
-                <dl className="space-y-3">
-                  <div>
-                    <dt className="text-sm font-medium text-muted-foreground">
+            <TabsContent value="details" className="p-6 pt-4">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">
+                    Description
+                  </h3>
+                  <p className="mt-1">{auctionDetails.description}</p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="rounded-lg bg-muted/20 p-4">
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Koi Item ID
+                    </h4>
+                    <p className="mt-1 font-mono">{auctionDetails.item}</p>
+                  </div>
+
+                  <div className="rounded-lg bg-muted/20 p-4">
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Buy Now Price
+                    </h4>
+                    <p className="mt-1 text-lg font-semibold">
+                      {formatCurrency(auctionDetails.buynow_price)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-muted/20 p-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Bid Increment
+                    </h4>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Minimum amount to increase bid by</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <p className="mt-1">
+                    {formatCurrency(auctionDetails.bid_increment)}
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="timeline" className="p-6 pt-4">
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="rounded-lg bg-muted/20 p-4">
+                    <h4 className="text-sm font-medium text-muted-foreground">
                       Start Date
-                    </dt>
-                    <dd className="mt-1">
+                    </h4>
+                    <p className="mt-1 font-medium">
                       {format(
                         parseISO(auctionDetails.start_datetime),
-                        "dd-MM-yy",
+                        "MMMM d, yyyy",
                       )}
-                    </dd>
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {format(
+                        parseISO(auctionDetails.start_datetime),
+                        "h:mm a",
+                      )}
+                    </p>
                   </div>
-                  <div>
-                    <dt className="text-sm font-medium text-muted-foreground">
+
+                  <div className="rounded-lg bg-muted/20 p-4">
+                    <h4 className="text-sm font-medium text-muted-foreground">
                       End Date
-                    </dt>
-                    <dd className="mt-1">
+                    </h4>
+                    <p className="mt-1 font-medium">
                       {format(
                         parseISO(auctionDetails.end_datetime),
-                        "dd-MM-yy",
+                        "MMMM d, yyyy",
                       )}
-                    </dd>
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {format(parseISO(auctionDetails.end_datetime), "h:mm a")}
+                    </p>
                   </div>
-                  <div>
-                    <dt className="text-sm font-medium text-muted-foreground">
-                      Duration
-                    </dt>
-                    <dd className="mt-1">
-                      {(() => {
-                        const start = parseISO(auctionDetails.start_datetime);
-                        const end = parseISO(auctionDetails.end_datetime);
+                </div>
 
-                        const diffDays = differenceInDays(end, start);
-                        const diffHours = differenceInHours(end, start) % 24;
-
-                        return `${diffDays} days, ${diffHours} hours`;
-                      })()}
-                    </dd>
-                  </div>
-                </dl>
+                <div className="rounded-lg bg-muted/20 p-4">
+                  <h4 className="text-sm font-medium text-muted-foreground">
+                    Duration
+                  </h4>
+                  <p className="mt-1">{getDuration()}</p>
+                </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 

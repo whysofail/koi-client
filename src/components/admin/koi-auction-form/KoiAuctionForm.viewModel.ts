@@ -25,8 +25,12 @@ const formSchema = z.object({
     .min(1, "Description is required"),
   item: z.string().min(1, "Item is required"),
   buynow_price: z.number().min(1, "Buy now price must be greater than 0"),
-  participation_fee: z.number().min(1, "Reserve price must be greater than 0"),
-  bid_increment: z.number().min(1, "Increment amount must be greater than 0"),
+  participation_fee: z
+    .number()
+    .min(1, "Participant fee must be greater than 0"),
+  bid_increment: z
+    .number()
+    .min(1, "Bid increment amount must be greater than 0"),
   status: z.nativeEnum(AuctionStatus).optional(),
 });
 

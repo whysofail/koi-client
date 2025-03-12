@@ -14,10 +14,8 @@ const AdminContentSkeleton: FC = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
-                {/* Image Gallery Skeleton */}
                 <Skeleton className="h-[400px] w-full" />
                 <Skeleton className="h-[1px] w-full" />
-                {/* Current Bid and Reserve Price */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[1, 2].map((i) => (
                     <div key={i}>

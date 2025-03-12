@@ -93,8 +93,6 @@ export interface Auction {
   user: User;
   bids: Bid[];
   participants: AuctionParticipantInfo[];
-  highest_bid: Bid | null;
-  winner: User | null;
   participants_count: number;
   hasJoined: boolean;
 }
