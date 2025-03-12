@@ -1,13 +1,9 @@
 import React, { FC } from "react";
 
-const UserHeader: FC<{ title: string; description: string }> = ({
-  title,
-  description,
-}) => {
+const UserHeader: FC<{ title: string; description: string }> = ({}) => {
   return (
     <div className="mb-6">
-      <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-      <p className="mt-2 text-muted-foreground">{description}</p>
+      <h1>Auction Details</h1>
     </div>
   );
 };

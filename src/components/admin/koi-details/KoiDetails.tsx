@@ -25,7 +25,7 @@ interface KoiDetailsProps {
   image?: SingleImage;
 }
 
-const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
+const KoiDetails: FC<KoiDetailsProps> = ({ koiID, isLoading }) => {
   const query = useGetKoiByID(koiID || "");
 
   if (isLoading || query.isLoading) {
@@ -62,7 +62,7 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
       }
     : undefined;
 
-  const displayData = koiData || {
+  const displayData = {
     code: query.data?.code,
     nickname: query.data?.nickname,
     variety: query.data?.variety.name,
@@ -72,6 +72,7 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, koiData, isLoading }) => {
     image: koiImage,
   };
 
+  console.log(displayData.image);
   const renderValue = (value: string | null | undefined) => {
     if (
       value === undefined ||

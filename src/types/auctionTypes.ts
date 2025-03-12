@@ -96,6 +96,7 @@ export interface Auction {
   highest_bid: Bid | null;
   winner: User | null;
   participants_count: number;
+  hasJoined: boolean;
 }
 
 export type PaginatedAuctionsResponse = PaginatedResponse<Auction>;

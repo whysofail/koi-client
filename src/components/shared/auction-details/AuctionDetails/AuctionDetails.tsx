@@ -15,12 +15,14 @@ interface AuctionDetailsProps {
   isAdmin: boolean;
   token: string;
   auctionID: string;
+  withBack?: boolean;
 }
 
 const AuctionDetails: React.FC<AuctionDetailsProps> = ({
   isAdmin,
   token,
   auctionID,
+  withBack = true,
 }) => {
   const { publicSocket } = useSocket();
   const {
@@ -41,13 +43,14 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
 
   return (
     <div className="container mx-auto p-6">
-      <BackButton />
+      {withBack && <BackButton />}
+
       {isAdmin ? (
         <AdminControls
           token={token}
           auctionId={auctionID}
           bid_increment={auction.bid_increment}
-          reserve_price={auction.reserve_price}
+          reserve_price={auction.buynow_price}
           koiId={auction.item}
         />
       ) : (
@@ -82,7 +85,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           bids={bids}
           title={auction.title}
           currentBid={auction.current_highest_bid}
-          reservePrice={auction.reserve_price}
+          reservePrice={auction.buynow_price}
           bidIncrement={auction.bid_increment}
         />
       ) : (

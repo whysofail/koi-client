@@ -1,6 +1,8 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
+import type React from "react";
+
+import { type FC, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
@@ -11,8 +13,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ImageIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, ImageIcon, ZoomIn } from "lucide-react";
 import GallerySkeleton from "@/components/skeletons/GalleryImageSkeleton";
+import { Button } from "@/components/ui/button";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -35,6 +38,9 @@ const ImageGallery: FC<ImageGalleryProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorImages, setErrorImages] = useState<Record<string, boolean>>({});
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
 
   // Validate maxImages
   const validMaxImages = Math.max(1, Math.min(maxImages, 20));
@@ -78,6 +84,37 @@ const ImageGallery: FC<ImageGalleryProps> = ({
       .toLowerCase() || "default"
   }`;
 
+  // Navigation functions
+  const goToPrevious = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Stop event propagation
+    setActiveImageIndex((prev) =>
+      prev === 0 ? galleryImages.length - 1 : prev - 1,
+    );
+  };
+
+  const goToNext = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Stop event propagation
+    setActiveImageIndex((prev) =>
+      prev === galleryImages.length - 1 ? 0 : prev + 1,
+    );
+  };
+
+  const setActiveImage = (index: number) => {
+    setActiveImageIndex(index);
+  };
+
+  // Function to open the lightbox programmatically
+  const openLightbox = (index: number = activeImageIndex) => {
+    if (lightboxRef.current && galleryRef.current) {
+      // Find all links in the gallery
+      const links = galleryRef.current.querySelectorAll("a.lightbox-link");
+      if (links[index]) {
+        // Simulate a click on the appropriate link
+        (links[index] as HTMLElement).click();
+      }
+    }
+  };
+
   useEffect(() => {
     if (images !== undefined) {
       setIsLoading(false);
@@ -87,12 +124,10 @@ const ImageGallery: FC<ImageGalleryProps> = ({
   useEffect(() => {
     if (galleryImages.length === 0) return;
 
-    let lightbox: PhotoSwipeLightbox | null = null;
-
     try {
-      lightbox = new PhotoSwipeLightbox({
+      lightboxRef.current = new PhotoSwipeLightbox({
         gallery: "#" + galleryID,
-        children: "a",
+        children: "a.lightbox-link",
         pswpModule: () => import("photoswipe"),
         wheelToZoom: true,
         initialZoomLevel: "fit", // This ensures image fits in viewport
@@ -108,15 +143,16 @@ const ImageGallery: FC<ImageGalleryProps> = ({
         showAnimationDuration: 300,
         hideAnimationDuration: 300,
       });
-      lightbox.init();
+      lightboxRef.current.init();
     } catch (error) {
       console.error("Error initializing PhotoSwipe:", error);
     }
 
     return () => {
-      if (lightbox) {
+      if (lightboxRef.current) {
         try {
-          lightbox.destroy();
+          lightboxRef.current.destroy();
+          lightboxRef.current = null;
         } catch (error) {
           console.error("Error destroying PhotoSwipe:", error);
         }
@@ -136,8 +172,6 @@ const ImageGallery: FC<ImageGalleryProps> = ({
       <div className="space-y-4">
         <div className="relative overflow-hidden rounded-lg border bg-muted">
           <div className="relative w-full" style={{ paddingBottom: "50%" }}>
-            {" "}
-            {/* 9:16 Aspect Ratio */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <ImageIcon className="mx-auto h-12 w-12" />
@@ -150,47 +184,91 @@ const ImageGallery: FC<ImageGalleryProps> = ({
     );
   }
 
+  const activeImage = galleryImages[activeImageIndex];
+
   return (
     <div className="space-y-4">
-      <div className="pswp-gallery" id={galleryID}>
+      <div className="pswp-gallery" id={galleryID} ref={galleryRef}>
         <div className="space-y-4">
-          {/* Main Image */}
-          <div className="relative overflow-hidden rounded-lg border bg-muted">
+          {/* Main Image with Navigation */}
+          <div className="group relative overflow-hidden rounded-lg border bg-muted">
             <div
               className="relative w-full"
               style={{
-                paddingBottom: `${Math.min(
-                  Math.max(
-                    (galleryImages[0].height / galleryImages[0].width) * 100,
-                    100,
-                  ),
-                  75,
-                )}%`,
+                paddingBottom: `${Math.min(Math.max((activeImage.height / activeImage.width) * 100, 100), 75)}%`,
               }}
             >
-              <a
-                href={galleryImages[0].largeURL}
-                data-pswp-width={galleryImages[0].width}
-                data-pswp-height={galleryImages[0].height}
-                className="absolute inset-0"
+              {/* Hidden links for PhotoSwipe to use */}
+              {galleryImages.map((image, index) => (
+                <a
+                  key={`lightbox-link-${index}`}
+                  href={image.largeURL}
+                  data-pswp-width={image.width}
+                  data-pswp-height={image.height}
+                  className={`lightbox-link absolute inset-0 ${index === activeImageIndex ? "" : "hidden"}`}
+                  aria-hidden={index !== activeImageIndex}
+                  tabIndex={-1}
+                >
+                  <span className="sr-only">View full size</span>
+                </a>
+              ))}
+
+              {/* Visible image (not wrapped in an anchor) */}
+              <div
+                className="absolute inset-0 cursor-zoom-in"
+                onClick={() => openLightbox()}
               >
                 <Image
-                  src={galleryImages[0].thumbnailURL}
-                  alt={galleryImages[0].alt}
+                  src={activeImage.thumbnailURL || "/placeholder.svg"}
+                  alt={activeImage.alt}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                   className="object-contain"
                   priority
-                  onError={() =>
-                    handleImageError(galleryImages[0].thumbnailURL)
-                  }
-                  unoptimized={errorImages[galleryImages[0].thumbnailURL]}
+                  onError={() => handleImageError(activeImage.thumbnailURL)}
+                  unoptimized={errorImages[activeImage.thumbnailURL]}
                 />
-              </a>
+              </div>
+
+              {/* Zoom indicator */}
+              <div className="absolute right-2 top-2 rounded-full bg-black/50 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                <ZoomIn size={16} />
+              </div>
+
+              {/* Navigation arrows */}
+              {galleryImages.length > 1 && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
+                    onClick={goToPrevious}
+                  >
+                    <ChevronLeft size={24} />
+                    <span className="sr-only">Previous image</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
+                    onClick={goToNext}
+                  >
+                    <ChevronRight size={24} />
+                    <span className="sr-only">Next image</span>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Carousel of Additional Images */}
+          {/* Image Counter */}
+          {galleryImages.length > 1 && (
+            <div className="text-center text-sm text-muted-foreground">
+              {activeImageIndex + 1} / {galleryImages.length}
+            </div>
+          )}
+
+          {/* Carousel of Thumbnails */}
           {galleryImages.length > 1 && (
             <Carousel
               opts={{
@@ -200,43 +278,40 @@ const ImageGallery: FC<ImageGalleryProps> = ({
               className="w-full"
             >
               <CarouselContent className="-ml-2 md:-ml-4">
-                {galleryImages.slice(1).map((image, index) => (
+                {galleryImages.map((image, index) => (
                   <CarouselItem
                     key={`${image.thumbnailURL}-${index}`}
-                    className="basis-1/2 pl-2 md:basis-1/4 md:pl-4"
+                    className="basis-1/4 pl-2 md:basis-1/5 md:pl-4"
                   >
-                    <div className="relative overflow-hidden rounded-md border bg-muted">
+                    <div
+                      className={`relative cursor-pointer overflow-hidden rounded-md border transition-all ${
+                        activeImageIndex === index
+                          ? "border-primary ring-2 ring-primary ring-opacity-50"
+                          : "border-muted hover:border-primary/50"
+                      }`}
+                      onClick={() => setActiveImage(index)}
+                    >
                       <div
                         className="relative w-full"
                         style={{
-                          paddingBottom: `${Math.min(
-                            Math.max((image.height / image.width) * 100, 50),
-                            100,
-                          )}%`,
+                          paddingBottom: `${Math.min(Math.max((image.height / image.width) * 100, 50), 100)}%`,
                         }}
                       >
-                        <a
-                          href={image.largeURL}
-                          data-pswp-width={540}
-                          data-pswp-height={720}
-                          className="absolute inset-0"
-                        >
-                          <Image
-                            src={image.thumbnailURL}
-                            alt={image.alt}
-                            fill
-                            sizes="(max-width: 768px) 50vw, 25vw"
-                            className="object-contain"
-                            onError={() => handleImageError(image.thumbnailURL)}
-                            unoptimized={errorImages[image.thumbnailURL]}
-                          />
-                        </a>
+                        <Image
+                          src={image.thumbnailURL || "/placeholder.svg"}
+                          alt={image.alt}
+                          fill
+                          sizes="(max-width: 768px) 25vw, 20vw"
+                          className="object-cover"
+                          onError={() => handleImageError(image.thumbnailURL)}
+                          unoptimized={errorImages[image.thumbnailURL]}
+                        />
                       </div>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              {galleryImages.length > 4 && (
+              {galleryImages.length > 5 && (
                 <>
                   <CarouselPrevious className="-left-4 h-8 w-8" />
                   <CarouselNext className="-right-4 h-8 w-8" />

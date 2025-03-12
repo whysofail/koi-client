@@ -35,6 +35,7 @@ const UserProfileContent: FC<{
 
   if (isLoading) return <UserDetailsSkeleton />;
 
+  // TODO : Handle error
   if (error || !user) return <div>Error loading user details</div>;
 
   return (

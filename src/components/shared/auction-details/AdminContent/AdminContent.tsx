@@ -50,7 +50,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
     item: auction.item,
     start_datetime: auction.start_datetime,
     end_datetime: auction.end_datetime,
-    reserve_price: auction.reserve_price,
+    buynow_price: auction.buynow_price,
     bid_increment: auction.bid_increment,
     status: auction.status,
   };

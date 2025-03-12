@@ -12,7 +12,7 @@ const placeBidOnAuction = async (
   { auctionID, bid_amount }: PlaceBidParams,
 ) => {
   const { data } = await fetchWithAuth.post(
-    `/bids/auction/${auctionID}`,
+    `/bids/${auctionID}`,
     { bid_amount },
     {
       headers: {

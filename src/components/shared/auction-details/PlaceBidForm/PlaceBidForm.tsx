@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { usePlaceBidForm } from "./PlaceBidForm.viewModel";
+import { AuctionStatus } from "@/types/auctionTypes";
 
 interface PlaceBidFormProps {
   token: string;
@@ -19,6 +20,8 @@ interface PlaceBidFormProps {
   currentBid: number;
   minIncrement: number;
   isEnded: boolean;
+  hasJoined: boolean;
+  status: AuctionStatus;
 }
 
 const PlaceBidForm = ({
@@ -27,6 +30,8 @@ const PlaceBidForm = ({
   currentBid,
   minIncrement,
   isEnded,
+  hasJoined,
+  status,
 }: PlaceBidFormProps) => {
   const { form, isSubmitting, minBid, onSubmit } = usePlaceBidForm(
     token,
@@ -39,6 +44,17 @@ const PlaceBidForm = ({
     return (
       <Button className="w-full" disabled>
         Auction Ended
+      </Button>
+    );
+  }
+
+  if (
+    (!hasJoined && !isEnded && status === AuctionStatus.PUBLISHED) ||
+    status === AuctionStatus.STARTED
+  ) {
+    return (
+      <Button className="w-full" disabled>
+        Join the auction to place a bid
       </Button>
     );
   }

@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import ImageGallery from "./ImageGallery";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -8,12 +8,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Clock, CreditCard, Info, Truck, User } from "lucide-react";
+import { Clock, Info, User } from "lucide-react";
 import { BidHistory } from "./BidHistory";
-import { Auction, AuctionStatus } from "@/types/auctionTypes";
-import { Bid } from "@/types/bidTypes";
+import { type Auction, AuctionStatus } from "@/types/auctionTypes";
+import type { DetailedBid } from "@/types/bidTypes";
 import { Separator } from "@/components/ui/separator";
 import PlaceBidForm from "./PlaceBidForm/PlaceBidForm";
+import useGetKoiByID from "@/server/koi/getKoiByID/queries";
+import { AuctionItemCard } from "./auction-item-card";
+import { format } from "date-fns";
+import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -21,11 +25,12 @@ interface GalleryImage {
   height: number;
   alt: string;
 }
+
 interface UserContentProps {
-  token: string;
+  token?: string;
   auction: Auction;
   auctionID: string;
-  bids: Bid[];
+  bids: DetailedBid[];
   title: string;
   images?: GalleryImage[];
 }
@@ -36,16 +41,56 @@ const UserContent: React.FC<UserContentProps> = ({
   auctionID,
   bids,
   title,
-  images,
 }) => {
   const currentBid = Number(auction.current_highest_bid);
-  const reservePrice = Number(auction.reserve_price);
+  const reservePrice = Number(auction.buynow_price);
   const bidIncrement = Number(auction.bid_increment);
+  const { data: koiData } = useGetKoiByID(auction.item);
+  const koi = koiData;
+  const imageArray = koi?.photo?.split("|") || [];
+  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+  const startDate = format(
+    new Date(auction.start_datetime),
+    "dd/MM/yyyy HH:mm O",
+  );
+  const endDate = format(new Date(auction.end_datetime), "dd/MM/yyyy HH:mm O");
+
+  const koiImages: GalleryImage[] = imageArray
+    .filter((img) => img !== "")
+    .map((img) => ({
+      thumbnailURL: imageBaseUrl + img,
+      largeURL: imageBaseUrl + img,
+      height: 800,
+      width: 400,
+      alt: title,
+    }));
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <ImageGallery title={title} images={images} />
       <div className="space-y-6">
+        <ImageGallery title={title} images={koiImages} />
+        <AuctionItemCard auction={auction} koi={koi} />
+      </div>
+      <div className="space-y-6">
+        <div>
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+              {title}
+            </h2>
+          </div>
+          <StatusBadge status={auction.status} />
+          <p>{auction.description}</p>
+          <div className="ck flex justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <p className="text-sm text-muted">Start date : {startDate}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <p className="text-sm text-muted">End date : {endDate}</p>
+            </div>
+          </div>
+        </div>
         <Card>
           <CardContent className="grid gap-4 p-6">
             <div className="flex items-center justify-between">
@@ -76,51 +121,32 @@ const UserContent: React.FC<UserContentProps> = ({
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
-                QueryClient
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>Ends in 2 days</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <span>{auction.participants.length} watching</span>
+                <span>{auction.participants.length} users participated</span>
               </div>
             </div>
 
             <Separator />
-
-            <PlaceBidForm
-              token={token}
-              auctionID={auctionID}
-              currentBid={currentBid}
-              minIncrement={bidIncrement}
-              isEnded={
-                auction.status === AuctionStatus.PENDING ||
-                auction.status === AuctionStatus.COMPLETED
-              }
-            />
+            {token ? (
+              <PlaceBidForm
+                token={token}
+                auctionID={auctionID}
+                currentBid={currentBid}
+                minIncrement={bidIncrement}
+                isEnded={
+                  auction.status === AuctionStatus.PENDING ||
+                  auction.status === AuctionStatus.COMPLETED
+                }
+                status={auction.status}
+                hasJoined={auction.hasJoined}
+              />
+            ) : (
+              <>
+                <Button>Login to place a bid</Button>
+              </>
+            )}
 
             <Separator />
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Truck className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">Shipping Available</p>
-                  <p className="text-sm text-muted-foreground">
-                    Calculated at checkout
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">Secure Payment</p>
-                  <p className="text-sm text-muted-foreground">
-                    Major credit cards accepted
-                  </p>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
