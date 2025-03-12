@@ -6,6 +6,8 @@ import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
 import { useUpdateAuction } from "@/server/auction/updateAuction/mutations";
 import { AuctionStatus, Bid } from "@/types/auctionTypes";
 import { toast } from "sonner";
+import useUpdateKoi from "@/server/koi/updateKoi/mutations";
+import { KoiStatus } from "@/types/koiTypes";
 
 export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
   const queryClient = useQueryClient();
@@ -15,6 +17,8 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
   });
 
   const { mutate, isPending } = useUpdateAuction(token, queryClient);
+  const { mutateAsync: updateKoiStatus, isPending: pendingUpdateKoiStatus } =
+    useUpdateKoi(queryClient);
 
   // Local state
   const [selectedBid, setSelectedBid] = useState<Bid | null>(null);
@@ -25,51 +29,95 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
 
   const auction = data?.data?.[0];
 
-  // Simple callback to handle bid selection
   const handleSelectBid = useCallback((bid: Bid) => {
     setBidToConfirm(bid);
     setDialogOpen(true);
   }, []);
 
   const handleVerifyWinner = useCallback(() => {
-    if (!bidToConfirm || !auctionId) {
+    if (!bidToConfirm || !auctionId || !auction) {
       setDialogOpen(false);
       return;
     }
 
-    mutate(
-      {
-        auctionId,
-        data: {
-          winner_id: bidToConfirm.user.user_id,
-          final_price: bidToConfirm.bid_amount,
-          status: AuctionStatus.COMPLETED,
-        },
-      },
-      {
-        onSuccess: () => {
-          setSelectedBid(bidToConfirm);
-          setUpdateSuccess(true);
-          setDialogOpen(false);
-          toast.success("Winner verified successfully");
+    const koiId = auction.item;
 
-          queryClient.invalidateQueries({ queryKey: ["auction", auctionId] });
-          queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
+    // First update koi status with Promise wrapper
+    new Promise<boolean>((resolve, reject) => {
+      updateKoiStatus(
+        {
+          koiId,
+          koiStatus: KoiStatus.SOLD,
+          buyerName: bidToConfirm.user.username,
         },
-        onError: (error) => {
-          const errorMessage =
-            error instanceof Error ? error.message : "Failed to update auction";
-          setUpdateError(errorMessage);
-          toast.error(errorMessage);
+        {
+          onSuccess: () => resolve(true),
+          onError: reject,
         },
-        onSettled: () => {
-          if (dialogOpen) {
-            setDialogOpen(false);
-          }
-        },
-      },
-    );
-  }, [auctionId, bidToConfirm, dialogOpen, mutate, queryClient]);
+      );
+    })
+      .then((koiUpdateResult) => {
+        // Only proceed with auction update if koi update succeeded
+        if (koiUpdateResult) {
+          mutate(
+            {
+              auctionId,
+              data: {
+                winner_id: bidToConfirm.user.user_id,
+                final_price: bidToConfirm.bid_amount,
+                status: AuctionStatus.COMPLETED,
+              },
+            },
+            {
+              onSuccess: () => {
+                setSelectedBid(bidToConfirm);
+                setUpdateSuccess(true);
+                setDialogOpen(false);
+                toast.success("Winner verified successfully");
+
+                queryClient.invalidateQueries({
+                  queryKey: ["auction", auctionId],
+                });
+                queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
+                queryClient.invalidateQueries({ queryKey: ["koiData"] });
+              },
+              onError: (error) => {
+                const errorMessage =
+                  error instanceof Error
+                    ? error.message
+                    : "Failed to update auction";
+                setUpdateError(errorMessage);
+                toast.error(errorMessage);
+              },
+              onSettled: () => {
+                if (dialogOpen) {
+                  setDialogOpen(false);
+                }
+              },
+            },
+          );
+        }
+      })
+      .catch((error) => {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to update koi status";
+        setUpdateError(errorMessage);
+        toast.error(errorMessage);
+        if (dialogOpen) {
+          setDialogOpen(false);
+        }
+      });
+  }, [
+    auctionId,
+    bidToConfirm,
+    dialogOpen,
+    mutate,
+    queryClient,
+    auction,
+    updateKoiStatus,
+  ]);
 
   return {
     auction,
@@ -80,7 +128,7 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
     bidToConfirm,
     handleSelectBid,
     handleVerifyWinner,
-    isUpdating: isPending,
+    isUpdating: isPending || pendingUpdateKoiStatus,
     updateSuccess,
     updateError,
     dialogOpen,

@@ -15,7 +15,12 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { format } from "date-fns";
+import {
+  format,
+  differenceInDays,
+  differenceInHours,
+  parseISO,
+} from "date-fns";
 import VerifyAuctionSkeleton from "@/components/skeletons/VerifyAuctionSkeleton";
 import { Clock, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -85,16 +90,6 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
     );
   }
 
-  const { bids } = auction;
-
-  const formatDateSafe = (dateString: string) => {
-    try {
-      return format(new Date(dateString), "dd-MM-yy");
-    } catch {
-      return dateString || "Invalid date";
-    }
-  };
-
   const getStatusBadge = (status: AuctionStatus) => {
     switch (status) {
       case "PENDING":
@@ -126,7 +121,6 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
         </Alert>
       )}
 
-      {/* Confirmation Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -229,7 +223,10 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                       Start Date
                     </dt>
                     <dd className="mt-1">
-                      {formatDateSafe(auctionDetails.start_datetime)}
+                      {format(
+                        parseISO(auctionDetails.start_datetime),
+                        "dd-MM-yy",
+                      )}
                     </dd>
                   </div>
                   <div>
@@ -237,7 +234,10 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                       End Date
                     </dt>
                     <dd className="mt-1">
-                      {formatDateSafe(auctionDetails.end_datetime)}
+                      {format(
+                        parseISO(auctionDetails.end_datetime),
+                        "dd-MM-yy",
+                      )}
                     </dd>
                   </div>
                   <div>
@@ -246,23 +246,13 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                     </dt>
                     <dd className="mt-1">
                       {(() => {
-                        try {
-                          const start = new Date(auctionDetails.start_datetime);
-                          const end = new Date(auctionDetails.end_datetime);
-                          const diffTime = Math.abs(
-                            end.getTime() - start.getTime(),
-                          );
-                          const diffDays = Math.floor(
-                            diffTime / (1000 * 60 * 60 * 24),
-                          );
-                          const diffHours = Math.floor(
-                            (diffTime % (1000 * 60 * 60 * 24)) /
-                              (1000 * 60 * 60),
-                          );
-                          return `${diffDays} days, ${diffHours} hours`;
-                        } catch {
-                          return "Unable to calculate";
-                        }
+                        const start = parseISO(auctionDetails.start_datetime);
+                        const end = parseISO(auctionDetails.end_datetime);
+
+                        const diffDays = differenceInDays(end, start);
+                        const diffHours = differenceInHours(end, start) % 24;
+
+                        return `${diffDays} days, ${diffHours} hours`;
                       })()}
                     </dd>
                   </div>
@@ -279,8 +269,8 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
             <div>
               <CardTitle className="text-xl">Bids Summary</CardTitle>
               <CardDescription>
-                {bids.length} total bids • Click &quot;Select as Winner&quot; to
-                verify a bid
+                {auction.bids.length} total bids • Click &quot;Select as
+                Winner&quot; to verify a bid
               </CardDescription>
             </div>
             <div>
@@ -298,7 +288,7 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
         </CardHeader>
         <CardContent>
           <VerifyBidsTable
-            bids={bids}
+            bids={auction.bids}
             selectedBidId={selectedBid?.bid_id}
             onSelectBid={handleSelectBid}
             isVerified={updateSuccess}
