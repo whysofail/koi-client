@@ -20,7 +20,7 @@ export const useAuctionDetailsViewModel = (
     isLoading: isLoadingAuction,
     error: auctionError,
   } = useGetAuctionByID(auctionID, token, {
-    enabled: !!token && !!auctionID,
+    enabled: true,
   });
 
   const {
@@ -28,7 +28,7 @@ export const useAuctionDetailsViewModel = (
     isLoading: isLoadingBids,
     error: bidsError,
   } = useGetBidsByAuctionID(auctionID, token, {
-    enabled: !!token && !!auctionID,
+    enabled: true,
   });
 
   const auction: Auction | undefined = auctionData?.data[0];

@@ -4,10 +4,11 @@ import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
 import { useUpdateAuction } from "@/server/auction/updateAuction/mutations";
-import { AuctionStatus, Bid } from "@/types/auctionTypes";
+import { Bid } from "@/types/auctionTypes";
 import { toast } from "sonner";
 import useUpdateKoi from "@/server/koi/updateKoi/mutations";
 import { KoiStatus } from "@/types/koiTypes";
+import { AuctionStatus } from "@/types/auctionTypes"; // Make sure to import this
 
 export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
   const queryClient = useQueryClient();
@@ -50,9 +51,9 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
       data: [
         {
           ...old.data[0],
+          status: AuctionStatus.PENDING, // Ensure auction is in PENDING status
           winner_id: bidToConfirm.user.user_id,
           final_price: bidToConfirm.bid_amount,
-          status: AuctionStatus.COMPLETED,
         },
       ],
     }));
@@ -87,9 +88,9 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
             {
               auctionId,
               data: {
+                status: AuctionStatus.PENDING, // Important: Ensure auction is in PENDING status
                 winner_id: bidToConfirm.user.user_id,
                 final_price: bidToConfirm.bid_amount,
-                status: AuctionStatus.COMPLETED,
               },
             },
             {

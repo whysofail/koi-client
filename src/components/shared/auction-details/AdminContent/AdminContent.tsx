@@ -65,7 +65,9 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
   const auctionParams = new URLSearchParams(auctionData).toString();
   const verifyAuctionHref = `/dashboard/auctions/verify/${auction.auction_id}?${auctionParams}`;
 
-  console.log(auction);
+  const winnerParticipant = auction.participants.filter(
+    (participant) => participant.user.user_id === auction.winner_id,
+  )[0];
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -165,10 +167,14 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
               <Trophy className="h-4 w-4 text-yellow-500" />
               <div>
                 <p className="text-sm font-medium">Winner</p>
-                {auction.winner?.username ? (
-                  <Link href={`/dashboard/users/${auction.winner.user_id}`}>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {auction.winner?.username}
+                {winnerParticipant ? (
+                  <Link
+                    href={`/dashboard/users/${winnerParticipant.user.user_id}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {winnerParticipant.user.username}
+                    </div>
                   </Link>
                 ) : (
                   <p>No winner yet</p>

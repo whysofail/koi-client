@@ -19,6 +19,7 @@ import { AuctionItemCard } from "./auction-item-card";
 import { format } from "date-fns";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import useGetLoggedInUser from "@/server/user/getLoggedInUser/queries";
+import Link from "next/link";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -67,7 +68,7 @@ const UserContent: React.FC<UserContentProps> = ({
       alt: title,
     }));
 
-  const user = useGetLoggedInUser(token || "");
+  const user = useGetLoggedInUser(token ?? "", { enabled: Boolean(token) });
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-6">
@@ -147,7 +148,9 @@ const UserContent: React.FC<UserContentProps> = ({
               />
             ) : (
               <>
-                <Button>Login to place a bid</Button>
+                <Button>
+                  <Link href="/login">Login to place a bid</Link>
+                </Button>
               </>
             )}
 

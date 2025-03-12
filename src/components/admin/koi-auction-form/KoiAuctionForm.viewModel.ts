@@ -57,19 +57,19 @@ const KoiAuctionFormViewModel = (
   const { mutateAsync: updateKoiStatus, isPending: pendingUpdateKoiStatus } =
     useUpdateKoi(queryClient);
 
-  const { data } = useGetAuctionByID(id, token, {
+  const { data, isLoading } = useGetAuctionByID(id, token, {
     enabled: operation === "update",
   });
   const auctionData = data?.data[0];
 
+  // Initialize form with consistent default values
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
-      rich_description:
-        operation === "update" ? auctionData?.rich_description : "",
-      item: operation === "update" ? auctionData?.item : id,
+      rich_description: "", // Always initialize with empty string
+      item: id,
       buynow_price: 0,
       participation_fee: 0,
       bid_increment: 0,
@@ -77,12 +77,13 @@ const KoiAuctionFormViewModel = (
     },
   });
 
+  // Update form values when auction data is loaded
   useEffect(() => {
     if (operation === "update" && auctionData) {
       form.reset({
         title: auctionData.title,
         description: auctionData.description,
-        rich_description: auctionData.rich_description,
+        rich_description: auctionData.rich_description || "", // Ensure a default value if null
         participation_fee: parseFloat(auctionData.participation_fee),
         buynow_price: parseFloat(auctionData.buynow_price),
         bid_increment: parseFloat(auctionData.bid_increment),
@@ -224,6 +225,7 @@ const KoiAuctionFormViewModel = (
     formatDate,
     formatCurrency,
     isUpdate: operation === "update",
+    isLoading,
   };
 };
 

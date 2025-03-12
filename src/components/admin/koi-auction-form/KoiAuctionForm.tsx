@@ -16,6 +16,7 @@ import { Loader2 } from "lucide-react";
 import KoiAuctionFormViewModel from "./KoiAuctionForm.viewModel";
 import { MinimalTiptapEditor } from "@/components/shared/minimal-tiptap";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type KoiAuctionFormProps = {
   token: string;
@@ -31,7 +32,31 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
     pendingUpdate,
     formatCurrency,
     isUpdate,
+    isLoading,
   } = KoiAuctionFormViewModel(token, id, operation);
+
+  // Show loading state while fetching auction data for updates
+  if (isUpdate && isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-xl border p-4 dark:border-neutral-700">
+          <h2 className="font-semibold">Auction Details</h2>
+          <div className="mt-4 space-y-4">
+            {Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <div key={index} className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+              ))}
+          </div>
+        </div>
+        <Skeleton className="h-10 w-full" />
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -97,6 +122,7 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
                   <FormControl>
                     <MinimalTiptapEditor
                       {...field}
+                      value={field.value || ""}
                       throttleDelay={0}
                       className={cn("h-full min-h-56 w-full rounded-xl", {
                         "border-destructive focus-within:border-destructive":

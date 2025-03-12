@@ -38,13 +38,14 @@ export const useUpdateAuction = (token: string, queryClient: QueryClient) => {
     },
     onMutate: async ({ auctionId, data }) => {
       await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
+
       const previousAuctions = queryClient.getQueryData(["allAuctions"]);
 
-      queryClient.setQueryData(["allAuctions"], (old: any[]) => {
-        return old?.map((auction) =>
-          auction.id === auctionId ? { ...auction, ...data } : auction,
-        );
-      });
+      queryClient.setQueryData(["allAuctions"], (old: any[] = []) =>
+        old.map((auction) =>
+          auction.auction_id === auctionId ? { ...auction, ...data } : auction,
+        ),
+      );
 
       return { previousAuctions };
     },
