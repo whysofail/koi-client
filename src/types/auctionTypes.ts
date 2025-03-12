@@ -17,7 +17,6 @@ export enum AuctionOrderBy {
   CREATED_BY_ID = "created_by_id",
 }
 export interface FetchAllAuctionsParams extends AuctionFilters {
-  token: string;
   page?: number;
   limit?: number;
 }
