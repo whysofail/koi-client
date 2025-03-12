@@ -107,6 +107,12 @@ interface Warning {
   user: WarningUser;
 }
 
+export interface CreateAdminUserBody {
+  username: string;
+  email: string;
+  password: string;
+}
+
 export interface GetUserWarningsResponse {
   status: string;
   message: string;
