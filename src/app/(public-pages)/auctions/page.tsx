@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import BidButton from "@/components/home/bid-button";
 
 export default function AuctionPage() {
-  // Dummy data for auction items
   const auctionItems = [
     { id: 1, bids: 30, price: "8.500.000", time: "0:05:00" },
     { id: 2, bids: 15, price: "6.000.000", time: "0:05:00" },
@@ -16,7 +15,6 @@ export default function AuctionPage() {
     { id: 8, bids: 30, price: "8.500.000", time: "0:05:00" },
   ];
 
-  // Dummy data for history items
   const historyItems = [
     { id: 1, status: "Win" },
     { id: 2, status: "Win" },
