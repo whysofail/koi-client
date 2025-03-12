@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Heart, Timer } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,7 +11,6 @@ import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import { getStartDateTime, getTimeRemaining } from "@/lib/utils";
 import { AuctionStatus } from "@/types/auctionTypes";
 import { formatCurrency } from "@/lib/formatCurrency";
-import Link from "next/link";
 
 interface WishlistItemListProps {
   wishlist: Wishlist;
@@ -26,6 +26,7 @@ export function WishlistItemList({
       onRemoveFromWishlist(wishlist.wishlist_id);
     }
   };
+
   let time = "";
   switch (wishlist.auction.status) {
     case AuctionStatus.PUBLISHED:
@@ -42,19 +43,22 @@ export function WishlistItemList({
 
   return (
     <Card className="overflow-hidden">
-      <div className="flex flex-col md:flex-row">
-        <div className="relative h-48 flex-shrink-0 md:h-auto md:w-48">
+      <div className="flex flex-row">
+        {/* Image container - fixed width on all screen sizes */}
+        <div className="relative h-[150px] w-[150px] flex-shrink-0 sm:h-[180px] sm:w-[180px] md:h-52 md:w-52">
           <Image
             src={`/placeholder.webp?height=400&width=400&text=${encodeURIComponent(wishlist.auction.title)}`}
             alt={wishlist.auction.title}
             fill
-            className="object-cover"
+            className="aspect-square object-cover"
           />
         </div>
-        <div className="flex flex-grow flex-col p-4">
+
+        {/* Content container */}
+        <div className="flex flex-grow flex-col p-2 pl-4">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-sm font-semibold sm:text-lg">
                 {wishlist.auction.title}
               </h3>
               <StatusBadge status={wishlist.auction.status} />
@@ -62,35 +66,48 @@ export function WishlistItemList({
             <Button
               variant="ghost"
               size="icon"
+              className="h-8 w-8"
               onClick={handleRemoveFromWishlist}
             >
-              <Heart className="h-5 w-5 fill-primary text-primary" />
+              <Heart className="h-4 w-4 fill-primary text-primary dark:fill-white dark:text-white sm:h-5 sm:w-5" />
               <span className="sr-only">Remove from wishlist</span>
             </Button>
           </div>
 
-          <p className="my-2 line-clamp-2 text-sm text-muted-foreground md:line-clamp-3">
+          <p className="my-1 line-clamp-2 text-xs text-muted-foreground sm:my-2 sm:text-sm md:line-clamp-3">
             {wishlist.auction.description}
           </p>
 
-          <div className="mt-auto flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <div className="flex flex-col gap-4">
+          <div className="mt-auto flex flex-col items-start justify-between gap-2 sm:gap-4">
+            <div className="flex w-full items-center justify-between">
               <div>
-                <p className="text-sm font-medium">Current highest bid:</p>
-                <p className="text-lg font-bold">
+                <p className="text-xs font-medium sm:text-sm">
+                  Current highest bid:
+                </p>
+                <p className="text-sm font-bold sm:text-lg">
                   {formatCurrency(wishlist.auction.current_highest_bid)}
                 </p>
               </div>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Timer className="h-4 w-4" />
+
+              <Button size="sm" className="h-8 sm:hidden">
+                <Link href={`/auctions/${wishlist.auction.auction_id}`}>
+                  View
+                </Link>
+              </Button>
+            </div>
+
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground sm:text-sm">
+                <Timer className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span>{time}</span>
               </div>
+
+              <Button className="hidden sm:inline-flex">
+                <Link href={`/auctions/${wishlist.auction.auction_id}`}>
+                  View Auction
+                </Link>
+              </Button>
             </div>
-            <Button>
-              <Link href={`/auctions/${wishlist.auction.auction_id}`}>
-                View Auction
-              </Link>
-            </Button>
           </div>
         </div>
       </div>

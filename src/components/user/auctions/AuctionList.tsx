@@ -3,7 +3,9 @@
 import useGetJoinedAuctions from "@/server/auction/participatedAuctions/queries";
 import AuctionCard from "./AuctionCard";
 import AuctionCardSkeleton from "@/components/skeletons/AuctionCardSkeleton";
-import { FC } from "react";
+import { FC, useState } from "react";
+import { EmptyAuction } from "./empty-auction";
+import { ViewToggle } from "../toggle/view-toggle";
 
 interface MyAuctionListProps {
   token: string;
@@ -14,7 +16,8 @@ const AuctionList: FC<MyAuctionListProps> = ({ token, currentUserId }) => {
   const { data, isLoading } = useGetJoinedAuctions({
     token,
   });
-  console.log(data);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
   if (isLoading) {
     return (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -28,35 +31,28 @@ const AuctionList: FC<MyAuctionListProps> = ({ token, currentUserId }) => {
   const auctionsData = data?.data;
 
   if (!auctionsData) {
-    return (
-      <div className="py-12 text-center">
-        <p className="text-lg font-semibold">No auctions found</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          You haven&apos;t participated in any auctions yet.
-        </p>
-      </div>
-    );
+    return <EmptyAuction />;
   }
 
   if (auctionsData.length === 0) {
-    return (
-      <div className="py-12 text-center">
-        <p className="text-lg font-semibold">No auctions found</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          You haven&apos;t participated in any auctions yet.
-        </p>
-      </div>
-    );
+    return <EmptyAuction />;
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="container mx-auto">
+      <div className="mb-6 flex items-center justify-end">
+        <div className="">
+          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+        </div>
+      </div>
+
       {auctionsData.map((auction, idx) => (
         <AuctionCard
           key={idx}
           auction={auction.auction}
           userBid={auction.lastBid}
           currentUserId={currentUserId}
+          variant={viewMode}
         />
       ))}
     </div>

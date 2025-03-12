@@ -1,7 +1,7 @@
 import React from "react";
 import { getServerSession } from "@/lib/serverSession";
 
-import { WishlistCard } from "@/components/shared/wishlist-card/wishlists";
+import { WishlistCard } from "@/components/user/wishlist-card/wishlists";
 
 const WishlistPage = async () => {
   const session = await getServerSession();
