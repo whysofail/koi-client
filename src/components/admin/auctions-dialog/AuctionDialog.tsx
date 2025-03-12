@@ -6,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useAuctionDialog } from "./AuctionDialog.viewModel";
-import { TimeInput } from "@/components/ui/time-input";
+import { TimeInputWithWraparound } from "@/components/ui/time-input-with-wraparound";
 import {
   Form,
   FormField,
@@ -59,6 +59,21 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
     pendingUpdate,
   } = useAuctionDialog(token, () => setOpen(false));
 
+  const handleTimeChange = (time: string, field: any) => {
+    const [hours, minutes] = time.split(":");
+    const hoursNum = parseInt(hours);
+    const minutesNum = parseInt(minutes);
+
+    // Create a new date based on the current field value
+    const newDate = new Date(field.value || new Date());
+
+    // Set the hours and minutes
+    newDate.setHours(hoursNum, minutesNum);
+
+    // Update the field value
+    field.onChange(newDate);
+  };
+
   if (operation === "publish") {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
@@ -79,7 +94,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel>Start Date and Time</FormLabel>
-                    <div className="flex gap-2">
+                    <div className="flex items-center gap-2">
                       <Popover modal>
                         <PopoverTrigger asChild>
                           <Button
@@ -119,14 +134,10 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
                           />
                         </PopoverContent>
                       </Popover>
-                      <TimeInput
+                      <TimeInputWithWraparound
                         value={format(field.value || new Date(), "HH:mm")}
-                        onChange={(time) => {
-                          const [hours, minutes] = time.split(":");
-                          const newDate = new Date(field.value || new Date());
-                          newDate.setHours(parseInt(hours), parseInt(minutes));
-                          field.onChange(newDate);
-                        }}
+                        onChange={(time) => handleTimeChange(time, field)}
+                        className="flex-shrink-0"
                       />
                     </div>
                     <FormMessage />
@@ -140,7 +151,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <FormLabel>End Date and Time</FormLabel>
-                    <div className="flex gap-2">
+                    <div className="flex items-center gap-2">
                       <Popover modal>
                         <PopoverTrigger asChild>
                           <Button
@@ -190,14 +201,10 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
                           />
                         </PopoverContent>
                       </Popover>
-                      <TimeInput
+                      <TimeInputWithWraparound
                         value={field.value ? format(field.value, "HH:mm") : ""}
-                        onChange={(time) => {
-                          const [hours, minutes] = time.split(":");
-                          const newDate = field.value || new Date();
-                          newDate.setHours(parseInt(hours), parseInt(minutes));
-                          field.onChange(newDate);
-                        }}
+                        onChange={(time) => handleTimeChange(time, field)}
+                        className="flex-shrink-0"
                       />
                     </div>
                     <FormMessage />

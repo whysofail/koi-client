@@ -40,8 +40,12 @@ const auctionFormSchema = z
       ),
   })
   .superRefine((data, ctx) => {
-    const diffInMinutes =
-      (data.endDateTime.getTime() - data.startDateTime.getTime()) / (1000 * 60);
+    // Calculate the difference in milliseconds
+    const diffInMilliseconds =
+      data.endDateTime.getTime() - data.startDateTime.getTime();
+
+    // Convert milliseconds to hours (more accurate than the previous calculation)
+    const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
 
     if (data.endDateTime <= data.startDateTime) {
       ctx.addIssue({
@@ -51,7 +55,7 @@ const auctionFormSchema = z
       });
     }
 
-    if (diffInMinutes < 60) {
+    if (diffInHours < 1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Auction duration must be at least 1 hour",

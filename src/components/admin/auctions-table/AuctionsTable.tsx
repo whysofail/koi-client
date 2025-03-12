@@ -322,7 +322,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                     )}
                   >
                     <Edit />
-                    Update Auction
+                    Edit Auction
                   </Link>
                 </DropdownMenuItem>
               </>
@@ -377,7 +377,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       sorting,
       columnFilters,
       columnVisibility: {
-        auction_id: false, // Hide the auction_id column by default
+        auction_id: false,
         ...columnVisibility,
       },
       rowSelection,
