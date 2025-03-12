@@ -25,8 +25,8 @@ export interface FetchAllAuctionsParams extends AuctionFilters {
 export interface AuctionFilters {
   title?: string; // Filter by auction title
   description?: string; // Filter by auction description
-  minReservePrice?: number; // Filter by minimum reserve price
-  maxReservePrice?: number; // Filter by maximum reserve price
+  minBuyNowPrice?: number; // Filter by minimum reserve price
+  maxBuyNowPrice?: number; // Filter by maximum reserve price
   startDateFrom?: Date; // Filter by auction start date (earliest)
   startDateTo?: Date; // Filter by auction start date (latest)
   status?: AuctionStatus;

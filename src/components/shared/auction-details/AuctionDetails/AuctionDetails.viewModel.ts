@@ -4,7 +4,6 @@ import { Auction } from "@/types/auctionTypes";
 import { DetailedBid } from "@/types/bidTypes";
 import { Socket } from "socket.io-client";
 import { useAuctionSocket } from "@/hooks/useAuctionSocket";
-import React from "react";
 
 export const useAuctionDetailsViewModel = (
   auctionID: string,
@@ -32,15 +31,6 @@ export const useAuctionDetailsViewModel = (
     enabled: !!token && !!auctionID,
   });
 
-  // Add debug log for bid updates
-  React.useEffect(() => {
-    if (bidsData?.data) {
-      console.log("Bids data updated:", {
-        time: new Date().toISOString(),
-        count: bidsData.data.length,
-      });
-    }
-  }, [bidsData]);
   const auction: Auction | undefined = auctionData?.data[0];
   const bids: DetailedBid[] = (bidsData?.data as DetailedBid[]) || [];
 

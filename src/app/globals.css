@@ -38,16 +38,21 @@
   height: 100%;
 }
 
+/* CSS classes outside of shadcn and libraries */
+.header-container {
+  position: relative;
+  min-height: 100px;
+}
+
 .active-menu {
   position: relative;
-  background-color: #a30022; /* Red background for active menu */
+  background-color: #a30022;
   clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
-  margin-top: -2px; /* Connect with the red strip exactly */
+  margin-top: -2px;
   border-bottom-left-radius: 26px;
   border-bottom-right-radius: 26px;
 }
 
-/* Use a different approach - create a pseudo-element that extends up to cover any gap */
 .active-menu::before {
   content: "";
   position: absolute;
@@ -59,6 +64,17 @@
   z-index: -1; /* Behind the text but in front of any white space */
 }
 
+.logo-menu::before {
+  top: -6px;
+  height: 8px;
+}
+
+.logo-menu img {
+  position: relative;
+  z-index: 5;
+}
+
+/* existing CSS */
 @layer utilities {
   .shimmer {
     background: linear-gradient(

@@ -11,8 +11,6 @@ import { formatCurrency } from "@/lib/formatCurrency";
 import useLatestAuctionsViewModel from "./LatestAuctions.viewModel";
 import { Badge } from "@/components/ui/badge";
 
-//TODO: Currently the data only filtered by PUBLISHED status, we need to filter by STARTED and ENDED status as well
-
 const StatusBadge: FC<{ status: string }> = ({ status }) => {
   const variants: Record<
     string,
@@ -33,8 +31,8 @@ const StatusBadge: FC<{ status: string }> = ({ status }) => {
   return <Badge variant={variant}>{label}</Badge>;
 };
 
-const LatestAuctions: FC = () => {
-  const { auctions, isLoading, isEmpty } = useLatestAuctionsViewModel();
+const LatestAuctions: FC<{ token: string }> = ({ token }) => {
+  const { auctions, isLoading, isEmpty } = useLatestAuctionsViewModel(token);
 
   if (isLoading) {
     return (
@@ -95,7 +93,7 @@ const LatestAuctions: FC = () => {
             </div>
             <div className="mt-2">
               <div className="text-lg font-bold">
-                {formatCurrency(auction.reserve_price)}
+                {formatCurrency(auction.buynow_price)}
               </div>
               <p className="text-sm text-muted-foreground">
                 Ends {format(new Date(auction.end_datetime), "MMM d, yyyy")}

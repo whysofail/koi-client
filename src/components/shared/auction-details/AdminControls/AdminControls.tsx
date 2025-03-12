@@ -19,7 +19,7 @@ import AdminControlsViewModel from "./AdminControls.viewModel";
 type AdminControlsProps = {
   auctionId: string;
   bid_increment: string;
-  reserve_price: string;
+  buynow_price: string;
   koiId: string;
   token: string;
 };
@@ -27,7 +27,7 @@ type AdminControlsProps = {
 const AdminControls: FC<AdminControlsProps> = ({
   auctionId,
   bid_increment,
-  reserve_price,
+  buynow_price,
   koiId,
   token,
 }) => {
@@ -64,7 +64,7 @@ const AdminControls: FC<AdminControlsProps> = ({
                   handleCancelAuction(
                     auctionId,
                     bid_increment,
-                    reserve_price,
+                    buynow_price,
                     koiId,
                   );
                 }}

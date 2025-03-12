@@ -19,7 +19,7 @@ const AdminControlsViewModel = (token: string, onSuccess?: () => void) => {
   const handleCancelAuction = async (
     auctionId: string,
     bid_increment: string,
-    reserve_price: string,
+    buynow_price: string,
     koiId: string,
   ) => {
     try {
@@ -55,7 +55,7 @@ const AdminControlsViewModel = (token: string, onSuccess?: () => void) => {
                 ...auction,
                 status: AuctionStatus.CANCELLED,
                 bid_increment,
-                reserve_price,
+                buynow_price,
               }
             : auction,
         );
@@ -87,7 +87,7 @@ const AdminControlsViewModel = (token: string, onSuccess?: () => void) => {
               data: {
                 status: AuctionStatus.CANCELLED,
                 bid_increment,
-                reserve_price,
+                buynow_price,
               },
             },
             {

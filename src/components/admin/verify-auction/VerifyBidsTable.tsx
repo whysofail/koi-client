@@ -30,14 +30,6 @@ interface VerifyBidsTableProps {
   isVerified?: boolean;
 }
 
-const formatDateSafe = (dateString: string) => {
-  try {
-    return format(new Date(dateString), "dd-MM-yy HH:mm:ss");
-  } catch {
-    return dateString || "Invalid date";
-  }
-};
-
 const VerifyBidsTable: React.FC<VerifyBidsTableProps> = memo(
   ({ bids, selectedBidId, onSelectBid, isVerified = false }) => {
     const sortedBids = useMemo(() => {
@@ -83,7 +75,15 @@ const VerifyBidsTable: React.FC<VerifyBidsTableProps> = memo(
         {
           accessorKey: "bid_time",
           header: "Time",
-          cell: ({ row }) => <div>{formatDateSafe(row.original.bid_time)}</div>,
+          cell: ({ row }) => {
+            try {
+              return (
+                <div>{format(row.original.bid_time, "dd-MM-yy HH:mm:ss")}</div>
+              );
+            } catch {
+              return <div>{row.original.bid_time || "Invalid date"}</div>;
+            }
+          },
         },
         {
           id: "actions",
@@ -174,7 +174,6 @@ const VerifyBidsTable: React.FC<VerifyBidsTableProps> = memo(
   },
 );
 
-// Display name for debugging
 VerifyBidsTable.displayName = "VerifyBidsTable";
 
 export default VerifyBidsTable;

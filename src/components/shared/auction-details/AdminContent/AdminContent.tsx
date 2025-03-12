@@ -28,13 +28,13 @@ interface AdminContentProps {
   bids: DetailedBid[];
   title: string;
   currentBid: string;
-  reservePrice: string;
+  buynow_price: string;
   bidIncrement: string;
   images?: GalleryImage[];
 }
 
 const AdminContent: React.FC<AdminContentProps> = (props) => {
-  const { auction, bids, title, currentBid, reservePrice, bidIncrement } =
+  const { auction, bids, title, currentBid, buynow_price, bidIncrement } =
     props;
   const {
     koiImages,
@@ -81,7 +81,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
                 <div>
                   <p className="text-sm font-medium">Reserve Price</p>
                   <p className="text-2xl font-bold">
-                    {formatCurrency(reservePrice)}
+                    {formatCurrency(buynow_price)}
                   </p>
                 </div>
               </div>

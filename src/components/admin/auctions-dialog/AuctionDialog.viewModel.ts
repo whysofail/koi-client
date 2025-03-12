@@ -40,8 +40,12 @@ const auctionFormSchema = z
       ),
   })
   .superRefine((data, ctx) => {
-    const diffInMinutes =
-      (data.endDateTime.getTime() - data.startDateTime.getTime()) / (1000 * 60);
+    // Calculate the difference in milliseconds
+    const diffInMilliseconds =
+      data.endDateTime.getTime() - data.startDateTime.getTime();
+
+    // Convert milliseconds to hours (more accurate than the previous calculation)
+    const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
 
     if (data.endDateTime <= data.startDateTime) {
       ctx.addIssue({
@@ -51,7 +55,7 @@ const auctionFormSchema = z
       });
     }
 
-    if (diffInMinutes < 60) {
+    if (diffInHours < 1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Auction duration must be at least 1 hour",
@@ -87,7 +91,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
   const handlePublishAuction = async (
     auctionId: string,
     bid_increment: string,
-    reserve_price: string,
+    buynow_price: string,
   ) => {
     const { startDateTime, endDateTime } = form.getValues();
 
@@ -96,7 +100,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
       start_datetime: startDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       end_datetime: endDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
       bid_increment,
-      reserve_price,
+      buynow_price,
     };
 
     updateMutate(
@@ -116,12 +120,12 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
   const handleUnpublishAuction = async (
     auctionId: string,
     bid_increment: string,
-    reserve_price: string,
+    buynow_price: string,
   ) => {
     const data: UpdateAuctionBody = {
       status: AuctionStatus.DRAFT,
       bid_increment,
-      reserve_price,
+      buynow_price,
     };
 
     updateMutate(
@@ -141,7 +145,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
   const handleCancelAuction = async (
     auctionId: string,
     bid_increment: string,
-    reserve_price: string,
+    buynow_price: string,
     koiId: string,
   ) => {
     try {
@@ -179,7 +183,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
                 ...auction,
                 status: AuctionStatus.CANCELLED,
                 bid_increment,
-                reserve_price,
+                buynow_price,
               }
             : auction,
         );
@@ -213,7 +217,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
               data: {
                 status: AuctionStatus.CANCELLED,
                 bid_increment,
-                reserve_price,
+                buynow_price,
               },
             },
             {

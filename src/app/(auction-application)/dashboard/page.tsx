@@ -7,6 +7,7 @@ import LatestAuctions from "@/components/dashboard/LatestAuctions/LatestAuctions
 const Home = async () => {
   const session = await getServerSession();
   const isAdmin = session?.user?.role === "admin";
+  const token = session?.user?.accessToken ?? "";
 
   return (
     <div className="container mx-auto p-6">
@@ -16,13 +17,7 @@ const Home = async () => {
         </h1>
       </div>
       <div className="mt-6">
-        {isAdmin && (
-          //TODO: ask if user could have something like this but with different stats
-          <StatsCards
-            isAdmin={isAdmin}
-            token={session?.user?.accessToken ?? ""}
-          />
-        )}
+        {isAdmin && <StatsCards isAdmin={isAdmin} token={token} />}
       </div>
       <div className="mt-6">
         <div>
@@ -39,10 +34,10 @@ const Home = async () => {
           {/* TODO: SUBJECT TO CHANGE */}
           {isAdmin ? (
             <div className="rounded-lg border">
-              <ActiveAuctionsTable token={session?.user?.accessToken ?? ""} />
+              <ActiveAuctionsTable token={token} />
             </div>
           ) : (
-            <LatestAuctions />
+            <LatestAuctions token={token} />
           )}
         </div>
       </div>
