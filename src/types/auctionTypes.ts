@@ -10,7 +10,7 @@ export enum AuctionOrderBy {
   END_DATETIME = "end_datetime",
   STATUS = "status",
   CURRENT_HIGHEST_BID = "current_highest_bid",
-  RESERVE_PRICE = "reserve_price",
+  BUYNOW_PRICE = "buynow_price",
   BID_INCREMENT = "bid_increment",
   CREATED_AT = "created_at",
   UPDATED_AT = "updated_at",
@@ -39,7 +39,7 @@ export type CreateAuctionBody = {
   description: string;
   rich_description: string;
   item: string;
-  reserve_price: number;
+  buynow_price: number;
   participation_fee: number | undefined | null;
   bid_increment: number;
 };
@@ -51,7 +51,7 @@ export type UpdateAuctionBody = {
   item?: string;
   start_datetime?: string;
   end_datetime?: string;
-  reserve_price?: string;
+  buynow_price?: string;
   participation_fee?: string;
   bid_increment?: string;
   status?: AuctionStatus;
@@ -81,7 +81,7 @@ export interface Auction {
   end_datetime: string;
   status: AuctionStatus;
   current_highest_bid: string;
-  reserve_price: string;
+  buynow_price: string;
   participation_fee: string;
   bid_increment: string;
   created_at: string;
@@ -115,7 +115,7 @@ export interface AuctionTableData {
   end_datetime: string;
   status: string;
   current_highest_bid: string;
-  reserve_price: string;
+  buynow_price: string;
   bid_increment: string;
   created_at: string;
   updated_at: string;
@@ -149,7 +149,7 @@ export const transformAuctionToTableData = (
       end_datetime: "",
       status: "",
       current_highest_bid: "0",
-      reserve_price: "0",
+      buynow_price: "0",
       bid_increment: "0",
       created_at: "",
       updated_at: "",
@@ -168,7 +168,7 @@ export const transformAuctionToTableData = (
     end_datetime: auction.end_datetime ?? "",
     status: auction.status ?? "",
     current_highest_bid: auction.current_highest_bid ?? "0",
-    reserve_price: auction.reserve_price ?? "0",
+    buynow_price: auction.buynow_price ?? "0",
     bid_increment: auction.bid_increment ?? "0",
     created_at: auction.created_at ?? "",
     updated_at: auction.updated_at ?? "",
