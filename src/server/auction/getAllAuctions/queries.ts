@@ -11,7 +11,6 @@ const dateNow = new Date();
 const nextWeek = new Date(dateNow.getTime() + 7 * 24 * 60 * 60 * 1000);
 
 const fetchAllAuctions = async ({
-  token,
   page = 1,
   limit = 10,
   //TODO: Ask if we can add multiple statuses
@@ -36,20 +35,15 @@ const fetchAllAuctions = async ({
 
   const { data } = await fetchWithAuth.get<PaginatedAuctionsResponse>(
     `/auctions?${params.toString()}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
   );
 
   return data;
 };
 
-const useGetAllAuctions = ({ token, ...params }: FetchAllAuctionsParams) =>
+const useGetAllAuctions = ({ ...params }: FetchAllAuctionsParams) =>
   useQuery({
     queryKey: ["allAuctions", params],
-    queryFn: () => fetchAllAuctions({ token, ...params }),
+    queryFn: () => fetchAllAuctions({ ...params }),
     placeholderData: (previousData) => previousData,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
