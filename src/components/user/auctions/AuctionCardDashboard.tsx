@@ -13,7 +13,7 @@ interface AuctionCardProps {
   variant?: "grid" | "list";
 }
 
-const AuctionCard: FC<AuctionCardProps> = ({
+const AuctionCardDashboard: FC<AuctionCardProps> = ({
   auction,
   userBid,
   currentUserId,
@@ -40,4 +40,4 @@ const AuctionCard: FC<AuctionCardProps> = ({
   );
 };
 
-export default AuctionCard;
+export default AuctionCardDashboard;

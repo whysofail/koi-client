@@ -1,7 +1,7 @@
 "use client";
 
 import useGetJoinedAuctions from "@/server/auction/participatedAuctions/queries";
-import AuctionCard from "./AuctionCard";
+import AuctionCardDashboard from "./AuctionCardDashboard";
 import AuctionCardSkeleton from "@/components/skeletons/AuctionCardSkeleton";
 import { FC, useState } from "react";
 import { EmptyAuction } from "./empty-auction";
@@ -47,7 +47,7 @@ const AuctionList: FC<MyAuctionListProps> = ({ token, currentUserId }) => {
       </div>
 
       {auctionsData.map((auction, idx) => (
-        <AuctionCard
+        <AuctionCardDashboard
           key={idx}
           auction={auction.auction}
           userBid={auction.lastBid}

@@ -5,6 +5,10 @@ import { Toaster } from "sonner";
 import ReactQueryProvider from "@/lib/ReactQueryProvider";
 import { ThemeProvider } from "next-themes";
 import PathChecker from "@/lib/PathChecker";
+import { SessionProvider } from "next-auth/react";
+import { getServerSession } from "@/lib/serverSession";
+import AuthRedirectProvider from "@/lib/AuthRedirectProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,7 +17,9 @@ export const metadata: Metadata = {
   description: "Koi Auction web client",
 };
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = async ({ children }: { children: React.ReactNode }) => {
+  const session = await getServerSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -24,8 +30,14 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
           disableTransitionOnChange
         >
           <ReactQueryProvider>
-            <PathChecker>{children}</PathChecker>
-            <Toaster richColors position="bottom-right" />
+            <TooltipProvider>
+              <SessionProvider session={session}>
+                <AuthRedirectProvider>
+                  <PathChecker>{children}</PathChecker>
+                  <Toaster richColors position="bottom-right" />
+                </AuthRedirectProvider>
+              </SessionProvider>
+            </TooltipProvider>
           </ReactQueryProvider>
         </ThemeProvider>
       </body>

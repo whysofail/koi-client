@@ -89,7 +89,7 @@ const LandingPage: FC = () => {
   };
 
   return (
-    <main className="flex-grow dark:bg-gray-900">
+    <main className="mx-auto flex-grow dark:bg-gray-900">
       <div className="container mx-auto px-4 py-4 md:py-8">
         <div className="relative overflow-hidden rounded-3xl bg-black">
           <div className="relative h-[200px] sm:h-[300px] md:h-[400px]">
@@ -147,7 +147,6 @@ const LandingPage: FC = () => {
         </div>
       </div>
 
-      {/* Events Section (Now only showing upcoming and past) */}
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {auctionData.map(({ title, data, status }, index) => {

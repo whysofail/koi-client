@@ -2,12 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import ThemeToggle from "../dashboard/ThemeToggle";
+import { useSession } from "next-auth/react";
+import HeaderControl from "../dashboard/HeaderControl";
+import type { User } from "next-auth";
+import type React from "react";
+import { PanelRightClose, PanelRightOpen } from "lucide-react";
 
-const HomeHeader = () => {
+const HomeHeader: React.FC<{
+  sidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ sidebarOpen, setSidebarOpen }) => {
+  const { data: session } = useSession();
   const pathname = usePathname();
   const currentPage =
     pathname === "/"
@@ -20,13 +28,33 @@ const HomeHeader = () => {
             ? "contact"
             : "";
 
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => !prev);
+  };
+
   return (
     <div className="relative">
       <div className="h-6 w-full bg-red-800" />
 
-      <header className="relative m-0 bg-white p-0 dark:bg-gray-900">
-        <div className="container mx-auto flex items-center justify-between px-4">
+      <header className="relative m-0 mx-auto ml-auto bg-white p-0 transition-all duration-300 dark:bg-gray-900">
+        <div className="container mx-auto ml-auto flex items-center justify-between px-4">
           <nav className="flex items-center space-x-12">
+            {/* Show sidebar toggle button only when user is logged in */}
+            {session && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleSidebar}
+                className="ml-auto mr-2"
+                aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+              >
+                {sidebarOpen ? (
+                  <PanelRightClose className="h-5 w-5" />
+                ) : (
+                  <PanelRightOpen className="h-5 w-5" />
+                )}
+              </Button>
+            )}
             <Link
               href="/auctions"
               className={`relative px-6 py-3 font-medium ${
@@ -49,9 +77,8 @@ const HomeHeader = () => {
             </Link>
           </nav>
 
-          {/* Logo container with active-menu polygon when on home page */}
           <div
-            className="absolute left-1/2 z-10 -translate-x-1/2"
+            className="absolute left-1/2 z-10 -translate-x-1/2 transition-all duration-300"
             style={{ top: "0px" }}
           >
             <Link
@@ -83,16 +110,19 @@ const HomeHeader = () => {
             >
               CONTACT US
             </Link>
-            <Button
-              asChild
-              className="rounded-md bg-black px-3 py-1 text-sm text-white dark:bg-white dark:text-black"
-            >
-              <Link href="/login">Log In</Link>
-            </Button>
-            <ThemeToggle />
-            <button className="text-gray-800 dark:text-gray-300">
-              <ShoppingCart className="h-6 w-6" />
-            </button>
+            {session ? (
+              <HeaderControl user={session?.user as User} />
+            ) : (
+              <>
+                <Button
+                  asChild
+                  className="rounded-md bg-black px-3 py-1 text-sm text-white dark:bg-white dark:text-black"
+                >
+                  <Link href="/login">Log In</Link>
+                </Button>
+                <ThemeToggle />
+              </>
+            )}
           </div>
         </div>
       </header>
