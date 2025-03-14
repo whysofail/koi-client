@@ -34,7 +34,6 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
     };
   }, [mobileMenuOpen]);
 
-  // Helper function to conditionally join classNames
   const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(" ");
   };
@@ -57,14 +56,14 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
       <header className="relative m-0 mx-auto ml-auto bg-white p-0 transition-all duration-300 dark:bg-gray-900">
         <div className="container mx-auto ml-auto flex items-center justify-between px-4">
           <button
-            className="z-20 rounded-md p-2 hover:bg-gray-100 focus:outline-none md:hidden"
+            className="z-20 rounded-md p-2 hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700 md:hidden"
             onClick={toggleMobileMenu}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
+              <X className="h-6 w-6 dark:text-gray-200" />
             ) : (
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6 dark:text-gray-200" />
             )}
           </button>
 
@@ -75,7 +74,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
                 "relative px-6 py-3 font-medium",
                 currentPage === "auction"
                   ? "active-menu text-white"
-                  : "text-gray-800",
+                  : "text-gray-800 dark:text-gray-200",
               )}
             >
               AUCTIONS
@@ -86,7 +85,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
                 "relative px-6 py-3 font-medium lg:px-12",
                 currentPage === "store"
                   ? "active-menu text-white"
-                  : "text-gray-800",
+                  : "text-gray-800 dark:text-gray-200",
               )}
             >
               OUR STORE
@@ -129,7 +128,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
                 "relative px-6 py-3 font-medium lg:px-12",
                 currentPage === "contact"
                   ? "active-menu text-white"
-                  : "text-gray-800",
+                  : "text-gray-800 dark:text-gray-200",
               )}
             >
               CONTACT US
@@ -164,23 +163,23 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
             )}
             {mobileMenuOpen && (
               <div
-                className="mobile-menu-overlay fixed inset-0 z-30 bg-black bg-opacity-50 md:hidden"
+                className="mobile-menu-overlay fixed inset-0 z-30 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 md:hidden"
                 onClick={closeMobileMenu}
               />
             )}
             <div
               className={classNames(
-                "fixed left-0 top-0 z-40 h-screen w-3/4 max-w-xs transform bg-white transition-transform duration-300 ease-in-out md:hidden",
+                "fixed left-0 top-0 z-40 h-screen w-3/4 max-w-xs transform bg-white transition-transform duration-300 ease-in-out dark:bg-gray-800 md:hidden",
                 mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
               )}
             >
               {/* Close button inside mobile menu */}
               <button
-                className="absolute right-4 top-4 rounded-full p-2 hover:bg-gray-100 focus:outline-none"
+                className="absolute right-4 top-4 rounded-full p-2 hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700"
                 onClick={closeMobileMenu}
                 aria-label="Close menu"
               >
-                <X className="h-6 w-6" />
+                <X className="h-6 w-6 dark:text-gray-200" />
               </button>
               <div className="flex h-full flex-col px-4 pb-6 pt-16">
                 <nav className="flex flex-col space-y-4">
@@ -190,7 +189,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
                       "rounded-md px-4 py-2 font-medium transition-colors",
                       currentPage === "auction"
                         ? "active-menu text-center text-white"
-                        : "text-center text-gray-800 hover:bg-red-800 hover:text-white active:bg-red-800 active:text-white",
+                        : "text-center text-gray-800 hover:bg-red-800 hover:text-white active:bg-red-800 active:text-white dark:text-gray-200 dark:hover:bg-red-700",
                     )}
                     onClick={closeMobileMenu}
                   >
@@ -202,7 +201,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
                       "rounded-md px-4 py-2 font-medium transition-colors",
                       currentPage === "store"
                         ? "active-menu text-center text-white"
-                        : "text-center text-gray-800 hover:bg-red-800 hover:text-white active:bg-red-800 active:text-white",
+                        : "text-center text-gray-800 hover:bg-red-800 hover:text-white active:bg-red-800 active:text-white dark:text-gray-200 dark:hover:bg-red-700",
                     )}
                     onClick={closeMobileMenu}
                   >
@@ -214,7 +213,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
                       "rounded-md px-4 py-2 font-medium transition-colors",
                       currentPage === "contact"
                         ? "active-menu text-center text-white"
-                        : "text-center text-gray-800 hover:bg-red-800 hover:text-white active:bg-red-800 active:text-white",
+                        : "text-center text-gray-800 hover:bg-red-800 hover:text-white active:bg-red-800 active:text-white dark:text-gray-200 dark:hover:bg-red-700",
                     )}
                     onClick={closeMobileMenu}
                   >
