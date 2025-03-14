@@ -74,6 +74,14 @@
   z-index: 5;
 }
 
+/* Responsive adjustments for sidebar open state */
+@media (max-width: 768px) {
+  .sidebar-open .container {
+    padding-left: 1rem !important;
+  }
+}
+
+
 /* existing CSS */
 @layer utilities {
   .shimmer {

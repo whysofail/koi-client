@@ -5,17 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "../dashboard/ThemeToggle";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import HeaderControl from "../dashboard/HeaderControl";
 import type { User } from "next-auth";
 import type React from "react";
-import { PanelRightClose, PanelRightOpen } from "lucide-react";
 
-const HomeHeader: React.FC<{
-  sidebarOpen: boolean;
-  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ sidebarOpen, setSidebarOpen }) => {
-  const { data: session } = useSession();
+const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
   const pathname = usePathname();
   const currentPage =
     pathname === "/"
@@ -28,10 +23,6 @@ const HomeHeader: React.FC<{
             ? "contact"
             : "";
 
-  const toggleSidebar = () => {
-    setSidebarOpen((prev) => !prev);
-  };
-
   return (
     <div className="relative">
       <div className="h-6 w-full bg-red-800" />
@@ -39,22 +30,6 @@ const HomeHeader: React.FC<{
       <header className="relative m-0 mx-auto ml-auto bg-white p-0 transition-all duration-300 dark:bg-gray-900">
         <div className="container mx-auto ml-auto flex items-center justify-between px-4">
           <nav className="flex items-center space-x-12">
-            {/* Show sidebar toggle button only when user is logged in */}
-            {session && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleSidebar}
-                className="ml-auto mr-2"
-                aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
-              >
-                {sidebarOpen ? (
-                  <PanelRightClose className="h-5 w-5" />
-                ) : (
-                  <PanelRightOpen className="h-5 w-5" />
-                )}
-              </Button>
-            )}
             <Link
               href="/auctions"
               className={`relative px-6 py-3 font-medium ${

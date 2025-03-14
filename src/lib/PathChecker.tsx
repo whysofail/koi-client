@@ -1,24 +1,21 @@
 "use client";
 
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { usePathname } from "next/navigation";
 import HomeHeader from "@/components/home/HomeHeader";
 import Footer from "@/components/home/Footer";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { useSession } from "next-auth/react";
-import SidebarNav from "@/components/dashboard/sidebar-nav";
+import { Session } from "next-auth";
 
 type PathCheckerProps = {
   children: React.ReactNode;
+  session: Session | null;
 };
 
-const PathChecker: FC<PathCheckerProps> = ({ children }) => {
+const PathChecker: FC<PathCheckerProps> = ({ children, session }) => {
   const pathname = usePathname();
   const excludedPaths = ["/login", "/register"];
   const isExcluded = excludedPaths.includes(pathname);
-  const session = useSession();
-  const isAdmin = session?.data?.user?.role === "admin";
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isDashboard = pathname.startsWith("/dashboard");
 
   if (isExcluded) {
     return (
@@ -28,13 +25,14 @@ const PathChecker: FC<PathCheckerProps> = ({ children }) => {
     );
   }
 
+  if (isDashboard) {
+    return <>{children}</>;
+  }
+
   return (
     <main className="flex min-h-screen flex-col">
-      <HomeHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SidebarNav isAdmin={isAdmin} />
-        <div className="flex-grow">{children}</div>
-      </SidebarProvider>
+      <HomeHeader session={session} />
+      <div className="flex-grow">{children}</div>
       <Footer />
     </main>
   );

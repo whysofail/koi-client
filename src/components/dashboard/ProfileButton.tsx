@@ -9,14 +9,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { LogOut, User, LayoutDashboard } from "lucide-react";
+import { LogOut, User, LayoutDashboard, Home } from "lucide-react";
 import { Button } from "../ui/button";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const ProfileButton: FC = () => {
   const session = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+  const isDashboard = pathname.startsWith("/dashboard");
 
   return (
     <DropdownMenu>
@@ -31,13 +33,23 @@ const ProfileButton: FC = () => {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="flex items-center gap-2"
-          onClick={() => router.push("/dashboard")}
-        >
-          <LayoutDashboard className="h-4 w-4" />
-          <span>Dashboard</span>
-        </DropdownMenuItem>
+        {isDashboard ? (
+          <DropdownMenuItem
+            className="flex items-center gap-2"
+            onClick={() => router.push("/")}
+          >
+            <Home className="h-4 w-4" />
+            <span>Home</span>
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem
+            className="flex items-center gap-2"
+            onClick={() => router.push("/dashboard")}
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            <span>Dashboard</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => signOut()}
