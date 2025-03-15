@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 
@@ -17,9 +17,10 @@ const LoginFormSchema = z.object({
 });
 
 const LoginFormViewModel = () => {
-  const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [redirectUrl, setRedirectUrl] = useState<string>("/dashboard");
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -31,6 +32,14 @@ const LoginFormViewModel = () => {
   });
 
   useEffect(() => {
+    // Get redirect URL from query parameters
+    const callbackUrl =
+      searchParams.get("callbackUrl") || searchParams.get("redirect");
+    if (callbackUrl) {
+      setRedirectUrl(callbackUrl);
+    }
+
+    // Load remembered user
     try {
       const remembered = localStorage.getItem(STORAGE_KEY);
       if (remembered) {
@@ -45,7 +54,7 @@ const LoginFormViewModel = () => {
       localStorage.removeItem(STORAGE_KEY);
       console.error("Error loading remembered user:", error);
     }
-  }, [form]);
+  }, [form, searchParams]);
 
   const onSubmit: SubmitHandler<z.infer<typeof LoginFormSchema>> = async (
     data,
@@ -70,12 +79,13 @@ const LoginFormViewModel = () => {
         redirect: false,
         email,
         password,
-        redirectTo: "/dashboard",
+        callbackUrl: redirectUrl,
       });
 
       if (!res?.error) {
         toast.success("Login successful");
-        router.push("/dashboard");
+        // Force a hard reload to ensure session is updated
+        window.location.href = redirectUrl;
       } else {
         if (res.error === "CredentialsSignin") {
           toast.error("Invalid email or password");
@@ -116,6 +126,8 @@ const LoginFormViewModel = () => {
     clearRememberedUser,
     showPassword,
     togglePasswordVisibility: () => setShowPassword((prev) => !prev),
+    redirectUrl,
+    setRedirectUrl,
   };
 };
 

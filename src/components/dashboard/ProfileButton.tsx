@@ -9,24 +9,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { LogOut, User, LayoutDashboard, Home } from "lucide-react";
+import { LogOut, LayoutDashboard, Home } from "lucide-react";
 import { Button } from "../ui/button";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const ProfileButton: FC = () => {
-  const session = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const isDashboard = pathname.startsWith("/dashboard");
 
+  const user = session?.user;
+
+  if (!user) return null;
+
+  const initials = user.name
+    ? user.name
+        .split(" ")
+        .map((name) => name[0])
+        .join("")
+        .toUpperCase()
+    : "U";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2 px-3">
-          <User className="h-5 w-5" />
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2 px-3 hover:bg-transparent"
+        >
+          <Avatar>
+            <AvatarImage src={user.image || ""} alt={user.name || "User"} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
           <span className="hidden text-sm font-medium md:inline-block">
-            {session?.data?.user?.name}
+            {user.name}
           </span>
         </Button>
       </DropdownMenuTrigger>

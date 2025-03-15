@@ -1,5 +1,33 @@
 import React, { Suspense } from "react";
 import LoginForm from "@/components/auth/LoginForm";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const LoginFormSkeleton = () => (
+  <div className="w-full p-8 md:w-1/2">
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-1/3" />
+        <Skeleton className="h-4 w-2/3" />
+      </div>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-1/4" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-1/4" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="flex justify-between">
+          <Skeleton className="h-4 w-1/4" />
+          <Skeleton className="h-4 w-1/4" />
+        </div>
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="mx-auto h-4 w-2/3" />
+      </div>
+    </div>
+  </div>
+);
 
 const LoginPage: React.FC = () => (
   <main className="flex min-h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-900">
@@ -18,7 +46,7 @@ const LoginPage: React.FC = () => (
           </div>
         </div>
       </div>
-      <Suspense>
+      <Suspense fallback={<LoginFormSkeleton />}>
         <LoginForm />
       </Suspense>
     </div>

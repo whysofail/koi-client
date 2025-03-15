@@ -12,7 +12,17 @@ export default auth((req) => {
   // Allow all non-dashboard routes
   if (!pathname.startsWith("/dashboard")) return NextResponse.next();
 
-  if (!req.auth) return NextResponse.redirect(new URL("/login", req.url));
+  // If not authenticated, redirect to login with the current URL as callbackUrl
+  if (!req.auth) {
+    const loginUrl = new URL("/login", req.url);
+
+    // Add the current URL as a callbackUrl parameter
+    // Include query parameters if they exist
+    const returnTo = pathname + (req.nextUrl.search || "");
+    loginUrl.searchParams.set("callbackUrl", returnTo);
+
+    return NextResponse.redirect(loginUrl);
+  }
 
   if (pathname.startsWith("/api")) return NextResponse.next();
 
@@ -30,7 +40,13 @@ export default auth((req) => {
   const currentTime = Math.floor(Date.now() / 1000);
 
   if (tokenExpiry && currentTime >= tokenExpiry - BUFFER_TIME) {
-    return NextResponse.redirect(new URL("/session-expired", req.url));
+    // For session expiry, we can also preserve where the user was trying to go
+    const sessionExpiredUrl = new URL("/session-expired", req.url);
+    sessionExpiredUrl.searchParams.set(
+      "returnTo",
+      pathname + (req.nextUrl.search || ""),
+    );
+    return NextResponse.redirect(sessionExpiredUrl);
   }
 
   return NextResponse.next();

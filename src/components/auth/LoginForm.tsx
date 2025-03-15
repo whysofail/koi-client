@@ -21,10 +21,47 @@ import { LogIn } from "lucide-react";
 import LoginFormViewModel from "./LoginForm.viewModel";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
-  const { form, onSubmit, showPassword, togglePasswordVisibility, isLoading } =
-    LoginFormViewModel();
+  const {
+    form,
+    onSubmit,
+    showPassword,
+    togglePasswordVisibility,
+    isLoading,
+    setRedirectUrl,
+  } = LoginFormViewModel();
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Get the redirect URL from query parameters
+    const callbackUrl =
+      searchParams.get("callbackUrl") || searchParams.get("redirect");
+    if (callbackUrl) {
+      setRedirectUrl(callbackUrl);
+    }
+
+    // If no redirect URL is specified, use the referrer as a fallback
+    else if (
+      !searchParams.has("callbackUrl") &&
+      !searchParams.has("redirect") &&
+      document.referrer
+    ) {
+      // Only use referrer if it's from the same origin
+      try {
+        const referrerUrl = new URL(document.referrer);
+        if (referrerUrl.origin === window.location.origin) {
+          setRedirectUrl(referrerUrl.pathname + referrerUrl.search);
+        }
+      } catch (error) {
+        console.error("Error parsing referrer URL:", error);
+      }
+    }
+  }, [searchParams, setRedirectUrl]);
 
   return (
     <div className="w-full p-8 md:w-1/2">
@@ -98,13 +135,24 @@ const LoginForm = () => {
                 )}
               />
               <div className="flex items-center justify-between">
-                <label className="flex items-center space-x-2 text-sm text-zinc-900 dark:text-zinc-50">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox rounded border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700"
-                  />
-                  <span>Remember me</span>
-                </label>
+                <FormField
+                  control={form.control}
+                  name="rememberMe"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="border-zinc-300 dark:border-zinc-600 dark:bg-zinc-700"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm text-zinc-900 dark:text-zinc-50">
+                        Remember me
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
                 <Button
                   variant="link"
                   className="px-0 font-semibold text-zinc-900 dark:text-zinc-50"
@@ -115,7 +163,7 @@ const LoginForm = () => {
               <Button
                 className="w-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-100"
                 type="submit"
-                disabled={isLoading} // Disable button when isLoading
+                disabled={isLoading}
               >
                 {isLoading ? (
                   <div className="flex items-center">
