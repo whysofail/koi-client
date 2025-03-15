@@ -141,6 +141,7 @@ const TransactionDetails = ({
                   <h3 className="mb-4 text-lg font-semibold sm:text-xl">
                     Proof of Payment
                   </h3>
+                  {`ENV : ${process.env.NEXT_PUBLIC_S3_URL}`}
                   {`${IMAGE_URL}/${transaction.proof_of_payment}`}
                   <Dialog
                     open={isImageExpanded}
@@ -157,7 +158,6 @@ const TransactionDetails = ({
                             e.currentTarget.src = "/placeholder.svg";
                           }}
                         />
-                        {`${IMAGE_URL}/${transaction.proof_of_payment}`}
                       </div>
                     </DialogTrigger>
                     <DialogContent className="max-w-3xl border-none bg-transparent shadow-none sm:max-w-4xl">
