@@ -1,14 +1,27 @@
+"use client";
+
 import Image from "next/image";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format, isValid, parseISO } from "date-fns";
 import Link from "next/link";
+import { Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Auction } from "@/types/auctionTypes";
 
 interface AuctionCardProps {
-  auction: any;
+  auction: Auction;
+  onAddToWishlist?: (auctionId: string) => void;
+  onRemoveFromWishlist?: (auctionId: string) => void;
+  isPendingWishlist?: boolean;
 }
 
-export default function AuctionCard({ auction }: AuctionCardProps) {
+export default function AuctionCard({
+  auction,
+  onAddToWishlist,
+  onRemoveFromWishlist,
+  isPendingWishlist = false,
+}: AuctionCardProps) {
   const { data: koiData, isLoading, error } = useGetKoiByID(auction.item || "");
 
   const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
@@ -20,10 +33,20 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
     try {
       const date = parseISO(dateString);
       return isValid(date)
-        ? format(date, "dd MMM yyyy, HH:mm")
+        ? format(date, "dd MMM yyyy, HH:mm O")
         : "Invalid date";
     } catch {
       return "Invalid date";
+    }
+  };
+
+  const handleWishlistToggle = () => {
+    if (isPendingWishlist) return;
+
+    if (auction.hasWishlisted) {
+      onRemoveFromWishlist?.(auction.auction_id);
+    } else {
+      onAddToWishlist?.(auction.auction_id);
     }
   };
 
@@ -37,17 +60,43 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
             No image available
           </div>
         ) : (
-          <Image
-            src={imageUrl}
-            alt={auction.title || "Koi fish"}
-            width={400}
-            height={400}
-            className="h-full w-full rounded-lg bg-blue-500 object-cover"
-          />
+          <>
+            <Image
+              src={imageUrl || "/placeholder.svg"}
+              alt={auction.title || "Koi fish"}
+              width={400}
+              height={400}
+              className="h-full w-full rounded-lg bg-blue-500 object-cover"
+            />
+            <button
+              onClick={handleWishlistToggle}
+              disabled={isPendingWishlist}
+              className={cn(
+                "absolute bottom-2 right-2 rounded-full bg-white/80 p-2 backdrop-blur-sm transition-all",
+                "hover:bg-white hover:shadow-md",
+                "dark:bg-gray-800/80 dark:hover:bg-gray-800",
+                isPendingWishlist && "opacity-70",
+              )}
+              aria-label={
+                auction.hasWishlisted
+                  ? "Remove from wishlist"
+                  : "Add to wishlist"
+              }
+            >
+              <Heart
+                className={cn(
+                  "h-5 w-5 transition-colors",
+                  auction.hasWishlisted
+                    ? "fill-red-500 text-red-500"
+                    : "fill-none text-gray-600 dark:text-gray-300",
+                )}
+              />
+            </button>
+          </>
         )}
       </div>
       <Link
-        className="mb-2 text-lg font-medium"
+        className="mb-2 block text-lg font-medium hover:underline"
         href={`/auctions/${auction.auction_id}`}
       >
         {auction.title}

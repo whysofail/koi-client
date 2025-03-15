@@ -18,6 +18,7 @@ const fetchAllAuctions = async ({
   startDateTo = nextWeek,
   orderBy = AuctionOrderBy.CREATED_AT,
   order = "DESC",
+  token,
 }: FetchAllAuctionsParams) => {
   const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
@@ -40,9 +41,14 @@ const fetchAllAuctions = async ({
   if (startDateFrom) {
     params.append("startDateFrom", formatDate(startDateFrom));
   }
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   const { data } = await fetchWithAuth.get<PaginatedAuctionsResponse>(
     `/auctions?${params.toString()}`,
+    { headers },
   );
 
   return data;

@@ -1,40 +1,47 @@
 "use client";
 
-import React, { FC, useState } from "react";
+import { type FC, useState } from "react";
 import AuctionCard from "./AuctionCard";
-import useGetAllAuctions from "@/server/auction/getAllAuctions/queries";
-import { AuctionStatus, AuctionOrderBy } from "@/types/auctionTypes";
 import AuctionContentSkeleton from "../skeletons/AuctionContentSkeleton";
 import AuctionContentError from "./AuctionContentError";
 import AuctionContentEmpty from "./AuctionContentEmpty";
+import useAuctionContentViewModel from "./AuctionContent.viewModel";
 
-const AuctionContent: FC = () => {
+type AuctionContentProps = {
+  token?: string;
+};
+
+const AuctionContent: FC<AuctionContentProps> = ({ token }) => {
   const [page, setPage] = useState(1);
 
   const {
-    data: auctionData,
+    auctionData,
     isLoading,
-    error,
-  } = useGetAllAuctions({
-    page,
-    limit: 8,
-    orderBy: AuctionOrderBy.CREATED_AT,
-    order: "DESC",
-    status: [AuctionStatus.PUBLISHED, AuctionStatus.STARTED],
+    isError,
+    handleAddToWishlist,
+    handleRemoveFromWishlist,
+    isPendingAdd,
+    isPendingRemove,
+  } = useAuctionContentViewModel({
+    token,
   });
 
   if (isLoading) return <AuctionContentSkeleton />;
-  if (error) return <AuctionContentError />;
+  if (isError) return <AuctionContentError />;
   if (!auctionData?.data.length) return <AuctionContentEmpty page={page} />;
-
-  console.log(auctionData);
 
   return (
     <>
       <div className="container mx-auto px-4 py-8 pb-28">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {auctionData.data.map((item) => (
-            <AuctionCard key={item.auction_id} auction={item} />
+            <AuctionCard
+              key={item.auction_id}
+              auction={item}
+              onAddToWishlist={handleAddToWishlist}
+              onRemoveFromWishlist={handleRemoveFromWishlist}
+              isPendingWishlist={isPendingAdd || isPendingRemove}
+            />
           ))}
         </div>
       </div>

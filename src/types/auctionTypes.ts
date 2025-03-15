@@ -95,6 +95,7 @@ export interface Auction {
   participants: AuctionParticipantInfo[];
   participants_count: number;
   hasJoined: boolean;
+  hasWishlisted: boolean;
 }
 
 export type PaginatedAuctionsResponse = PaginatedResponse<Auction>;
