@@ -37,7 +37,6 @@ jobs:
             NEXT_PUBLIC_APPLICATION_URL=${{ secrets.NEXT_PUBLIC_APPLICATION_URL }}
             NEXT_PUBLIC_SOCKET_URL=${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
             NEXT_PUBLIC_LARAVEL_URL=${{ secrets.NEXT_PUBLIC_LARAVEL_URL }}
-            NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
             NEXT_PUBLIC_KOI_IMG_BASE_URL=${{ secrets.NEXT_PUBLIC_KOI_IMG_BASE_URL }}
             NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
 
