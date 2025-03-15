@@ -1,5 +1,5 @@
 import type React from "react";
-import ImageGallery from "./ImageGallery";
+import ImageGallery, { GalleryMediaItem } from "./GalleryMedia";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import useGetLoggedInUser from "@/server/user/getLoggedInUser/queries";
 import Link from "next/link";
+
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -50,41 +51,58 @@ const UserContent: React.FC<UserContentProps> = ({
   const bidIncrement = Number(auction.bid_increment);
   const { data: koiData } = useGetKoiByID(auction.item);
   const koi = koiData;
-  const imageArray = koi?.photo?.split("|") || [];
-  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+
   const startDate = format(
     new Date(auction.start_datetime),
     "dd/MM/yyyy HH:mm O",
   );
   const endDate = format(new Date(auction.end_datetime), "dd/MM/yyyy HH:mm O");
 
-  const koiImages: GalleryImage[] = imageArray
-    .filter((img) => img !== "")
-    .map((img) => ({
-      thumbnailURL: imageBaseUrl + img,
-      largeURL: imageBaseUrl + img,
-      height: 800,
-      width: 400,
-      alt: title,
-    }));
+  const imageArray = koiData?.photo?.split("|") || [];
+  const videoArray = koiData?.video?.split("|") || [];
 
+  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+  const videoBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/video/`;
+
+  const koiMedia: GalleryMediaItem[] = [
+    ...imageArray
+      .filter((img) => img !== "")
+      .map((img) => ({
+        type: "image" as const,
+        largeURL: `${imageBaseUrl}${img}`,
+        width: 800,
+        height: 400,
+        alt: title,
+        thumbnailURL: `${imageBaseUrl}${img}`, // Use image itself as thumbnail
+      })),
+    ...videoArray
+      .filter((vid) => vid !== "")
+      .map((vid) => ({
+        type: "video" as const,
+        largeURL: `${videoBaseUrl}${vid}`,
+        width: 800,
+        height: 400,
+        alt: title,
+        poster: undefined, // No need to define it
+        thumbnailURL: undefined, // Let the video element handle the thumbnail
+      })),
+  ];
   const user = useGetLoggedInUser(token ?? "", { enabled: Boolean(token) });
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-6">
-        <ImageGallery title={title} images={koiImages} />
+        <ImageGallery title={title} media={koiMedia} />
         <AuctionItemCard auction={auction} koi={koi} />
       </div>
       <div className="space-y-6">
         <div>
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-              {title}
-            </h2>
-          </div>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+            {title}
+          </h2>
           <StatusBadge status={auction.status} />
           <p>{auction.description}</p>
-          <div className="ck flex justify-between">
+          <div className="flex justify-between">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
               <p className="text-sm text-muted">Start date : {startDate}</p>
@@ -147,11 +165,9 @@ const UserContent: React.FC<UserContentProps> = ({
                 hasJoined={auction.hasJoined}
               />
             ) : (
-              <>
-                <Button>
-                  <Link href="/login">Login to place a bid</Link>
-                </Button>
-              </>
+              <Button>
+                <Link href="/login">Login to place a bid</Link>
+              </Button>
             )}
 
             <Separator />

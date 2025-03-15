@@ -14,14 +14,14 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ImageGallery from "../ImageGallery";
+import MediaGallery from "../GalleryMedia";
 import { BidHistory } from "../BidHistory";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { ParticipantHistory } from "../ParticipantHistory";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import { useAdminContentViewModel } from "./AdminContent.viewModel";
 import Link from "next/link";
-
+import KoiProductCard from "../koi-product-card";
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -44,7 +44,8 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
   const { auction, bids, title, currentBid, buynow_price, bidIncrement } =
     props;
   const {
-    koiImages,
+    koiData: koi,
+    koiMedia,
     lastBidUpdate,
     countdown,
     showVerifyButton,
@@ -78,7 +79,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
-              <ImageGallery title={title} images={koiImages} />
+              <MediaGallery title={title} media={koiMedia} />
               <Separator />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -96,6 +97,8 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
                   </p>
                 </div>
               </div>
+              <Separator />
+              <KoiProductCard koi={koi} isAdmin={true} />
             </div>
           </CardContent>
         </Card>
