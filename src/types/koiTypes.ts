@@ -30,7 +30,7 @@ export interface Koi {
   code: string;
   nickname: string | null;
   birthdate: string | null;
-  gender: "Male" | "Female";
+  gender: "Male" | "Female" | "Unknown";
   breeder_id: number;
   bloodline_id: number;
   variety_id: number;

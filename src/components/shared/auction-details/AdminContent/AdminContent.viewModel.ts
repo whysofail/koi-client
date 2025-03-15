@@ -3,15 +3,7 @@ import { Auction, AuctionStatus } from "@/types/auctionTypes";
 import { DetailedBid } from "@/types/bidTypes";
 import { formatDuration, intervalToDuration, isPast } from "date-fns";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
-
-interface GalleryImage {
-  thumbnailURL: string;
-  largeURL: string;
-  width: number;
-  height: number;
-  alt: string;
-}
-
+import { GalleryMediaItem } from "../GalleryMedia";
 export interface AdminContentViewModelProps {
   auction: Auction;
   bids: DetailedBid[];
@@ -26,19 +18,36 @@ export function useAdminContentViewModel({
   const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState<string>("");
 
-  const { data } = useGetKoiByID(auction.item);
-  const imageArray = data?.photo?.split("|") || [];
-  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+  const { data: koiData } = useGetKoiByID(auction.item);
+  const imageArray = koiData?.photo?.split("|") || [];
+  const videoArray = koiData?.video?.split("|") || [];
 
-  const koiImages: GalleryImage[] = imageArray
-    .filter((img) => img !== "")
-    .map((img) => ({
-      thumbnailURL: imageBaseUrl + img,
-      largeURL: imageBaseUrl + img,
-      height: 800,
-      width: 400,
-      alt: title,
-    }));
+  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+  const videoBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/video/`;
+
+  const koiMedia: GalleryMediaItem[] = [
+    ...imageArray
+      .filter((img) => img !== "")
+      .map((img) => ({
+        type: "image" as const,
+        largeURL: `${imageBaseUrl}${img}`,
+        width: 800,
+        height: 400,
+        alt: title,
+        thumbnailURL: `${imageBaseUrl}${img}`, // Use image itself as thumbnail
+      })),
+    ...videoArray
+      .filter((vid) => vid !== "")
+      .map((vid) => ({
+        type: "video" as const,
+        largeURL: `${videoBaseUrl}${vid}`,
+        width: 800,
+        height: 400,
+        alt: title,
+        poster: undefined, // No need to define it
+        thumbnailURL: undefined, // Let the video element handle the thumbnail
+      })),
+  ];
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -80,7 +89,8 @@ export function useAdminContentViewModel({
   }, [bids]);
 
   return {
-    koiImages,
+    koiData,
+    koiMedia,
     lastBidUpdate,
     countdown,
     showVerifyButton: auction.status === AuctionStatus.PENDING,
