@@ -157,6 +157,7 @@ const TransactionDetails = ({
                             e.currentTarget.src = "/placeholder.svg";
                           }}
                         />
+                        {`${IMAGE_URL}/${transaction.proof_of_payment}`}
                       </div>
                     </DialogTrigger>
                     <DialogContent className="max-w-3xl border-none bg-transparent shadow-none sm:max-w-4xl">
