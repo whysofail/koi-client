@@ -1,5 +1,11 @@
 import { jwtDecode } from "jwt-decode";
 import NextAuth, { type Session } from "next-auth";
+
+declare module "next-auth" {
+  interface Session {
+    error?: string;
+  }
+}
 import Credentials from "next-auth/providers/credentials";
 import type { Role } from "nextauth";
 
@@ -60,12 +66,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   pages: {
     signIn: "/login",
+    error: "/login",
+    signOut: "/session-expired",
   },
   callbacks: {
     authorized: async ({ auth }) => {
       return !!auth;
     },
     jwt: async ({ token, user, account }) => {
+      // Initial sign in
       if (account && user) {
         const decoded = jwtDecode(user.accessToken);
         return {
@@ -78,9 +87,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
         };
       }
+
+      // Check if token is expired
+      if (token.accessTokenExpires) {
+        const currentTime = Math.floor(Date.now() / 1000);
+        if (currentTime > (token.accessTokenExpires as number)) {
+          // Token is expired, don't return it
+          return {
+            ...token,
+            error: "TokenExpired",
+          };
+        }
+      }
+
       return token;
     },
     session: async ({ session, token }): Promise<Session> => {
+      // If token has error, pass it to the session
+      if (token.error) {
+        return {
+          ...session,
+          error: token.error as string,
+          user: {
+            ...session.user,
+            id: token.id as string,
+            role: token.role as Role,
+            accessToken: token.accessToken as string,
+            accessTokenExpires: token.accessTokenExpires as number,
+          },
+        };
+      }
+
       return {
         ...session,
         user: {
@@ -91,6 +128,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           accessTokenExpires: token.accessTokenExpires as number,
         },
       };
+    },
+  },
+  events: {
+    async signOut() {
+      console.log("User signed out");
     },
   },
   trustHost: true,

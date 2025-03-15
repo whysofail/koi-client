@@ -36,6 +36,8 @@ export const useUserNotifications = ({
   page = 1,
   limit = 10,
 }: FetchNotificationsParams) => {
+  console.log("token provided:", token);
+  console.log("!!token", !!token);
   return useQuery<AxiosResponse<GetNotificationResponse>, Error>({
     queryKey: ["notifications", { token, page, limit }],
     queryFn: () => fetchUserNotifications({ token, page, limit }),
@@ -49,5 +51,6 @@ export const useUserNotifications = ({
 
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: !!token,
   });
 };
