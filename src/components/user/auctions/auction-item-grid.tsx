@@ -11,9 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { Auction } from "@/types/auctionTypes";
-import { Bid } from "@/types/bidTypes";
-import { FC } from "react";
+import type { Auction } from "@/types/auctionTypes";
+import type { Bid } from "@/types/bidTypes";
+import type { FC } from "react";
 import { formatCurrency } from "@/lib/formatCurrency";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 

@@ -30,31 +30,43 @@ const AuctionList: FC<MyAuctionListProps> = ({ token, currentUserId }) => {
 
   const auctionsData = data?.data;
 
-  if (!auctionsData) {
-    return <EmptyAuction />;
-  }
-
-  if (auctionsData.length === 0) {
+  if (!auctionsData || auctionsData.length === 0) {
     return <EmptyAuction />;
   }
 
   return (
     <div className="container mx-auto">
       <div className="mb-6 flex items-center justify-end">
-        <div className="">
-          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-        </div>
+        <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
       </div>
 
-      {auctionsData.map((auction, idx) => (
-        <AuctionCardDashboard
-          key={idx}
-          auction={auction.auction}
-          userBid={auction.lastBid}
-          currentUserId={currentUserId}
-          variant={viewMode}
-        />
-      ))}
+      {viewMode === "list" ? (
+        // List view - render items directly
+        <div className="space-y-4">
+          {auctionsData.map((auction, idx) => (
+            <AuctionCardDashboard
+              key={auction.auction.auction_id || idx}
+              auction={auction.auction}
+              userBid={auction.lastBid}
+              currentUserId={currentUserId}
+              variant="list"
+            />
+          ))}
+        </div>
+      ) : (
+        // Grid view - wrap items in a grid container
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {auctionsData.map((auction, idx) => (
+            <AuctionCardDashboard
+              key={auction.auction.auction_id || idx}
+              auction={auction.auction}
+              userBid={auction.lastBid}
+              currentUserId={currentUserId}
+              variant="grid"
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -5,7 +5,6 @@ import { getErrorMessage } from "@/lib/handleApiError";
 const removeFromWishlist = async (token: string, auctionId: string) => {
   const { data: response } = await fetchWithAuth.delete(
     `/wishlists/${auctionId}`,
-
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -29,6 +28,7 @@ const useRemoveFromWishlist = (token: string, queryClient: QueryClient) => {
       await queryClient.invalidateQueries({
         queryKey: ["wishlist", auctionId],
       });
+      await queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
     },
     onError: (error) => {
       console.error("Failed to update wishlist:", error);

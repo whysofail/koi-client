@@ -29,14 +29,13 @@ const AuctionCardDashboard: FC<AuctionCardProps> = ({
     );
   }
 
+  // Return just the card without wrapping it in a grid
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      <AuctionCardGrid
-        auction={auction}
-        userBid={userBid}
-        currentUserId={currentUserId}
-      />
-    </div>
+    <AuctionCardGrid
+      auction={auction}
+      userBid={userBid}
+      currentUserId={currentUserId}
+    />
   );
 };
 
