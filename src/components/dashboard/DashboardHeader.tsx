@@ -11,7 +11,7 @@ interface HeaderProps {
 const DashboardHeader: FC<HeaderProps> = ({ user }) => {
   return (
     <header>
-      <div className="flex h-16 items-center px-4">
+      <div className="flex items-center px-4">
         <div className="ml-auto flex items-center space-x-4">
           <ThemeToggle />
           <NotificationsDropdown user={user} />

@@ -13,6 +13,7 @@ import { X, Menu } from "lucide-react";
 
 const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showBg, setShowBg] = useState(mobileMenuOpen);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -25,8 +26,11 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.classList.add("body-with-menu-open");
+      setShowBg(true);
     } else {
       document.body.classList.remove("body-with-menu-open");
+      const timeout = setTimeout(() => setShowBg(false), 300);
+      return () => clearTimeout(timeout);
     }
 
     return () => {
@@ -169,8 +173,11 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
             )}
             <div
               className={classNames(
-                "fixed left-0 top-0 z-40 h-screen w-3/4 max-w-xs transform bg-white transition-transform duration-300 ease-in-out dark:bg-gray-800 md:hidden",
-                mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+                "fixed left-0 top-0 z-40 h-screen w-3/4 max-w-xs transform transition-transform duration-300 ease-in-out md:hidden",
+                mobileMenuOpen
+                  ? "translate-x-0 shadow-lg"
+                  : "-translate-x-full",
+                showBg ? "bg-white dark:bg-gray-900" : "bg-none",
               )}
             >
               {/* Close button inside mobile menu */}
@@ -184,7 +191,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
               <div className="flex h-full flex-col px-4 pb-6 pt-16">
                 <nav className="flex flex-col space-y-4">
                   <Link
-                    href="/auction"
+                    href="/auctions"
                     className={classNames(
                       "rounded-md px-4 py-2 font-medium transition-colors",
                       currentPage === "auction"

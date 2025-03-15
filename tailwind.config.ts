@@ -83,6 +83,15 @@ const config: Config = {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      keyframes: {
+        bgFadeOut: {
+          "0%": { backgroundColor: "white" }, // Start with white
+          "100%": { backgroundColor: "transparent" }, // End with transparent
+        },
+      },
+      animation: {
+        bgFadeOut: "bgFadeOut 300ms linear 300ms forwards", // Wait 300ms before changing bg
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
