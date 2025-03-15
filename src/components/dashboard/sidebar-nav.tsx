@@ -2,6 +2,7 @@
 
 import type { FC } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import {
   LayoutDashboard,
   Users,
@@ -161,10 +162,14 @@ const SidebarNav: FC<SidebarNavProps> = ({ isAdmin = false }) => {
                       isActive={pathname === item.href}
                       tooltip={item.title}
                     >
-                      <a href={item.href} className="flex items-center gap-2">
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-2"
+                        prefetch={false}
+                      >
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

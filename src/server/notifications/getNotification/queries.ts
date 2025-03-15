@@ -7,15 +7,24 @@ interface FetchNotificationsParams {
   token: string;
   page?: number;
   limit?: number;
+  options?: {
+    refetchOnMount?: boolean | "always";
+    refetchOnWindowFocus?: boolean | "always";
+    staleTime?: number;
+    gcTime?: number;
+    enabled?: boolean;
+  };
 }
 
 export const fetchUserNotifications = async ({
   token,
   page = 1,
   limit = 10,
-}: FetchNotificationsParams): Promise<
-  AxiosResponse<GetNotificationResponse>
-> => {
+}: {
+  token: string;
+  page?: number;
+  limit?: number;
+}): Promise<AxiosResponse<GetNotificationResponse>> => {
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
@@ -35,22 +44,25 @@ export const useUserNotifications = ({
   token,
   page = 1,
   limit = 10,
+  options = {},
 }: FetchNotificationsParams) => {
-  console.log("token provided:", token);
-  console.log("!!token", !!token);
-  return useQuery<AxiosResponse<GetNotificationResponse>, Error>({
-    queryKey: ["notifications", { token, page, limit }],
+  const {
+    refetchOnMount = true,
+    refetchOnWindowFocus = false,
+    staleTime = 1000 * 60 * 5, // 5 minutes default
+    gcTime = 1000 * 60 * 10, // 10 minutes default
+    enabled = !!token,
+  } = options;
+
+  return useQuery({
+    queryKey: ["notifications", page, limit],
     queryFn: () => fetchUserNotifications({ token, page, limit }),
-    staleTime: 1000 * 60 * 5, // 5 minutes stale time
-    gcTime: 1000 * 60 * 10, // 10 minutes cache time
-
-    placeholderData: (previousData) => {
-      // Return the previous data to avoid loading states during pagination
-      return previousData;
-    },
-
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: !!token,
+    staleTime,
+    gcTime,
+    placeholderData: (previousData) => previousData,
+    refetchOnMount,
+    refetchOnWindowFocus,
+    refetchOnReconnect: true,
+    enabled,
   });
 };

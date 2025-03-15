@@ -14,8 +14,13 @@ interface UseNotificationViewModelProps {
   authSocket: Socket | null;
 }
 
-// Centralized query key generator
-const NOTIFICATIONS_QUERY_KEY = "notifications";
+// Centralized query key generator - use a function to ensure consistency
+const getNotificationsQueryKey = (page?: number, limit?: number) => {
+  if (page !== undefined && limit !== undefined) {
+    return ["notifications", page, limit];
+  }
+  return ["notifications"];
+};
 
 const useNotificationViewModel = ({
   token,
@@ -28,6 +33,12 @@ const useNotificationViewModel = ({
 
   // Track previous path to detect navigation
   const prevPathRef = useRef(pathname);
+  const navigationOccurred = prevPathRef.current !== pathname;
+
+  // Update path reference
+  useEffect(() => {
+    prevPathRef.current = pathname;
+  }, [pathname]);
 
   // Memoize the pagination decision to prevent unnecessary recalculations
   const { shouldPaginate, pageIndex, pageSize } = useMemo(() => {
@@ -35,7 +46,7 @@ const useNotificationViewModel = ({
     return {
       shouldPaginate: isOnDashboard,
       pageIndex: isOnDashboard ? Number(searchParams.get("page")) || 1 : 1,
-      pageSize: isOnDashboard ? Number(searchParams.get("limit")) || 10 : 100,
+      pageSize: isOnDashboard ? Number(searchParams.get("limit")) || 10 : 10, // Reduced from 100 to 5 for non-dashboard views
     };
   }, [pathname, searchParams]);
 
@@ -69,6 +80,10 @@ const useNotificationViewModel = ({
     token,
     page: pageIndex,
     limit: pageSize,
+    // Disable refetching on mount when navigation has occurred
+    options: {
+      refetchOnMount: navigationOccurred ? false : true,
+    },
   });
 
   // Effect to prefetch next/prev pages for smoother pagination
@@ -76,10 +91,7 @@ const useNotificationViewModel = ({
     if (shouldPaginate && token) {
       // Prefetch next page
       queryClient.prefetchQuery({
-        queryKey: [
-          NOTIFICATIONS_QUERY_KEY,
-          { page: pageIndex + 1, limit: pageSize },
-        ],
+        queryKey: getNotificationsQueryKey(pageIndex + 1, pageSize),
         queryFn: () =>
           fetchUserNotifications({
             token,
@@ -91,10 +103,7 @@ const useNotificationViewModel = ({
       // Prefetch previous page if not on page 1
       if (pageIndex > 1) {
         queryClient.prefetchQuery({
-          queryKey: [
-            NOTIFICATIONS_QUERY_KEY,
-            { page: pageIndex - 1, limit: pageSize },
-          ],
+          queryKey: getNotificationsQueryKey(pageIndex - 1, pageSize),
           queryFn: () =>
             fetchUserNotifications({
               token,
@@ -106,13 +115,6 @@ const useNotificationViewModel = ({
     }
   }, [pageIndex, pageSize, shouldPaginate, token, queryClient]);
 
-  // Detect path changes to avoid unnecessary refetches
-  useEffect(() => {
-    if (prevPathRef.current !== pathname) {
-      prevPathRef.current = pathname;
-    }
-  }, [pathname]);
-
   // Memoize the notifications data to avoid unnecessary rerenders
   const notificationData = useMemo(() => {
     return notifications?.data.data || [];
@@ -120,9 +122,8 @@ const useNotificationViewModel = ({
 
   // Memoize unread count calculation
   const unreadCount = useMemo(() => {
-    return notificationData.filter((n: Notification) => n.status === "UNREAD")
-      .length;
-  }, [notificationData]);
+    return notifications?.data.unread_count || 0; // Use server-provided total if available
+  }, [notifications]);
 
   // Mutation to mark a single notification as read
   const { mutate: markAsRead, isPending: isMarkingAsRead } =
@@ -136,11 +137,11 @@ const useNotificationViewModel = ({
   const optimisticMarkAsRead = useCallback(
     (notificationId: string) => {
       queryClient.setQueriesData(
-        { queryKey: "notifications" },
+        { queryKey: ["notifications"] },
         (oldData: any) => {
           if (!oldData) return oldData;
 
-          return {
+          const newData = {
             ...oldData,
             data: {
               ...oldData.data,
@@ -149,8 +150,12 @@ const useNotificationViewModel = ({
                   ? { ...notification, status: "READ" }
                   : notification,
               ),
+              // Also decrement the total_unread count if it exists
+              total_unread: Math.max(0, (oldData.data.total_unread || 0) - 1),
             },
           };
+
+          return newData;
         },
       );
     },
@@ -162,10 +167,12 @@ const useNotificationViewModel = ({
     (notificationId: string) => {
       optimisticMarkAsRead(notificationId);
       markAsRead(notificationId, {
+        onSuccess: () =>
+          queryClient.invalidateQueries({ queryKey: ["notifications"] }),
         onError: () => {
           // Revert optimistic update on error
           queryClient.invalidateQueries({
-            queryKey: [NOTIFICATIONS_QUERY_KEY],
+            queryKey: ["notifications"],
           });
         },
       });
@@ -176,7 +183,7 @@ const useNotificationViewModel = ({
   // Handler for marking all notifications as read with optimistic updates
   const handleMarkAllAsRead = useCallback(() => {
     queryClient.setQueriesData(
-      { queryKey: [NOTIFICATIONS_QUERY_KEY] },
+      { queryKey: ["notifications"] },
       (oldData: any) => {
         if (!oldData) return oldData;
 
@@ -188,6 +195,7 @@ const useNotificationViewModel = ({
               ...notification,
               status: "READ",
             })),
+            total_unread: 0, // Reset unread count to zero
           },
         };
       },
@@ -196,7 +204,7 @@ const useNotificationViewModel = ({
     markAllAsRead(undefined, {
       onError: () => {
         // Revert optimistic update on error
-        queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] });
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
       },
     });
   }, [markAllAsRead, queryClient]);
@@ -222,7 +230,7 @@ const useNotificationViewModel = ({
 
   // Memoized refetch function
   const refetchNotifications = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] });
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
   }, [queryClient]);
 
   return {

@@ -25,15 +25,13 @@ export const useNotificationSocket = ({
     }) => {
       if (data.entity !== "notification") return;
 
-      // Get all notification queries in the cache
+      // Update all notification queries (all pages)
       const queryCache = queryClient.getQueryCache();
       const notificationQueries = queryCache.findAll({
         queryKey: ["notifications"],
       });
 
-      // Update all notification query data regardless of pagination
       notificationQueries.forEach((query) => {
-        // Extract pagination parameters from the query key
         const queryKey = query.queryKey as [
           string,
           { page: number; limit: number },
@@ -48,13 +46,13 @@ export const useNotificationSocket = ({
 
             const baseResponse = {
               count: oldData.count,
+              unread_count: oldData.unread_count,
               page: oldData.page,
               limit: oldData.limit,
             };
 
             switch (data.type) {
               case "CREATE":
-                // Only add to first page
                 if (paginationParams.page === 1) {
                   return {
                     data: {
@@ -81,7 +79,7 @@ export const useNotificationSocket = ({
                     ...baseResponse,
                     data: oldData.data.map((notification) =>
                       notification.notification_id === data.data.notification_id
-                        ? data.data
+                        ? { ...notification, ...data.data }
                         : notification,
                     ),
                   },
@@ -107,11 +105,22 @@ export const useNotificationSocket = ({
         );
       });
 
-      // Update the unread count across the application
-      if (data.type === "CREATE" && data.data.status === "UNREAD") {
-        // Could dispatch to a global state manager if you're using one
-        // Or update a specific query for unread counts
-      }
+      // ✅ Update unread count globally
+      queryClient.setQueryData<number>(
+        ["notifications", "unread_count"],
+        (oldUnreadCount = 0) => {
+          if (data.type === "CREATE" && data.data.status === "UNREAD") {
+            return oldUnreadCount + 1;
+          }
+          if (data.type === "UPDATE" && data.data.status === "READ") {
+            return Math.max(0, oldUnreadCount - 1);
+          }
+          return oldUnreadCount;
+        },
+      );
+
+      // ✅ Ensure other pages update their notifications
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     };
 
     // Subscribe to socket events
