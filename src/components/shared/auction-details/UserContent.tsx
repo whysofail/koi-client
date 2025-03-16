@@ -1,5 +1,5 @@
 import type React from "react";
-import ImageGallery, { GalleryMediaItem } from "./GalleryMedia";
+import ImageGallery, { type GalleryMediaItem } from "./GalleryMedia";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import useGetLoggedInUser from "@/server/user/getLoggedInUser/queries";
 import Link from "next/link";
+import AuctionNotStarted from "./AuctionNotStarted";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -89,6 +90,9 @@ const UserContent: React.FC<UserContentProps> = ({
   ];
   const user = useGetLoggedInUser(token ?? "", { enabled: Boolean(token) });
 
+  // Check if auction has not started yet
+  const isNotStarted = auction.status === AuctionStatus.PUBLISHED;
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-6">
@@ -113,73 +117,85 @@ const UserContent: React.FC<UserContentProps> = ({
             </div>
           </div>
         </div>
-        <Card>
-          <CardContent className="grid gap-4 p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Current Bid</p>
-                <p className="text-3xl font-bold">
-                  {currentBid > 0
-                    ? `Rp. ${currentBid.toLocaleString()}`
-                    : "No bids yet"}
-                </p>
+
+        {isNotStarted ? (
+          // Show "Not Started" UI state
+          <AuctionNotStarted
+            startDateTime={auction.start_datetime}
+            isLoggedIn={!!token}
+          />
+        ) : (
+          // Show normal bidding UI
+          <Card>
+            <CardContent className="grid gap-4 p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Current Bid</p>
+                  <p className="text-3xl font-bold">
+                    {currentBid > 0
+                      ? `Rp. ${currentBid.toLocaleString()}`
+                      : "No bids yet"}
+                  </p>
+                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon">
+                        <Info className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Reserve Price: Rp. {reservePrice.toLocaleString()}</p>
+                      <p>
+                        Minimum Increment: Rp. {bidIncrement.toLocaleString()}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Reserve Price: Rp. {reservePrice.toLocaleString()}</p>
-                    <p>
-                      Minimum Increment: Rp. {bidIncrement.toLocaleString()}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span>{auction.participants.length} users participated</span>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span>{auction.participants.length} users participated</span>
+                </div>
               </div>
-            </div>
 
-            <Separator />
-            {token ? (
-              <PlaceBidForm
-                token={token}
-                auctionID={auctionID}
-                currentBid={currentBid}
-                minIncrement={bidIncrement}
-                isEnded={
-                  auction.status === AuctionStatus.PENDING ||
-                  auction.status === AuctionStatus.COMPLETED
-                }
-                status={auction.status}
-                participationFee={Number(auction.participation_fee)}
-                userBalance={Number(user.data?.data.wallet.balance)}
-                hasJoined={auction.hasJoined}
-              />
-            ) : (
-              <Button>
-                <Link href="/login">Login to place a bid</Link>
-              </Button>
-            )}
+              <Separator />
+              {token ? (
+                <PlaceBidForm
+                  token={token}
+                  auctionID={auctionID}
+                  currentBid={currentBid}
+                  minIncrement={bidIncrement}
+                  isEnded={
+                    auction.status === AuctionStatus.PENDING ||
+                    auction.status === AuctionStatus.COMPLETED
+                  }
+                  status={auction.status}
+                  participationFee={Number(auction.participation_fee)}
+                  userBalance={Number(user.data?.data.wallet.balance)}
+                  hasJoined={auction.hasJoined}
+                />
+              ) : (
+                <Button asChild>
+                  <Link href="/login">Login to place a bid</Link>
+                </Button>
+              )}
 
-            <Separator />
-          </CardContent>
-        </Card>
+              <Separator />
+            </CardContent>
+          </Card>
+        )}
 
-        <Card>
-          <CardContent className="p-6">
-            <h2 className="mb-4 font-semibold">Bid History</h2>
-            <BidHistory bids={bids} />
-          </CardContent>
-        </Card>
+        {!isNotStarted && (
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="mb-4 font-semibold">Bid History</h2>
+              <BidHistory bids={bids} />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
