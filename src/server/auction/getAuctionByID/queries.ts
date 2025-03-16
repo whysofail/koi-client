@@ -20,10 +20,9 @@ const useGetAuctionByID = (
   options?: { enabled?: boolean },
 ) => {
   return useQuery({
-    queryKey: ["auction", id],
+    queryKey: ["auction"],
     queryFn: () => getAuctionByID(id, token),
     enabled: options?.enabled,
-    staleTime: Infinity, // Keep data fresh since we update via sockets
   });
 };
 

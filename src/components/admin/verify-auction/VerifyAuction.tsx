@@ -197,7 +197,7 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                 <div className="text-sm font-medium text-muted-foreground">
                   Highest Bid
                 </div>
-                <div className="text-xl font-bold text-primary">
+                <div className="text-xl font-bold">
                   {formatCurrency(highestBid.bid_amount)}
                 </div>
                 <div className="text-xs text-muted-foreground">

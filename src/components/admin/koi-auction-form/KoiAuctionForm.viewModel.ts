@@ -198,10 +198,12 @@ const KoiAuctionFormViewModel = (
           },
         },
         {
-          onSuccess: () => {
+          onSuccess: async () => {
             toast.success("Auction updated successfully");
+            // First invalidate and wait for the query to refetch
+            await queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
+            // Then navigate after data is refreshed
             router.push("/dashboard/auctions");
-            queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
           },
           onError: (error: Error) => {
             toast.error(error.message);

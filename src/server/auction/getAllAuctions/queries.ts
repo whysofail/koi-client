@@ -59,8 +59,6 @@ const useGetAllAuctions = ({ ...params }: FetchAllAuctionsParams) =>
     queryKey: ["allAuctions", params],
     queryFn: () => fetchAllAuctions({ ...params }),
     placeholderData: (previousData) => previousData,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
 export default useGetAllAuctions;
