@@ -25,8 +25,9 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
   const [selectedBid, setSelectedBid] = useState<Bid | null>(null);
   const [bidToConfirm, setBidToConfirm] = useState<Bid | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+
+  const updateSuccess = data?.data?.[0]?.status === AuctionStatus.COMPLETED;
 
   const auction = data?.data?.[0];
 
@@ -46,7 +47,7 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
     const previousKoi = queryClient.getQueryData(["koiData", koiId]);
 
     // Optimistically update the auction data
-    queryClient.setQueryData(["auction", auctionId], (old: any) => ({
+    queryClient.setQueryData(["auction"], (old: any) => ({
       ...old,
       data: [
         {
@@ -76,7 +77,7 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
           onSuccess: () => resolve(true),
           onError: (error) => {
             // Revert koi optimistic update on error
-            queryClient.setQueryData(["koiData", koiId], previousKoi);
+            queryClient.setQueryData(["koiData"], previousKoi);
             reject(error);
           },
         },
@@ -96,12 +97,11 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
             {
               onSuccess: () => {
                 setSelectedBid(bidToConfirm);
-                setUpdateSuccess(true);
                 setDialogOpen(false);
                 toast.success("Winner verified successfully");
 
                 queryClient.invalidateQueries({
-                  queryKey: ["auction", auctionId],
+                  queryKey: ["auction"],
                 });
                 queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
                 queryClient.invalidateQueries({ queryKey: ["koiData"] });
@@ -111,7 +111,7 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
                   ["auction", auctionId],
                   previousAuction,
                 );
-                queryClient.setQueryData(["koiData", koiId], previousKoi);
+                queryClient.setQueryData(["koiData"], previousKoi);
 
                 const errorMessage =
                   error instanceof Error
@@ -131,8 +131,8 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
       })
       .catch((error) => {
         // Revert both optimistic updates on error
-        queryClient.setQueryData(["auction", auctionId], previousAuction);
-        queryClient.setQueryData(["koiData", koiId], previousKoi);
+        queryClient.setQueryData(["auction"], previousAuction);
+        queryClient.setQueryData(["koiData"], previousKoi);
 
         const errorMessage =
           error instanceof Error

@@ -1,7 +1,9 @@
 "use client";
 
-import { Auction, AuctionStatus } from "@/types/auctionTypes";
-import { DetailedBid } from "@/types/bidTypes";
+import type React from "react";
+
+import type { Auction, AuctionStatus } from "@/types/auctionTypes";
+import type { DetailedBid } from "@/types/bidTypes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -22,6 +24,8 @@ import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import { useAdminContentViewModel } from "./AdminContent.viewModel";
 import Link from "next/link";
 import KoiProductCard from "../koi-product-card";
+import VerifiedButton from "./VerifiedButton";
+
 interface GalleryImage {
   thumbnailURL: string;
   largeURL: string;
@@ -51,20 +55,6 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
     showVerifyButton,
     showVerifiedButton,
   } = useAdminContentViewModel(props);
-
-  const auctionData = {
-    title,
-    description: auction.description,
-    item: auction.item,
-    start_datetime: auction.start_datetime,
-    end_datetime: auction.end_datetime,
-    buynow_price: auction.buynow_price,
-    bid_increment: auction.bid_increment,
-    status: auction.status,
-  };
-
-  const auctionParams = new URLSearchParams(auctionData).toString();
-  const verifyAuctionHref = `/dashboard/auctions/verify/${auction.auction_id}?${auctionParams}`;
 
   const winnerParticipant = auction.participants.filter(
     (participant) => participant.user.user_id === auction.winner_id,
@@ -175,7 +165,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
                     href={`/dashboard/users/${winnerParticipant.user.user_id}`}
                   >
                     <div className="flex items-center gap-2">
-                      <ExternalLink className="mr-2 h-4 w-4" />
+                      <ExternalLink className="h-4 w-4" />
                       {winnerParticipant.user.username}
                     </div>
                   </Link>
@@ -193,7 +183,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
                   style={{ backgroundColor: "green", color: "white" }}
                 >
                   <Link
-                    href={verifyAuctionHref}
+                    href={`/dashboard/auctions/verify/${auction.auction_id}`}
                     className="text-bold uppercase"
                   >
                     Verify Winner
@@ -203,19 +193,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
             )}
 
             {showVerifiedButton && (
-              <div className="pt-2">
-                <Button
-                  className="w-full"
-                  disabled
-                  style={{
-                    color: "green",
-                    border: "1px solid green",
-                    backgroundColor: "transparent",
-                  }}
-                >
-                  <p className="text-bold uppercase">Auction Winner Verified</p>
-                </Button>
-              </div>
+              <VerifiedButton auctionId={auction.auction_id} />
             )}
           </CardContent>
         </Card>

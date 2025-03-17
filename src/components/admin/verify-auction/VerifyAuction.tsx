@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AuctionStatus } from "@/types/auctionTypes";
 import VerifyBidsTable from "./VerifyBidsTable";
 import { useVerifyAuctionViewModel } from "./VerifyAuction.viewModel";
 import { Button } from "@/components/ui/button";
@@ -43,23 +42,11 @@ import {
 
 interface VerifyAuctionViewProps {
   auctionId: string;
-  auctionDetails: {
-    auction_id: string;
-    title: string;
-    description: string;
-    item: string;
-    start_datetime: string;
-    end_datetime: string;
-    buynow_price: string;
-    bid_increment: string;
-    status: AuctionStatus;
-  };
   token: string;
 }
 
 const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
   auctionId,
-  auctionDetails,
   token,
 }) => {
   const {
@@ -99,8 +86,8 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
   }
 
   const getDuration = () => {
-    const start = parseISO(auctionDetails.start_datetime);
-    const end = parseISO(auctionDetails.end_datetime);
+    const start = parseISO(auction.start_datetime);
+    const end = parseISO(auction.end_datetime);
     const diffDays = differenceInDays(end, start);
     const diffHours = differenceInHours(end, start) % 24;
     return `${diffDays} days, ${diffHours} hours`;
@@ -182,13 +169,13 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle className="text-xl font-bold sm:text-2xl">
-                {auctionDetails.title}
+                {auction.title}
               </CardTitle>
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <Badge variant="outline" className="font-mono">
-                  #{auctionDetails.auction_id}
+                  #{auction.auction_id}
                 </Badge>
-                <StatusBadge status={auctionDetails.status} />
+                <StatusBadge status={auction.status} />
               </div>
             </div>
 
@@ -235,7 +222,7 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                   <h3 className="text-sm font-medium text-muted-foreground">
                     Description
                   </h3>
-                  <p className="mt-1">{auctionDetails.description}</p>
+                  <p className="mt-1">{auction.description}</p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -243,7 +230,7 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                     <h4 className="text-sm font-medium text-muted-foreground">
                       Koi Item ID
                     </h4>
-                    <p className="mt-1 font-mono">{auctionDetails.item}</p>
+                    <p className="mt-1 font-mono">{auction.item}</p>
                   </div>
 
                   <div className="rounded-lg bg-muted/20 p-4">
@@ -251,7 +238,7 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                       Buy Now Price
                     </h4>
                     <p className="mt-1 text-lg font-semibold">
-                      {formatCurrency(auctionDetails.buynow_price)}
+                      {formatCurrency(auction.buynow_price)}
                     </p>
                   </div>
                 </div>
@@ -273,7 +260,7 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                     </TooltipProvider>
                   </div>
                   <p className="mt-1">
-                    {formatCurrency(auctionDetails.bid_increment)}
+                    {formatCurrency(auction.bid_increment)}
                   </p>
                 </div>
               </div>
@@ -287,16 +274,10 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                       Start Date
                     </h4>
                     <p className="mt-1 font-medium">
-                      {format(
-                        parseISO(auctionDetails.start_datetime),
-                        "MMMM d, yyyy",
-                      )}
+                      {format(parseISO(auction.start_datetime), "MMMM d, yyyy")}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {format(
-                        parseISO(auctionDetails.start_datetime),
-                        "h:mm a",
-                      )}
+                      {format(parseISO(auction.start_datetime), "h:mm a")}
                     </p>
                   </div>
 
@@ -305,13 +286,10 @@ const VerifyAuction: React.FC<VerifyAuctionViewProps> = ({
                       End Date
                     </h4>
                     <p className="mt-1 font-medium">
-                      {format(
-                        parseISO(auctionDetails.end_datetime),
-                        "MMMM d, yyyy",
-                      )}
+                      {format(parseISO(auction.end_datetime), "MMMM d, yyyy")}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {format(parseISO(auctionDetails.end_datetime), "h:mm a")}
+                      {format(parseISO(auction.end_datetime), "h:mm a")}
                     </p>
                   </div>
                 </div>
