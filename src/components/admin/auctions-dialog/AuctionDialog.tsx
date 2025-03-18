@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/popover";
 
 type AuctionAlertDialogProps = {
-  operation: "publish" | "delete" | "cancel" | "unpublish";
+  operation: "publish" | "delete" | "cancel" | "unpublish" | "republish";
   bid_increment: string;
   buynow_price: string;
   auction_id: string;
@@ -85,6 +85,163 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Publish Auction</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <div className="grid gap-4 py-4">
+              <FormField
+                control={form.control}
+                name="startDateTime"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel>Start Date and Time</FormLabel>
+                    <div className="flex items-center gap-2">
+                      <Popover modal>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            {format(
+                              field.value || new Date(),
+                              "dd-MM-yyyy HH:mm",
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value || new Date()}
+                            onSelect={(date) => {
+                              if (date) {
+                                const newDate = new Date(date);
+                                const currentValue = field.value || new Date();
+                                newDate.setHours(currentValue.getHours());
+                                newDate.setMinutes(currentValue.getMinutes());
+                                field.onChange(newDate);
+                              }
+                            }}
+                            disabled={(date) => {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              return date < today;
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <TimeInputWithWraparound
+                        value={format(field.value || new Date(), "HH:mm")}
+                        onChange={(time) => handleTimeChange(time, field)}
+                        className="flex-shrink-0"
+                      />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endDateTime"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel>End Date and Time</FormLabel>
+                    <div className="flex items-center gap-2">
+                      <Popover modal>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            {format(
+                              field.value || new Date(),
+                              "dd-MM-yyyy HH:mm",
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={(date) => {
+                              if (date) {
+                                const newDate = new Date(date);
+                                if (field.value) {
+                                  newDate.setHours(field.value.getHours());
+                                  newDate.setMinutes(field.value.getMinutes());
+                                }
+                                field.onChange(newDate);
+                              }
+                            }}
+                            disabled={(date) => {
+                              const startDate = form.getValues("startDateTime");
+                              const startDay = startDate
+                                ? new Date(startDate)
+                                : new Date();
+                              startDay.setHours(0, 0, 0, 0);
+
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+
+                              return (
+                                date < today || (startDate && date < startDay)
+                              );
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <TimeInputWithWraparound
+                        value={field.value ? format(field.value, "HH:mm") : ""}
+                        onChange={(time) => handleTimeChange(time, field)}
+                        className="flex-shrink-0"
+                      />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </Form>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={form.handleSubmit(() =>
+                handlePublishAuction(auction_id, bid_increment, buynow_price),
+              )}
+              disabled={pendingUpdate}
+            >
+              {pendingUpdate ? "Publishing..." : "Publish"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (operation === "republish") {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            {children}
+          </DropdownMenuItem>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Republish Auction</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <div className="grid gap-4 py-4">

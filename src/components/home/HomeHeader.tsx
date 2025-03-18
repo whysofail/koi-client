@@ -38,6 +38,8 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
     };
   }, [mobileMenuOpen]);
 
+  const laravelURI = process.env.NEXT_PUBLIC_LARAVEL_URL;
+
   const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(" ");
   };
@@ -83,8 +85,10 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
             >
               AUCTIONS
             </Link>
-            <Link
-              href="/store"
+            <a
+              href={laravelURI}
+              target="_blank"
+              rel="noopener noreferrer"
               className={classNames(
                 "relative px-6 py-3 font-medium lg:px-12",
                 currentPage === "store"
@@ -93,7 +97,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
               )}
             >
               OUR STORE
-            </Link>
+            </a>
           </nav>
 
           <div

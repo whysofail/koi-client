@@ -1,15 +1,42 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import {
-  Facebook,
-  Instagram,
-  Twitter,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { Mail, Phone } from "lucide-react";
+
+type ContactUsData = {
+  email: string;
+  whatsapp: string;
+  message: string;
+};
 
 const ContactPage = () => {
+  const [contact, setContact] = useState<ContactUsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchContactData = async () => {
+      try {
+        const response = await fetch("/api/contactus");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch data.");
+        }
+
+        setContact(data);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (err) {
+        setError("Failed to load contact details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContactData();
+  }, []);
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="container mx-auto flex-grow px-4 py-8">
@@ -18,66 +45,39 @@ const ContactPage = () => {
         <div className="mb-12 grid grid-cols-1 gap-12 md:grid-cols-2">
           {/* Contact Information */}
           <div className="rounded-lg bg-white p-8 shadow-md">
-            <div className="mb-6 flex items-center justify-center">
-              <Image
-                src="/placeholder.svg?height=120&width=120"
-                alt="FS KOI Logo"
-                width={120}
-                height={120}
-                className="mr-6"
-              />
-              <h2 className="text-3xl font-bold text-red-800">FS KOI</h2>
-            </div>
+            {loading ? (
+              <p className="text-center text-gray-500">
+                Loading contact details...
+              </p>
+            ) : error ? (
+              <p className="text-center text-red-500">{error}</p>
+            ) : (
+              <>
+                <div className="mb-6 flex items-center justify-center">
+                  <Image
+                    src="/Logo.png"
+                    alt="FS KOI Logo"
+                    width={240}
+                    height={240}
+                    className="mr-6"
+                  />
+                </div>
 
-            <div className="mb-8 space-y-4">
-              <div className="flex items-center">
-                <MapPin className="mr-3 h-5 w-5 text-red-800" />
-                <span>123 Koi Street, Aquarium District, Jakarta</span>
-              </div>
-              <div className="flex items-center">
-                <Phone className="mr-3 h-5 w-5 text-red-800" />
-                <span>+62 21 123456</span>
-              </div>
-              <div className="flex items-center">
-                <Mail className="mr-3 h-5 w-5 text-red-800" />
-                <span>info@fskoi.com</span>
-              </div>
-            </div>
-
-            <h3 className="mb-4 text-xl font-semibold">Business Hours</h3>
-            <div className="mb-8 grid grid-cols-2 gap-2">
-              <div>Monday - Friday:</div>
-              <div>9:00 AM - 6:00 PM</div>
-              <div>Saturday:</div>
-              <div>10:00 AM - 4:00 PM</div>
-              <div>Sunday:</div>
-              <div>Closed</div>
-            </div>
-
-            <h3 className="mb-4 text-xl font-semibold">Connect With Us</h3>
-            <div className="flex space-x-4">
-              <Link
-                href="https://facebook.com"
-                target="_blank"
-                className="rounded-full bg-red-800 p-3 text-white transition-colors hover:bg-red-700"
-              >
-                <Facebook className="h-6 w-6" />
-              </Link>
-              <Link
-                href="https://instagram.com"
-                target="_blank"
-                className="rounded-full bg-red-800 p-3 text-white transition-colors hover:bg-red-700"
-              >
-                <Instagram className="h-6 w-6" />
-              </Link>
-              <Link
-                href="https://twitter.com"
-                target="_blank"
-                className="rounded-full bg-red-800 p-3 text-white transition-colors hover:bg-red-700"
-              >
-                <Twitter className="h-6 w-6" />
-              </Link>
-            </div>
+                <div className="mb-8 space-y-4">
+                  <div className="flex items-center">
+                    <Phone className="mr-3 h-5 w-5 text-red-800" />
+                    <span>{contact?.whatsapp || "+62 21 123456"}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Mail className="mr-3 h-5 w-5 text-red-800" />
+                    <span>{contact?.email || "info@fskoi.com"}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span>{contact?.message || ""}</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Contact Form */}
@@ -135,70 +135,6 @@ const ContactPage = () => {
                 Send Message
               </button>
             </form>
-          </div>
-        </div>
-
-        {/* Map Section */}
-        <div className="mb-8 rounded-lg bg-white p-6 shadow-md">
-          <h3 className="mb-4 text-xl font-semibold">Find Us</h3>
-          <div className="relative h-[400px] w-full overflow-hidden rounded-lg border border-gray-300">
-            {/* Replace this with an actual Google Maps embed in production */}
-            <Image
-              src="/placeholder.svg?height=400&width=800"
-              alt="Location Map"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 text-white">
-              <div className="text-center">
-                <MapPin className="mx-auto mb-2 h-12 w-12" />
-                <p className="text-lg font-semibold">FS KOI Location</p>
-                <p>Interactive map would appear here</p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 text-sm text-gray-600">
-            <p>
-              For the best experience visiting our store, we recommend calling
-              ahead to schedule an appointment.
-            </p>
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div className="rounded-lg bg-yellow-100 p-6 shadow-md">
-          <h3 className="mb-4 text-xl font-semibold">
-            Frequently Asked Questions
-          </h3>
-          <div className="space-y-4">
-            <div className="border-b border-gray-300 pb-4">
-              <h4 className="mb-2 font-medium">
-                What types of koi do you sell?
-              </h4>
-              <p className="text-gray-700">
-                We specialize in high-quality Japanese koi varieties including
-                Kohaku, Sanke, Showa, and many others. Our selection changes
-                regularly based on availability and season.
-              </p>
-            </div>
-            <div className="border-b border-gray-300 pb-4">
-              <h4 className="mb-2 font-medium">
-                How does the auction process work?
-              </h4>
-              <p className="text-gray-700">
-                Our auctions are held online through our website. You need to
-                register an account to participate. Auctions typically run for a
-                set period, and the highest bidder at the end wins.
-              </p>
-            </div>
-            <div className="border-b border-gray-300 pb-4">
-              <h4 className="mb-2 font-medium">Do you ship internationally?</h4>
-              <p className="text-gray-700">
-                Yes, we offer international shipping for our koi. Shipping costs
-                and requirements vary by destination. Please contact us for
-                specific details about shipping to your location.
-              </p>
-            </div>
           </div>
         </div>
       </main>
