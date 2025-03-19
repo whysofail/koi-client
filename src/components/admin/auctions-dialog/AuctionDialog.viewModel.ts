@@ -106,8 +106,10 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     updateMutate(
       { auctionId, data },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Auction published");
+          await queryClient.cancelQueries({ queryKey: ["auction"] });
+
           onSuccess?.();
         },
         onError: () => {
@@ -256,6 +258,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
     } finally {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["allAuctions"] }),
+        await queryClient.cancelQueries({ queryKey: ["auction"] }),
         queryClient.invalidateQueries({ queryKey: ["koiData"] }),
       ]);
     }
@@ -264,6 +267,7 @@ export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
   const handleDeleteAuction = async (auctionId: string, koiId: string) => {
     try {
       await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
+      await queryClient.cancelQueries({ queryKey: ["auction"] });
       await queryClient.cancelQueries({ queryKey: ["koiData"] });
 
       const previousAuctions =

@@ -10,7 +10,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, Loader2, AlertCircle } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  Loader2,
+  AlertCircle,
+  ExternalLink,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -66,7 +72,18 @@ const KoiTable = () => {
       accessorKey: "id",
       header: "ID",
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("id")}</div>
+        <div>
+          <Link
+            href={`${process.env.NEXT_PUBLIC_LARAVEL_URL}/CMS/koi/detail/${row.original.id}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <span className="group flex text-blue-500 hover:underline">
+              <ExternalLink className="group mr-1 h-4 w-4 hover:underline" />
+              {row.getValue("id")}
+            </span>
+          </Link>
+        </div>
       ),
     },
     {

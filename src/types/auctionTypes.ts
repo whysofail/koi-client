@@ -15,6 +15,7 @@ export enum AuctionOrderBy {
   CREATED_AT = "created_at",
   UPDATED_AT = "updated_at",
   CREATED_BY_ID = "created_by_id",
+  BID_STARTING_PRICE = "bid_starting_price",
 }
 export interface FetchAllAuctionsParams extends AuctionFilters {
   token?: string;
@@ -42,6 +43,7 @@ export type CreateAuctionBody = {
   buynow_price: number;
   participation_fee: number | undefined | null;
   bid_increment: number;
+  bid_starting_price: number;
 };
 
 export type UpdateAuctionBody = {
@@ -57,6 +59,7 @@ export type UpdateAuctionBody = {
   status?: AuctionStatus;
   winner_id?: string;
   final_price?: string;
+  bid_starting_price?: string;
 };
 
 interface User {
@@ -81,6 +84,7 @@ export interface Auction {
   end_datetime: string;
   status: AuctionStatus;
   current_highest_bid: string;
+  bid_starting_price: string;
   buynow_price: string;
   participation_fee: string;
   bid_increment: string;
@@ -122,6 +126,7 @@ export interface AuctionTableData {
   user: string;
   bids: number;
   participants: AuctionParticipantInfo[];
+  bid_starting_price: string;
 }
 
 export enum AuctionStatus {
@@ -156,6 +161,7 @@ export const transformAuctionToTableData = (
       user: "N/A",
       bids: 0,
       participants: [],
+      bid_starting_price: "0",
     };
   }
 
@@ -175,5 +181,6 @@ export const transformAuctionToTableData = (
     user: auction.user?.username ?? "N/A",
     bids: auction.bids?.length ?? 0,
     participants: auction.participants ?? [],
+    bid_starting_price: auction.bid_starting_price ?? "0",
   };
 };

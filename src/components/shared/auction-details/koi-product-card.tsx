@@ -89,7 +89,7 @@ const KoiProductCard: FC<KoiProductCardProps> = ({
 
   return (
     <>
-      <h4>Koi Information</h4>
+      <h4 className="text-3xl font-bold">Koi Information</h4>
       <Tabs
         defaultValue="general"
         className="w-full"

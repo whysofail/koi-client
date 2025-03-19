@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import PlaceBidForm from "./PlaceBidForm/PlaceBidForm";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { AuctionItemCard } from "./auction-item-card";
-import { format } from "date-fns";
+import { format, isAfter } from "date-fns";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import useGetLoggedInUser from "@/server/user/getLoggedInUser/queries";
 import Link from "next/link";
@@ -51,6 +51,7 @@ const UserContent: React.FC<UserContentProps> = ({
   const currentBid = Number(auction.current_highest_bid);
   const reservePrice = Number(auction.buynow_price);
   const bidIncrement = Number(auction.bid_increment);
+  const startingBidPrice = Number(auction.bid_starting_price);
   const {
     data: koiData,
     isLoading: koiIsLoading,
@@ -100,6 +101,24 @@ const UserContent: React.FC<UserContentProps> = ({
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
+      <div className="lg:hidden">
+        <div className="mb-4 flex items-center space-x-2">
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+            {title}
+          </h2>
+          <StatusBadge status={auction.status} />
+        </div>
+        <div className="flex flex-col justify-between">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <p className="text-md text-muted">Start date : {startDate}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <p className="text-md text-muted">End date : {endDate}</p>
+          </div>
+        </div>
+      </div>
       <div className="space-y-6">
         <ImageGallery title={title} media={koiMedia} />
         <AuctionItemCard
@@ -110,20 +129,21 @@ const UserContent: React.FC<UserContentProps> = ({
         />
       </div>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            {title}
-          </h2>
-          <StatusBadge status={auction.status} />
-          <p>{auction.description}</p>
+        <div className="hidden lg:block">
+          <div className="mb-4 flex items-center space-x-2">
+            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+              {title}
+            </h2>
+            <StatusBadge status={auction.status} />
+          </div>
           <div className="flex justify-between">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
-              <p className="text-sm text-muted">Start date : {startDate}</p>
+              <p className="text-md text-muted">Start date : {startDate}</p>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
-              <p className="text-sm text-muted">End date : {endDate}</p>
+              <p className="text-md text-muted">End date : {endDate}</p>
             </div>
           </div>
         </div>
@@ -148,17 +168,22 @@ const UserContent: React.FC<UserContentProps> = ({
                   </p>
                 </div>
                 <TooltipProvider>
-                  <Tooltip>
+                  <Tooltip defaultOpen>
                     <TooltipTrigger asChild>
                       <Button variant="outline" size="icon">
                         <Info className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Reserve Price: Rp. {reservePrice.toLocaleString()}</p>
-                      <p>
-                        Minimum Increment: Rp. {bidIncrement.toLocaleString()}
-                      </p>
+                      <div className="p-4">
+                        <h3>Bidding Information</h3>
+                        <p>Buy Now Price : {formatCurrency(reservePrice)}</p>
+                        <p>Increment : {formatCurrency(bidIncrement)}</p>
+                        <p>
+                          Starting Bid Price :{" "}
+                          {formatCurrency(startingBidPrice)}
+                        </p>
+                      </div>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -229,8 +254,9 @@ const UserContent: React.FC<UserContentProps> = ({
                   token={token}
                   auctionID={auctionID}
                   currentBid={currentBid}
+                  bidStartingPrice={Number(auction.bid_starting_price)}
                   minIncrement={bidIncrement}
-                  isEnded
+                  isEnded={isAfter(new Date(), new Date(auction.end_datetime))}
                   status={auction.status}
                   participationFee={Number(auction.participation_fee)}
                   userBalance={Number(user.data?.data.wallet.balance)}

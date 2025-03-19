@@ -80,7 +80,7 @@ const AuctionBanner = () => {
           {/* Invisible Link Overlay */}
           {currentAuction && (
             <Link
-              href={`/auction/${currentAuction.auction_id}`}
+              href={`/auctions/${currentAuction.auction_id}`}
               className="absolute inset-0 z-10"
               aria-label="Go to auction"
             />

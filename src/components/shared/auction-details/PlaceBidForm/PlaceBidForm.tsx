@@ -27,6 +27,7 @@ interface PlaceBidFormProps {
   status: AuctionStatus;
   participationFee: number;
   userBalance: number;
+  bidStartingPrice: number;
 }
 
 const PlaceBidForm = ({
@@ -39,12 +40,14 @@ const PlaceBidForm = ({
   status,
   participationFee,
   userBalance,
+  bidStartingPrice,
 }: PlaceBidFormProps) => {
   const { form, isSubmitting, minBid, onSubmit } = usePlaceBidForm(
     token,
     auctionID,
     currentBid,
     minIncrement,
+    bidStartingPrice,
   );
 
   const [isFocused, setIsFocused] = useState(false);

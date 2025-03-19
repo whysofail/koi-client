@@ -26,6 +26,101 @@
   }
 }
 
+/* Tiptap */
+@layer base {
+  :root {
+    --mt-overlay: rgba(251, 251, 251, 0.75);
+    --mt-transparent-foreground: rgba(0, 0, 0, 0.4);
+    --mt-bg-secondary: rgba(251, 251, 251, 0.8);
+    --mt-code-background: #082b781f;
+    --mt-code-color: #d4d4d4;
+    --mt-secondary: #9d9d9f;
+    --mt-pre-background: #ececec;
+    --mt-pre-border: #e0e0e0;
+    --mt-pre-color: #2f2f31;
+    --mt-hr: #dcdcdc;
+    --mt-drag-handle-hover: #5c5c5e;
+
+    --mt-accent-bold-blue: #05c;
+    --mt-accent-bold-teal: #206a83;
+    --mt-accent-bold-green: #216e4e;
+    --mt-accent-bold-orange: #a54800;
+    --mt-accent-bold-red: #ae2e24;
+    --mt-accent-bold-purple: #5e4db2;
+
+    --mt-accent-gray: #758195;
+    --mt-accent-blue: #1d7afc;
+    --mt-accent-teal: #2898bd;
+    --mt-accent-green: #22a06b;
+    --mt-accent-orange: #fea362;
+    --mt-accent-red: #c9372c;
+    --mt-accent-purple: #8270db;
+
+    --mt-accent-blue-subtler: #cce0ff;
+    --mt-accent-teal-subtler: #c6edfb;
+    --mt-accent-green-subtler: #baf3db;
+    --mt-accent-yellow-subtler: #f8e6a0;
+    --mt-accent-red-subtler: #ffd5d2;
+    --mt-accent-purple-subtler: #dfd8fd;
+
+    --hljs-string: #aa430f;
+    --hljs-title: #b08836;
+    --hljs-comment: #999999;
+    --hljs-keyword: #0c5eb1;
+    --hljs-attr: #3a92bc;
+    --hljs-literal: #c82b0f;
+    --hljs-name: #259792;
+    --hljs-selector-tag: #c8500f;
+    --hljs-number: #3da067;
+  }
+
+  .dark {
+    --mt-overlay: rgba(31, 32, 35, 0.75);
+    --mt-transparent-foreground: rgba(255, 255, 255, 0.4);
+    --mt-bg-secondary: rgba(31, 32, 35, 0.8);
+    --mt-code-background: #ffffff13;
+    --mt-code-color: #2c2e33;
+    --mt-secondary: #595a5c;
+    --mt-pre-background: #080808;
+    --mt-pre-border: #23252a;
+    --mt-pre-color: #e3e4e6;
+    --mt-hr: #26282d;
+    --mt-drag-handle-hover: #969799;
+
+    --mt-accent-bold-blue: #85b8ff;
+    --mt-accent-bold-teal: #9dd9ee;
+    --mt-accent-bold-green: #7ee2b8;
+    --mt-accent-bold-orange: #fec195;
+    --mt-accent-bold-red: #fd9891;
+    --mt-accent-bold-purple: #b8acf6;
+
+    --mt-accent-gray: #738496;
+    --mt-accent-blue: #388bff;
+    --mt-accent-teal: #42b2d7;
+    --mt-accent-green: #2abb7f;
+    --mt-accent-orange: #a54800;
+    --mt-accent-red: #e2483d;
+    --mt-accent-purple: #8f7ee7;
+
+    --mt-accent-blue-subtler: #09326c;
+    --mt-accent-teal-subtler: #164555;
+    --mt-accent-green-subtler: #164b35;
+    --mt-accent-yellow-subtler: #533f04;
+    --mt-accent-red-subtler: #5d1f1a;
+    --mt-accent-purple-subtler: #352c63;
+
+    --hljs-string: #da936b;
+    --hljs-title: #f1d59d;
+    --hljs-comment: #aaaaaa;
+    --hljs-keyword: #6699cc;
+    --hljs-attr: #90cae8;
+    --hljs-literal: #f2777a;
+    --hljs-name: #5fc0a0;
+    --hljs-selector-tag: #e8c785;
+    --hljs-number: #b6e7b6;
+  }
+}
+
 /* PhotoSwipe customization */
 .pswp__img {
   object-fit: contain !important;
@@ -81,7 +176,6 @@
   }
 }
 
-
 /* existing CSS */
 @layer utilities {
   .shimmer {
@@ -109,27 +203,172 @@
   }
 }
 
-/* Text Typography */
 @layer utilities {
-  h1 {
-    @apply text-4xl font-bold;
+  .heading-node {
+    @apply relative font-semibold;
   }
-  h2 {
-    @apply text-3xl font-bold;
+
+  .heading-node:first-child {
+    @apply mt-0;
   }
-  h3 {
-    @apply text-2xl font-bold;
+
+  h1,
+  .heading-node[level="1"] {
+    @apply mb-4 mt-[46px] text-[1.375rem] leading-7 tracking-[-0.004375rem];
   }
-  h4 {
-    @apply text-xl font-bold;
+
+  h2,
+  .heading-node[level="2"] {
+    @apply mb-3.5 mt-8 text-[1.1875rem] leading-7 tracking-[0.003125rem];
   }
-  h5 {
-    @apply text-lg font-bold;
+
+  h3,
+  .heading-node[level="3"] {
+    @apply mb-3 mt-6 text-[1.0625rem] leading-6 tracking-[0.00625rem];
   }
-  h6 {
-    @apply text-base font-bold;
+
+  h4,
+  .heading-node[level="4"] {
+    @apply mb-2 mt-4 text-[0.9375rem] leading-6;
   }
-  p {
-    @apply text-base;
+
+  h5,
+  .heading-node[level="5"] {
+    @apply mb-2 mt-4 text-sm;
+  }
+
+  h6,
+  .heading-node[level="6"] {
+    @apply mb-2 mt-4 text-sm;
+  }
+
+  a.link {
+    @apply cursor-pointer text-primary;
+  }
+
+  a.link:hover {
+    @apply underline;
+  }
+  code.inline {
+    @apply rounded border border-[var(--mt-code-color)] bg-[var(--mt-code-background)] px-1 py-0.5 text-sm;
+  }
+
+  pre {
+    @apply relative overflow-auto rounded border font-mono text-sm;
+    @apply border-[var(--mt-pre-border)] bg-[var(--mt-pre-background)] text-[var(--mt-pre-color)];
+    @apply hyphens-none whitespace-pre text-left;
+  }
+
+  code {
+    @apply break-words leading-[1.7em];
+  }
+
+  pre code {
+    @apply block overflow-x-auto p-3.5;
+  }
+
+  pre {
+    .hljs-keyword,
+    .hljs-operator,
+    .hljs-function,
+    .hljs-built_in,
+    .hljs-builtin-name {
+      color: var(--hljs-keyword);
+    }
+
+    .hljs-attr,
+    .hljs-symbol,
+    .hljs-property,
+    .hljs-attribute,
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-params {
+      color: var(--hljs-attr);
+    }
+
+    .hljs-name,
+    .hljs-regexp,
+    .hljs-link,
+    .hljs-type,
+    .hljs-addition {
+      color: var(--hljs-name);
+    }
+
+    .hljs-string,
+    .hljs-bullet {
+      color: var(--hljs-string);
+    }
+
+    .hljs-title,
+    .hljs-subst,
+    .hljs-section {
+      color: var(--hljs-title);
+    }
+
+    .hljs-literal,
+    .hljs-type,
+    .hljs-deletion {
+      color: var(--hljs-literal);
+    }
+
+    .hljs-selector-tag,
+    .hljs-selector-id,
+    .hljs-selector-class {
+      color: var(--hljs-selector-tag);
+    }
+
+    .hljs-number {
+      color: var(--hljs-number);
+    }
+
+    .hljs-comment,
+    .hljs-meta,
+    .hljs-quote {
+      color: var(--hljs-comment);
+    }
+
+    .hljs-emphasis {
+      @apply italic;
+    }
+
+    .hljs-strong {
+      @apply font-bold;
+    }
+  }
+  /* Ordered Lists */
+  /* Ordered Lists */
+  ol {
+    @apply ml-0 list-decimal pl-5;
+  }
+
+  ol ol {
+    list-style: lower-alpha;
+    @apply pl-5;
+  }
+
+  ol ol ol {
+    list-style: lower-roman;
+    @apply pl-5;
+  }
+
+  /* Unordered Lists */
+
+  ul ul {
+    list-style: circle;
+    @apply pl-5;
+  }
+
+  ul ul ul {
+    list-style: square;
+    @apply pl-5;
+  }
+
+  /* Ensure list text aligns with other text elements */
+  li {
+    @apply leading-7;
+  }
+
+  li > * {
+    @apply mb-0;
   }
 }

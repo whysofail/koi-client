@@ -41,7 +41,7 @@ const AdminControls: FC<AdminControlsProps> = ({
   const router = useRouter();
 
   return (
-    <div className="mb-3 mt-4 flex items-center justify-between">
+    <div className=" flex items-center justify-between">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
           Auction Management

@@ -79,7 +79,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 pt-0">
       {withBack && <BackButton />}
 
       {isAdmin ? (
@@ -126,6 +126,8 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           currentBid={auction.current_highest_bid}
           buynow_price={auction.buynow_price}
           bidIncrement={auction.bid_increment}
+          participationFee={auction.participation_fee}
+          startingBidPrice={auction.bid_starting_price}
         />
       ) : (
         <UserContent

@@ -242,6 +242,45 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="bid_starting_price"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel className="text-foreground">
+                    Minimum Starting Bid Price
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                        Rp
+                      </span>
+                      <Input
+                        type="text"
+                        placeholder="Enter starting bid price"
+                        {...field}
+                        className="pl-9"
+                        value={
+                          field.value === 0 ? "" : formatCurrency(field.value)
+                        }
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\./g, "");
+                          if (/^\d*$/.test(value)) {
+                            field.onChange(Number(value));
+                          }
+                        }}
+                      />
+                    </div>
+                  </FormControl>
+                  {!form.formState.errors.buynow_price && (
+                    <FormDescription>
+                      The minimum price user to bid the auction
+                    </FormDescription>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}

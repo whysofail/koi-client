@@ -31,6 +31,11 @@ const formSchema = z.object({
   bid_increment: z
     .number()
     .min(1, "Bid increment amount must be greater than 0"),
+  bid_starting_price: z
+    .number({
+      required_error: "Starting bid price is required",
+    })
+    .min(1, "Starting bid price must be greater than 0"),
   status: z.nativeEnum(AuctionStatus).optional(),
 });
 
@@ -73,6 +78,7 @@ const KoiAuctionFormViewModel = (
       buynow_price: 0,
       participation_fee: 0,
       bid_increment: 0,
+      bid_starting_price: 0,
       status: AuctionStatus.DRAFT as AuctionStatus,
     },
   });
@@ -89,6 +95,7 @@ const KoiAuctionFormViewModel = (
         bid_increment: parseFloat(auctionData.bid_increment),
         item: auctionData.item,
         status: auctionData.status as AuctionStatus,
+        bid_starting_price: parseFloat(auctionData.bid_starting_price),
       });
     }
   }, [auctionData, operation, form]);
@@ -195,6 +202,7 @@ const KoiAuctionFormViewModel = (
             participation_fee: data.participation_fee.toString(),
             bid_increment: data.bid_increment.toString(),
             status: data.status,
+            bid_starting_price: data.bid_starting_price.toString(),
           },
         },
         {

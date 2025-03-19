@@ -142,6 +142,20 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     {
       accessorKey: "item",
       header: "Koi ID",
+      cell: ({ row }) => (
+        <div>
+          <Link
+            href={`${process.env.NEXT_PUBLIC_LARAVEL_URL}/CMS/koi/detail/${row.original.item}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <span className="group flex text-blue-500 hover:underline">
+              <ExternalLink className="group mr-1 h-4 w-4 hover:underline" />
+              {row.original.item}
+            </span>
+          </Link>
+        </div>
+      ),
     },
     {
       accessorKey: "start_datetime",
@@ -259,6 +273,14 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       ),
       cell: ({ row }) => {
         const value = row.original.bid_increment;
+        return <div>{formatCurrency(value ?? 0)}</div>;
+      },
+    },
+    {
+      accessorKey: "bid_starting_price",
+      header: "Bid Starting Price",
+      cell: ({ row }) => {
+        const value = row.original.bid_starting_price;
         return <div>{formatCurrency(value ?? 0)}</div>;
       },
     },
@@ -409,6 +431,18 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     },
   ];
 
+  const columnLabels: Partial<Record<keyof AuctionTableData, string>> = {
+    bid_increment: "Bid Increment",
+    bid_starting_price: "Bid Starting Price",
+    created_at: "Created At",
+    current_highest_bid: "Current Highest Bid",
+    description: "Description",
+    end_datetime: "End Date",
+    start_datetime: "Start Date",
+    buynow_price: "Buy Now Price",
+    item: "Koi ID",
+  };
+
   const table = useReactTable({
     data: PaginatedData?.data.map(transformAuctionToTableData) ?? [],
     columns,
@@ -433,7 +467,6 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
     manualPagination: true,
     manualSorting: true,
   });
-
   const searchableColumns = [
     { id: "title", label: "Title" },
     { id: "description", label: "Description" },
@@ -567,6 +600,9 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
+                const label =
+                  columnLabels[column.id as keyof AuctionTableData] ??
+                  column.id.replace(/_/g, " "); // Fallback: Format ID into readable text
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -576,7 +612,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {label}
                   </DropdownMenuCheckboxItem>
                 );
               })}

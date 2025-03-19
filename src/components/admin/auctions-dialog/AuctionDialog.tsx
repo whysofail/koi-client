@@ -81,7 +81,10 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           {button ? (
-            <Button className="text-bold w-full uppercase">
+            <Button
+              variant={"outline"}
+              className="text-bold w-full bg-green-500 uppercase "
+            >
               <Upload />
               Publish Auction
             </Button>

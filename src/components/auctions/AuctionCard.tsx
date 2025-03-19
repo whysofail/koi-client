@@ -26,6 +26,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 interface AuctionCardProps {
   auction: Auction;
@@ -86,7 +87,7 @@ export default function AuctionCard({
             className="border-green-300 bg-green-100 text-green-700 dark:border-green-700 dark:bg-green-900 dark:text-green-200"
           >
             <Timer className="mr-1 h-3 w-3" />
-            Active
+            Started
           </Badge>
         );
       case "COMPLETED":
@@ -259,7 +260,7 @@ export default function AuctionCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center text-lg font-bold">
           <Tag className="mr-1 h-5 w-5 text-green-600 dark:text-green-400" />
-          Rp. {Number(auction.buynow_price || 0).toLocaleString()}
+          {formatCurrency(auction.buynow_price)}
         </div>
         <Link
           href={`/auctions/${auction.auction_id}`}

@@ -17,9 +17,10 @@ export function usePlaceBidForm(
   auctionID: string,
   currentBid: number,
   minIncrement: number,
+  bidStartingPrice: number,
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const minBid = currentBid === 0 ? minIncrement : currentBid + minIncrement;
+  const minBid = currentBid > 0 ? currentBid + minIncrement : bidStartingPrice;
 
   const queryClient = useQueryClient();
 

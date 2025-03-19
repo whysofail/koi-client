@@ -10,10 +10,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   User,
   Clock,
-  DollarSign,
   ShieldIcon,
   Trophy,
   ExternalLink,
+  BanknoteIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MediaGallery from "../GalleryMedia";
@@ -42,6 +42,8 @@ interface AdminContentProps {
   currentBid: string;
   buynow_price: string;
   bidIncrement: string;
+  participationFee: string;
+  startingBidPrice: string;
   images?: GalleryImage[];
   token: string;
 }
@@ -54,6 +56,8 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
     currentBid,
     buynow_price,
     bidIncrement,
+    startingBidPrice,
+    participationFee,
     token,
   } = props;
   const {
@@ -100,6 +104,10 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
                 </div>
               </div>
               <Separator />
+              <div
+                dangerouslySetInnerHTML={{ __html: auction.rich_description }}
+              />
+
               <KoiProductCard
                 koi={koi}
                 isAdmin={true}
@@ -167,10 +175,24 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <BanknoteIcon className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Bid Increment</p>
                 <p>{formatCurrency(bidIncrement)}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <BanknoteIcon className="h-4 w-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">Participation Fee</p>
+                <p>{formatCurrency(participationFee)}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <BanknoteIcon className="h-4 w-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">Participation Fee</p>
+                <p>{formatCurrency(startingBidPrice)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
