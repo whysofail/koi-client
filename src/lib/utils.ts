@@ -30,19 +30,19 @@ export const truncateText = (text: string, maxLength: number) => {
   return text.slice(0, maxLength) + "...";
 };
 
-// Helper function to calculate age display from birthdate
 export const calculateAge = (birthdate?: string): string => {
   if (!birthdate) return "Unknown";
 
   const birthDate = new Date(birthdate);
   const now = new Date();
 
-  const yearDiff = now.getFullYear() - birthDate.getFullYear();
+  let yearDiff = now.getFullYear() - birthDate.getFullYear();
+  let monthDiff = now.getMonth() - birthDate.getMonth();
 
-  if (yearDiff < 1) {
-    const monthDiff = now.getMonth() - birthDate.getMonth();
-    return `${monthDiff} months`;
+  if (monthDiff < 0) {
+    yearDiff -= 1;
+    monthDiff += 12;
   }
 
-  return `${yearDiff} years`;
+  return `${yearDiff} years ${monthDiff} months`;
 };

@@ -27,7 +27,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
 
     switch (notification.type) {
       case NotificationType.AUCTION:
-        return `/auction/${notification.reference_id}`;
+        return `/auctions/${notification.reference_id}`;
       case NotificationType.SYSTEM:
         return `/dashboard/user/${notification.reference_id}`;
       case NotificationType.BID:

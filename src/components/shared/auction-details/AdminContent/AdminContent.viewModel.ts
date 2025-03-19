@@ -18,7 +18,11 @@ export function useAdminContentViewModel({
   const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState<string>("");
 
-  const { data: koiData } = useGetKoiByID(auction.item);
+  const {
+    data: koiData,
+    isLoading: koiIsLoading,
+    isError: koiIsError,
+  } = useGetKoiByID(auction.item);
   const imageArray = koiData?.photo?.split("|") || [];
   const videoArray = koiData?.video?.split("|") || [];
 
@@ -90,6 +94,8 @@ export function useAdminContentViewModel({
 
   return {
     koiData,
+    koiIsLoading,
+    koiIsError,
     koiMedia,
     lastBidUpdate,
     countdown,

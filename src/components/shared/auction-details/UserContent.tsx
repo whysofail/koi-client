@@ -21,6 +21,7 @@ import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import useGetLoggedInUser from "@/server/user/getLoggedInUser/queries";
 import Link from "next/link";
 import AuctionNotStarted from "./AuctionNotStarted";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -50,7 +51,11 @@ const UserContent: React.FC<UserContentProps> = ({
   const currentBid = Number(auction.current_highest_bid);
   const reservePrice = Number(auction.buynow_price);
   const bidIncrement = Number(auction.bid_increment);
-  const { data: koiData } = useGetKoiByID(auction.item);
+  const {
+    data: koiData,
+    isLoading: koiIsLoading,
+    isError: koiIsError,
+  } = useGetKoiByID(auction.item);
   const koi = koiData;
 
   const startDate = format(
@@ -97,7 +102,12 @@ const UserContent: React.FC<UserContentProps> = ({
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-6">
         <ImageGallery title={title} media={koiMedia} />
-        <AuctionItemCard auction={auction} koi={koi} />
+        <AuctionItemCard
+          auction={auction}
+          koi={koi}
+          onKoiLoading={koiIsLoading}
+          onKoiError={koiIsError}
+        />
       </div>
       <div className="space-y-6">
         <div>
@@ -162,27 +172,70 @@ const UserContent: React.FC<UserContentProps> = ({
               </div>
 
               <Separator />
-              {token ? (
+              {auction.status === AuctionStatus.PENDING ? (
+                <div className="py-4 text-center">
+                  <p className="text-lg font-medium">
+                    Auction ended, verifying winner
+                  </p>
+                </div>
+              ) : auction.status === AuctionStatus.COMPLETED &&
+                auction.winner_id ? (
+                <div className="space-y-3 py-2">
+                  <p className="text-lg font-medium">Auction completed</p>
+                  {(() => {
+                    // Find the winning bid using highest_bid_id
+                    const winningBid = bids?.find(
+                      (bid) => bid.bid_id === auction.highest_bid_id,
+                    );
+                    // Find the winner in the bids array
+                    const winner = bids?.find(
+                      (bid) => bid.user.user_id === auction.winner_id,
+                    );
+
+                    if (winningBid && winner) {
+                      return (
+                        <div className="rounded-md bg-muted p-3">
+                          <div className="mb-1 flex items-center gap-2">
+                            <User className="h-5 w-5 text-primary" />
+                            <p className="font-semibold">
+                              Winner: {winner.user.username}
+                            </p>
+                          </div>
+                          <p className="text-muted-foreground">
+                            Winning bid: {formatCurrency(winningBid.bid_amount)}
+                          </p>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <p className="text-muted-foreground">
+                          Winner information not available
+                        </p>
+                      );
+                    }
+                  })()}
+                </div>
+              ) : auction.status === AuctionStatus.CANCELLED ||
+                auction.status === AuctionStatus.FAILED ? (
+                <Button className="w-full" disabled>
+                  Auction Ended
+                </Button>
+              ) : !token ? (
+                <Button asChild>
+                  <Link href="/login">Login to place a bid</Link>
+                </Button>
+              ) : (
                 <PlaceBidForm
                   token={token}
                   auctionID={auctionID}
                   currentBid={currentBid}
                   minIncrement={bidIncrement}
-                  isEnded={
-                    auction.status === AuctionStatus.PENDING ||
-                    auction.status === AuctionStatus.COMPLETED ||
-                    auction.status === AuctionStatus.CANCELLED ||
-                    auction.status === AuctionStatus.FAILED
-                  }
+                  isEnded
                   status={auction.status}
                   participationFee={Number(auction.participation_fee)}
                   userBalance={Number(user.data?.data.wallet.balance)}
                   hasJoined={auction.hasJoined}
                 />
-              ) : (
-                <Button asChild>
-                  <Link href="/login">Login to place a bid</Link>
-                </Button>
               )}
 
               <Separator />

@@ -1,3 +1,4 @@
+import BackButton from "@/components/dashboard/BackButton";
 import AuctionDetails from "@/components/shared/auction-details/AuctionDetails/AuctionDetails";
 import { getServerSession } from "@/lib/serverSession";
 import React from "react";
@@ -11,6 +12,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto p-6">
+        <BackButton />
         <AuctionDetails
           auctionID={auctionId}
           token={token}

@@ -58,6 +58,8 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
   } = props;
   const {
     koiData: koi,
+    koiIsError,
+    koiIsLoading,
     koiMedia,
     lastBidUpdate,
     countdown,
@@ -98,7 +100,12 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
                 </div>
               </div>
               <Separator />
-              <KoiProductCard koi={koi} isAdmin={true} />
+              <KoiProductCard
+                koi={koi}
+                isAdmin={true}
+                onKoiLoading={koiIsLoading}
+                onKoiError={koiIsError}
+              />
             </div>
           </CardContent>
         </Card>

@@ -5,9 +5,16 @@ import KoiProductCard from "./koi-product-card";
 interface AuctionItemCardProps {
   auction: any;
   koi?: any;
+  onKoiLoading: boolean;
+  onKoiError: boolean;
 }
 
-export function AuctionItemCard({ auction, koi }: AuctionItemCardProps) {
+export function AuctionItemCard({
+  auction,
+  koi,
+  onKoiError,
+  onKoiLoading,
+}: AuctionItemCardProps) {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-6">
@@ -29,7 +36,12 @@ export function AuctionItemCard({ auction, koi }: AuctionItemCardProps) {
 
           <Separator className="my-4" />
 
-          <KoiProductCard koi={koi} isAdmin={false} />
+          <KoiProductCard
+            koi={koi}
+            isAdmin={false}
+            onKoiLoading={onKoiLoading}
+            onKoiError={onKoiError}
+          />
         </div>
       </CardContent>
     </Card>

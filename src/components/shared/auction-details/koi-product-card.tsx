@@ -17,10 +17,15 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Koi } from "@/types/koiTypes";
+import { calculateAge } from "@/lib/utils";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import KoiProductCardSkeleton from "@/components/skeletons/KoiProductCardSkeleton";
 
 type KoiProductCardProps = {
   koi: Koi | undefined;
   isAdmin?: boolean;
+  onKoiLoading?: boolean;
+  onKoiError?: boolean;
 };
 
 const ErrorComponent: FC = () => (
@@ -33,7 +38,12 @@ const ErrorComponent: FC = () => (
   </div>
 );
 
-const KoiProductCard: FC<KoiProductCardProps> = ({ koi, isAdmin = false }) => {
+const KoiProductCard: FC<KoiProductCardProps> = ({
+  koi,
+  isAdmin = false,
+  onKoiError,
+  onKoiLoading,
+}) => {
   const [, setActiveTab] = useState("general");
 
   // Base URLs for images
@@ -73,6 +83,8 @@ const KoiProductCard: FC<KoiProductCardProps> = ({ koi, isAdmin = false }) => {
       return dateString;
     }
   };
+  if (onKoiLoading) return <KoiProductCardSkeleton />;
+  if (onKoiError) return <ErrorComponent />;
   if (!koi) return <ErrorComponent />;
 
   return (
@@ -117,6 +129,12 @@ const KoiProductCard: FC<KoiProductCardProps> = ({ koi, isAdmin = false }) => {
                     <span className="text-muted-foreground">Birthdate:</span>
                   </div>
                   <div>{formatDate(koi.birthdate)}</div>
+
+                  <div className="flex items-center gap-2">
+                    <InfoCircledIcon className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Age:</span>
+                  </div>
+                  <div>{calculateAge(koi.birthdate ?? undefined)}</div>
 
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
