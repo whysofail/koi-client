@@ -20,10 +20,15 @@ import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 interface AuctionCardGridProps {
   auction: Omit<Auction, "bids" | "participants" | "user">;
   userBid?: Bid | null;
+  photo: string;
   currentUserId: string;
 }
 
-const AuctionCardGrid: FC<AuctionCardGridProps> = ({ auction, userBid }) => {
+const AuctionCardGrid: FC<AuctionCardGridProps> = ({
+  auction,
+  userBid,
+  photo,
+}) => {
   const endDate = new Date(auction.end_datetime);
   const isEnded = endDate < new Date();
   const timeLeft = isEnded
@@ -36,10 +41,11 @@ const AuctionCardGrid: FC<AuctionCardGridProps> = ({ auction, userBid }) => {
     <Card className="flex h-full flex-col overflow-hidden">
       <div className="relative h-48 w-full">
         <Image
-          src={`/placeholder.webp?height=400&width=600&text=${encodeURIComponent(auction.title)}`}
+          src={photo}
           alt={auction.title}
-          fill
-          className="object-cover"
+          height={400}
+          width={400}
+          className="h-full w-full rounded-lg object-contain transition-transform duration-300 hover:scale-105 "
         />
         <StatusBadge
           className="absolute bottom-2 right-2"

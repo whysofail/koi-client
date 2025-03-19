@@ -14,11 +14,16 @@ import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 
 interface AuctionItemListProps {
   auction: Omit<Auction, "bids" | "participants" | "user">;
+  photo: string;
   userBid?: Bid | null;
   currentUserId: string;
 }
 
-const AuctionItemList: FC<AuctionItemListProps> = ({ auction, userBid }) => {
+const AuctionItemList: FC<AuctionItemListProps> = ({
+  auction,
+  userBid,
+  photo,
+}) => {
   const endDate = new Date(auction.end_datetime);
   const isEnded = endDate < new Date();
   const timeLeft = isEnded
@@ -32,7 +37,7 @@ const AuctionItemList: FC<AuctionItemListProps> = ({ auction, userBid }) => {
       <div className="flex flex-col md:flex-row">
         <div className="relative h-48 flex-shrink-0 md:h-auto md:w-48">
           <Image
-            src={`/placeholder.webp?height=400&width=400&text=${encodeURIComponent(auction.title)}`}
+            src={photo}
             alt={auction.title}
             fill
             className="object-cover"

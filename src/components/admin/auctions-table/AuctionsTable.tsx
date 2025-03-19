@@ -299,19 +299,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                     <span>Publish Auction</span>
                   </div>
                 </AuctionDialog>
-                <AuctionDialog
-                  operation="delete"
-                  auction_id={row.original.auction_id}
-                  bid_increment={row.original.bid_increment}
-                  buynow_price={row.original.buynow_price}
-                  token={token}
-                  koiId={row.original.item}
-                >
-                  <div className="flex w-full items-center">
-                    <Trash className="mr-2 h-4 w-4" />
-                    <span>Delete Auction</span>
-                  </div>
-                </AuctionDialog>
+
                 <DropdownMenuItem asChild>
                   <Link
                     href={updateAuctionURLSearchParams(
@@ -325,22 +313,6 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                     Edit Auction
                   </Link>
                 </DropdownMenuItem>
-              </>
-            )}
-            {row.original.status === "DRAFT" && (
-              <>
-                <AuctionDialog
-                  operation="publish"
-                  bid_increment={row.original.bid_increment}
-                  buynow_price={row.original.buynow_price}
-                  auction_id={row.original.auction_id}
-                  token={token}
-                >
-                  <div className="flex w-full items-center">
-                    <Upload className="mr-2 h-4 w-4" />
-                    <span>Publish Auction</span>
-                  </div>
-                </AuctionDialog>
                 <AuctionDialog
                   operation="delete"
                   auction_id={row.original.auction_id}
@@ -354,19 +326,6 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                     <span>Delete Auction</span>
                   </div>
                 </AuctionDialog>
-                <DropdownMenuItem asChild>
-                  <Link
-                    href={updateAuctionURLSearchParams(
-                      row.original.auction_id,
-                      {
-                        koiID: row.original.item,
-                      },
-                    )}
-                  >
-                    <Edit />
-                    Edit Auction
-                  </Link>
-                </DropdownMenuItem>
               </>
             )}
             {row.original.status === "PUBLISHED" && (

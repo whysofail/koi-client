@@ -16,6 +16,7 @@ import { getStartDateTime, getTimeRemaining } from "@/lib/utils";
 import { AuctionStatus } from "@/types/auctionTypes";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatCurrency";
+import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 
 interface WishlistItemGridProps {
   wishlist: Wishlist;
@@ -31,6 +32,14 @@ export function WishlistItemGrid({
       onRemoveFromWishlist(wishlist.auction_id);
     }
   };
+
+  const { data: koiData } = useGetKoiByID(wishlist.auction.item || "");
+  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+  const imageArray = koiData?.photo?.split("|") || [];
+  const imageUrl = imageArray[0]
+    ? `${imageBaseUrl}${imageArray[0]}`
+    : "/placeholder.webp";
+
   let time = "";
   switch (wishlist.auction.status) {
     case AuctionStatus.PUBLISHED:
@@ -49,7 +58,7 @@ export function WishlistItemGrid({
     <Card className="flex h-full flex-col overflow-hidden">
       <div className="relative h-48 w-full">
         <Image
-          src={`/placeholder.webp?height=400&width=600&text=${encodeURIComponent(wishlist.auction.title)}`}
+          src={imageUrl}
           alt={wishlist.auction.title}
           fill
           className="object-cover"

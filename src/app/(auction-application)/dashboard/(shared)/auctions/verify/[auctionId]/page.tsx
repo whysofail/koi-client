@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import VerifyAuction from "@/components/admin/verify-auction/VerifyAuction";
 import { getServerSession } from "@/lib/serverSession";
+import BackButton from "@/components/dashboard/BackButton";
 
 type VerifyPageProps = {
   params: Promise<{ auctionId: string }>;
@@ -16,6 +17,7 @@ const VerifyPage: FC<VerifyPageProps> = async ({ params }) => {
     <div className="container mx-auto px-4 py-6">
       <div className="mb-8 flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
+          <BackButton className="mb-4" />
           <h1 className="text-3xl font-bold tracking-tight">Verify Auction</h1>
           <p className="text-muted-foreground">
             Verify the highest bid and winner for this auction.

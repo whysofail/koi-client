@@ -40,7 +40,8 @@ export default function AuctionCard({
   onRemoveFromWishlist,
   isPendingWishlist = false,
 }: AuctionCardProps) {
-  const { data: koiData, isLoading, error } = useGetKoiByID(auction.item || "");
+  const { data: koiData, isLoading, error } = useGetKoiByID(auction.item);
+  console.log(koiData);
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {

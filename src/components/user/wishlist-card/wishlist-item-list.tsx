@@ -11,6 +11,7 @@ import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import { getStartDateTime, getTimeRemaining } from "@/lib/utils";
 import { AuctionStatus } from "@/types/auctionTypes";
 import { formatCurrency } from "@/lib/formatCurrency";
+import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 
 interface WishlistItemListProps {
   wishlist: Wishlist;
@@ -26,6 +27,13 @@ export function WishlistItemList({
       onRemoveFromWishlist(wishlist.wishlist_id);
     }
   };
+
+  const { data: koiData } = useGetKoiByID(wishlist.auction.item || "");
+  const imageBaseUrl = `${process.env.NEXT_PUBLIC_KOI_IMG_BASE_URL}/img/koi/photo/`;
+  const imageArray = koiData?.photo?.split("|") || [];
+  const imageUrl = imageArray[0]
+    ? `${imageBaseUrl}${imageArray[0]}`
+    : "/placeholder.webp";
 
   let time = "";
   switch (wishlist.auction.status) {
@@ -47,7 +55,7 @@ export function WishlistItemList({
         {/* Image container - fixed width on all screen sizes */}
         <div className="relative h-[150px] w-[150px] flex-shrink-0 sm:h-[180px] sm:w-[180px] md:h-52 md:w-52">
           <Image
-            src={`/placeholder.webp?height=400&width=400&text=${encodeURIComponent(wishlist.auction.title)}`}
+            src={imageUrl}
             alt={wishlist.auction.title}
             fill
             className="aspect-square object-cover"

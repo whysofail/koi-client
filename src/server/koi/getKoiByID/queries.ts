@@ -11,7 +11,7 @@ const fetchKoiByID = async (koiID: string) => {
 
 const useGetKoiByID = (koiID: string, options?: { enabled?: boolean }) =>
   useQuery({
-    queryKey: ["koiData"],
+    queryKey: ["koiData", koiID],
     queryFn: () => fetchKoiByID(koiID),
     enabled: options?.enabled,
   });

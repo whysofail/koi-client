@@ -170,7 +170,9 @@ const UserContent: React.FC<UserContentProps> = ({
                   minIncrement={bidIncrement}
                   isEnded={
                     auction.status === AuctionStatus.PENDING ||
-                    auction.status === AuctionStatus.COMPLETED
+                    auction.status === AuctionStatus.COMPLETED ||
+                    auction.status === AuctionStatus.CANCELLED ||
+                    auction.status === AuctionStatus.FAILED
                   }
                   status={auction.status}
                   participationFee={Number(auction.participation_fee)}
