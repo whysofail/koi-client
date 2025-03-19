@@ -43,32 +43,28 @@ export default function NotificationItem({
   return (
     <div
       onClick={handleClick}
-      className={`cursor-pointer rounded-lg p-4 shadow transition hover:bg-gray-100 ${
-        status === "READ"
-          ? "bg-gray-50 dark:bg-black"
-          : "dark:bg-dark border-l-4 border-blue-500 bg-white"
+      className={`cursor-pointer rounded-lg p-4 shadow transition hover:bg-accent/50 ${
+        status === "READ" ? "bg-muted/50" : "border-l-4 border-primary bg-card"
       }`}
     >
       <div className="flex items-start">
         <div className="flex-shrink-0">
           <Bell
             className={`h-6 w-6 ${
-              status === "READ" ? "text-gray-400" : "text-blue-500"
+              status === "READ" ? "text-muted-foreground" : "text-primary"
             }`}
           />
         </div>
         <div className="ml-3 flex-1">
-          <span>{type}</span>
+          <span className="text-foreground">{type}</span>
           <p
             className={`text-sm font-medium ${
-              status === "READ"
-                ? "text-gray-600 dark:text-slate-100"
-                : "text-gray-900 dark:text-slate-200"
+              status === "READ" ? "text-muted-foreground" : "text-foreground"
             }`}
           >
             {message}
           </p>
-          <p className="mt-1 text-xs text-gray-500 dark:text-slate-200">
+          <p className="mt-1 text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
           </p>
         </div>

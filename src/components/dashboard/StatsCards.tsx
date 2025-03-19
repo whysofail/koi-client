@@ -4,15 +4,7 @@ import React from "react";
 import StatsCardsSkeleton from "../skeletons/StatsCardsSkeleton";
 import StatsCardsError from "../skeletons/StatsCardsError";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Users,
-  Package,
-  DollarSign,
-  // TrendingUp,
-  Gavel,
-  Timer,
-  Heart,
-} from "lucide-react";
+import { Users, Package, DollarSign, Gavel, Timer, Heart } from "lucide-react";
 import useGetStats from "@/server/stats/getStats/queries";
 import Link from "next/link";
 

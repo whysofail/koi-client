@@ -50,11 +50,11 @@ export default function NotificationList({ token }: { token: string }) {
   }
 
   return (
-    <div>
+    <div className="bg-background text-foreground">
       <div className="mb-4 flex">
         <div className="flex gap-4">
           <Select onValueChange={setFilter} defaultValue={filter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] border-border bg-background">
               <SelectValue placeholder="Filter notifications" />
             </SelectTrigger>
             <SelectContent>
@@ -67,7 +67,7 @@ export default function NotificationList({ token }: { token: string }) {
             value={pageSize.toString()}
             onValueChange={(value) => setPageSize(Number(value))}
           >
-            <SelectTrigger className="w-[100px]">
+            <SelectTrigger className="w-[100px] border-border bg-background">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -100,7 +100,9 @@ export default function NotificationList({ token }: { token: string }) {
         ))}
       </div>
       {filteredNotifications.length === 0 && (
-        <p className="mt-4 text-center text-gray-500">No notifications found</p>
+        <p className="mt-4 text-center text-muted-foreground">
+          No notifications found
+        </p>
       )}
 
       <Pagination className="mt-4 flex justify-center">

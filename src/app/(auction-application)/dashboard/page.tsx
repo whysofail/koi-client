@@ -31,7 +31,6 @@ const Home = async () => {
                 : "Check out the latest auctions"}
             </p>
           </div>
-          {/* TODO: SUBJECT TO CHANGE */}
           {isAdmin ? (
             <div className="rounded-lg border">
               <ActiveAuctionsTable token={token} />
