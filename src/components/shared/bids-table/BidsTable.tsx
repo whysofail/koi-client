@@ -121,7 +121,11 @@ const BidsTable: React.FC<BidsTableProps> = ({ token, isAdmin }) => {
       cell: ({ row }: { row: Row<BidWithUserAndAuction> }) => (
         <Button asChild variant="ghost" size="sm">
           <Link
-            href={`/dashboard/auctions/item/${row.original.auction.auction_id}`}
+            href={
+              isAdmin
+                ? `/dashboard/auctions/item/${row.original.auction.auction_id}`
+                : `/auctions/${row.original.auction.auction_id}`
+            }
           >
             <ExternalLink className="h-4 w-4" />
             View in Auction

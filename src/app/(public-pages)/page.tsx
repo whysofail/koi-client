@@ -5,8 +5,8 @@ import useGetAllAuctions from "@/server/auction/getAllAuctions/queries";
 import { AuctionOrderBy, AuctionStatus } from "@/types/auctionTypes";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { format } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import AuctionBanner from "@/components/home/auction-banner";
 
 const LandingPage: FC = () => {
   // Fetch auctions
@@ -15,13 +15,6 @@ const LandingPage: FC = () => {
     orderBy: AuctionOrderBy.START_DATETIME,
     order: "ASC",
     status: AuctionStatus.PUBLISHED,
-  });
-
-  const { data: currentAuction } = useGetAllAuctions({
-    limit: 1,
-    orderBy: AuctionOrderBy.START_DATETIME,
-    order: "ASC",
-    status: AuctionStatus.STARTED,
   });
 
   const { data: pastAuction } = useGetAllAuctions({
@@ -50,16 +43,11 @@ const LandingPage: FC = () => {
 
   // Extract koi IDs safely
   const upcomingKoiId = upcomingAuction?.data?.[0]?.item || "";
-  const currentKoiId = currentAuction?.data?.[0]?.item || "";
   const pastKoiId = pastAuction?.data?.[0]?.item || "";
 
   // Call hooks individually at the top level
   const { data: upcomingKoi } = useGetKoiByID(upcomingKoiId, {
     enabled: !!upcomingKoiId,
-  });
-
-  const { data: currentKoi } = useGetKoiByID(currentKoiId, {
-    enabled: !!currentKoiId,
   });
 
   const { data: pastKoi } = useGetKoiByID(pastKoiId, {
@@ -77,82 +65,15 @@ const LandingPage: FC = () => {
       : "/placeholder.svg";
   };
 
-  // Format banner dates
-  const formatBannerDate = (dateString: string) => {
-    if (!dateString) return "";
-    try {
-      return format(new Date(dateString), "yyyy.MM.dd HH:mm");
-    } catch (error) {
-      console.error(error);
-      return dateString;
-    }
-  };
-
   return (
     <main className="mx-auto flex-grow dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-4 md:py-8">
-        <div className="relative overflow-hidden rounded-3xl bg-black">
-          <div className="relative h-[200px] sm:h-[300px] md:h-[400px]">
-            {/* Use current koi image if available, otherwise fallback to generic image */}
-            <Image
-              src={
-                currentKoi?.photo ? getImageUrl(currentKoi.photo) : "/ikan.png"
-              }
-              alt={currentKoi?.code || "Koi fish"}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
-
-            {/* Content */}
-            <div className="relative z-10 max-w-2xl p-4 text-white sm:p-8 md:p-12">
-              <h1 className="mb-2 text-3xl font-bold sm:text-4xl md:mb-4 md:text-5xl">
-                Current Event
-              </h1>
-              {currentAuction?.data?.[0] ? (
-                <>
-                  <p className="mb-2 text-xs text-yellow-200 sm:text-sm md:mb-4">
-                    Period of the event |{" "}
-                    {formatBannerDate(currentAuction.data[0].start_datetime)} -{" "}
-                    {formatBannerDate(currentAuction.data[0].end_datetime)}
-                  </p>
-                  <p className="hidden text-xs text-gray-200 sm:block sm:text-sm md:text-base">
-                    {currentAuction.data[0].description ||
-                      "No description available."}
-                  </p>
-                </>
-              ) : (
-                <p className="mb-2 text-xs text-yellow-200 sm:text-sm md:mb-4">
-                  No current events at this time
-                </p>
-              )}
-            </div>
-
-            {/* Navigation */}
-            <button className="absolute left-2 top-1/2 -translate-y-1/2 transform rounded-full bg-white/20 p-1 sm:left-4 sm:p-2">
-              <ChevronLeft className="h-4 w-4 text-white sm:h-6 sm:w-6" />
-            </button>
-            <button className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded-full bg-white/20 p-1 sm:right-4 sm:p-2">
-              <ChevronRight className="h-4 w-4 text-white sm:h-6 sm:w-6" />
-            </button>
-
-            {/* Dots */}
-            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2 sm:bottom-6">
-              <div className="h-2 w-2 rounded-full bg-white" />
-              <div className="h-2 w-2 rounded-full bg-white/50" />
-              <div className="h-2 w-2 rounded-full bg-white/50" />
-            </div>
-          </div>
-        </div>
-      </div>
+      <AuctionBanner />
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {auctionData.map(({ title, data, status }, index) => {
-            if (!data?.data?.length) return null;
-
             const koi = koiData[index]; // Get koi data for this auction
+            const hasAuctions = data?.data && data.data.length > 0;
 
             return (
               <div key={status} className="relative mt-6">
@@ -160,38 +81,58 @@ const LandingPage: FC = () => {
                   {title}
                 </div>
                 <div className="flex flex-col rounded-xl bg-red-800 p-4 dark:bg-red-900 sm:flex-row sm:p-6">
-                  <div className="relative mb-4 flex w-full justify-center sm:mb-0 sm:block sm:w-1/3">
-                    <div className="relative h-[150px] w-[150px] overflow-hidden rounded-lg bg-blue-500">
-                      <Image
-                        src={getImageUrl(koi?.photo)}
-                        alt={koi?.code || "Koi Fish"}
-                        fill
-                        style={{ objectFit: "cover" }}
-                        unoptimized
-                      />
+                  {hasAuctions ? (
+                    <>
+                      <Link href={`/auctions/${data?.data?.[0]?.auction_id}`}>
+                        <div className="relative mb-4 flex w-full justify-center sm:mb-0 sm:block sm:w-1/3">
+                          <div className="relative h-[150px] w-[150px] overflow-hidden rounded-lg bg-blue-500">
+                            <Image
+                              src={getImageUrl(koi?.photo)}
+                              alt={koi?.code || "Koi Fish"}
+                              fill
+                              style={{ objectFit: "cover" }}
+                              unoptimized
+                            />
+                          </div>
+                        </div>
+                      </Link>
+                      <Link href={`/auctions/${data?.data?.[0]?.auction_id}`}>
+                        <div className="w-full text-white sm:w-2/3 sm:pl-6">
+                          <h3 className="mb-2 text-xl font-bold sm:text-2xl">
+                            {data?.data?.[0]?.title || "Auction Event"}
+                          </h3>
+                          <p className="mb-2 text-xs text-yellow-200 sm:text-sm">
+                            Period of the event
+                            <br />
+                            {data?.data?.[0]?.start_datetime
+                              ? format(
+                                  new Date(data.data[0].start_datetime),
+                                  "dd MMMM yyyy HH:mm O",
+                                )
+                              : "Unknown Start Date"}{" "}
+                            -{" "}
+                            {data?.data?.[0]?.end_datetime
+                              ? format(
+                                  new Date(data.data[0].end_datetime),
+                                  "dd MMMM yyyy HH:mm O",
+                                )
+                              : "Unknown End Date"}
+                          </p>
+                          <p className="text-xs sm:text-sm">
+                            {data?.data?.[0]?.description ||
+                              "No description available."}
+                          </p>
+                        </div>
+                      </Link>
+                    </>
+                  ) : (
+                    <div className="w-full py-6 text-center text-white">
+                      <p className="text-lg font-bold">No auctions available</p>
+                      <p className="text-sm text-yellow-200">
+                        Check back later for upcoming events.
+                      </p>
                     </div>
-                  </div>
-                  <div className="w-full text-white sm:w-2/3 sm:pl-6">
-                    <h3 className="mb-2 text-xl font-bold sm:text-2xl">
-                      {data.data[0]?.title || "Auction Event"}
-                    </h3>
-                    <p className="mb-2 text-xs text-yellow-200 sm:text-sm">
-                      Period of the event
-                      <br />
-                      {format(
-                        new Date(data.data[0]?.start_datetime),
-                        "dd MMMM yyyy HH:mm O",
-                      )}{" "}
-                      -{" "}
-                      {format(
-                        new Date(data.data[0]?.end_datetime),
-                        "dd MMMM yyyy HH:mm O",
-                      )}
-                    </p>
-                    <p className="text-xs sm:text-sm">
-                      {data.data[0]?.description || "No description available."}
-                    </p>
-                  </div>
+                  )}
                 </div>
               </div>
             );

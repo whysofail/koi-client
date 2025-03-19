@@ -312,19 +312,6 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                     <span>Delete Auction</span>
                   </div>
                 </AuctionDialog>
-                <DropdownMenuItem asChild>
-                  <Link
-                    href={updateAuctionURLSearchParams(
-                      row.original.auction_id,
-                      {
-                        koiID: row.original.item,
-                      },
-                    )}
-                  >
-                    <Edit />
-                    Edit Auction
-                  </Link>
-                </DropdownMenuItem>
               </>
             )}
             {row.original.status === "PUBLISHED" && (
