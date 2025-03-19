@@ -287,6 +287,19 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
             </DropdownMenuItem>
             {row.original.status === "DRAFT" && (
               <>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href={updateAuctionURLSearchParams(
+                      row.original.auction_id,
+                      {
+                        koiID: row.original.item,
+                      },
+                    )}
+                  >
+                    <Edit />
+                    Edit Auction
+                  </Link>
+                </DropdownMenuItem>
                 <AuctionDialog
                   operation="publish"
                   bid_increment={row.original.bid_increment}

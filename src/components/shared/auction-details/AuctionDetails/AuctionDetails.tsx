@@ -39,6 +39,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
     return isAdmin ? <AdminContentSkeleton /> : <UserContentSkeleton />;
   }
 
+  console.log(auction);
   if (dataError || !auction) {
     return (
       <div className="container mx-auto p-6">
@@ -88,6 +89,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           bid_increment={auction.bid_increment}
           buynow_price={auction.buynow_price}
           koiId={auction.item}
+          auctionStatus={auction.status}
         />
       ) : (
         <UserHeader title={auction.title} description={auction.description} />
@@ -117,6 +119,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
       )}
       {isAdmin ? (
         <AdminContent
+          token={token}
           auction={auction}
           bids={bids}
           title={auction.title}

@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, useState } from "react";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Upload } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -35,7 +35,8 @@ type AuctionAlertDialogProps = {
   auction_id: string;
   token: string;
   koiId?: string;
-  children: ReactNode;
+  children?: ReactNode;
+  button?: boolean; // Changed from button: boolean to button?: boolean with default value
 };
 
 const AuctionDialog: FC<AuctionAlertDialogProps> = ({
@@ -46,6 +47,7 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
   token,
   koiId,
   children,
+  button = false,
 }) => {
   const [open, setOpen] = useState(false);
   const {
@@ -78,9 +80,16 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            {children}
-          </DropdownMenuItem>
+          {button ? (
+            <Button className="text-bold w-full uppercase">
+              <Upload />
+              Publish Auction
+            </Button>
+          ) : (
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              {children}
+            </DropdownMenuItem>
+          )}
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

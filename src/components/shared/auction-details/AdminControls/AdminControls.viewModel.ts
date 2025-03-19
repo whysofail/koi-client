@@ -125,6 +125,7 @@ const AdminControlsViewModel = (token: string, onSuccess?: () => void) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["allAuctions"] }),
         queryClient.invalidateQueries({ queryKey: ["koiData"] }),
+        queryClient.invalidateQueries({ queryKey: ["auction"] }),
       ]);
     }
   };

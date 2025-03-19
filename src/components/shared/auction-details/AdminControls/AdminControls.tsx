@@ -12,9 +12,11 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { Ban } from "lucide-react";
+import { Ban, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminControlsViewModel from "./AdminControls.viewModel";
+import { AuctionStatus } from "@/types/auctionTypes";
+import { useRouter } from "next/navigation";
 
 type AdminControlsProps = {
   auctionId: string;
@@ -22,6 +24,7 @@ type AdminControlsProps = {
   buynow_price: string;
   koiId: string;
   token: string;
+  auctionStatus: AuctionStatus;
 };
 
 const AdminControls: FC<AdminControlsProps> = ({
@@ -30,9 +33,12 @@ const AdminControls: FC<AdminControlsProps> = ({
   buynow_price,
   koiId,
   token,
+  auctionStatus,
 }) => {
   const { handleCancelAuction, pendingCancel, open, setOpen } =
     AdminControlsViewModel(token);
+
+  const router = useRouter();
 
   return (
     <div className="mb-3 mt-4 flex items-center justify-between">
@@ -43,12 +49,27 @@ const AdminControls: FC<AdminControlsProps> = ({
       </div>
       <div className="flex items-center gap-2">
         <AlertDialog open={open} onOpenChange={setOpen}>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive">
-              <Ban className="mr-2 h-4 w-4" />
-              Cancel Auction
+          {auctionStatus !== AuctionStatus.CANCELLED ||
+            (AuctionStatus.DRAFT && (
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                  <Ban className="mr-2 h-4 w-4" />
+                  Cancel Auction
+                </Button>
+              </AlertDialogTrigger>
+            ))}
+          {auctionStatus === AuctionStatus.DRAFT && (
+            <Button
+              onClick={() =>
+                router.push(
+                  `/dashboard/auctions/update/${auctionId}?koiID=${koiId}`,
+                )
+              }
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Auction
             </Button>
-          </AlertDialogTrigger>
+          )}
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>

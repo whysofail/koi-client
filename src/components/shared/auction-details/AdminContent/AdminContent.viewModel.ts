@@ -95,5 +95,6 @@ export function useAdminContentViewModel({
     countdown,
     showVerifyButton: auction.status === AuctionStatus.PENDING,
     showVerifiedButton: auction.status === AuctionStatus.COMPLETED,
+    showPublishButton: auction.status === AuctionStatus.DRAFT,
   };
 }

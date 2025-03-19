@@ -25,6 +25,7 @@ import { useAdminContentViewModel } from "./AdminContent.viewModel";
 import Link from "next/link";
 import KoiProductCard from "../koi-product-card";
 import VerifiedButton from "./VerifiedButton";
+import AuctionDialog from "@/components/admin/auctions-dialog/AuctionDialog";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -42,11 +43,19 @@ interface AdminContentProps {
   buynow_price: string;
   bidIncrement: string;
   images?: GalleryImage[];
+  token: string;
 }
 
 const AdminContent: React.FC<AdminContentProps> = (props) => {
-  const { auction, bids, title, currentBid, buynow_price, bidIncrement } =
-    props;
+  const {
+    auction,
+    bids,
+    title,
+    currentBid,
+    buynow_price,
+    bidIncrement,
+    token,
+  } = props;
   const {
     koiData: koi,
     koiMedia,
@@ -54,6 +63,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
     countdown,
     showVerifyButton,
     showVerifiedButton,
+    showPublishButton,
   } = useAdminContentViewModel(props);
 
   const winnerParticipant = auction.participants.filter(
@@ -178,7 +188,6 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
             {showVerifyButton && (
               <div className="pt-2">
                 <Button
-                  asChild
                   className="w-full"
                   style={{ backgroundColor: "green", color: "white" }}
                 >
@@ -194,6 +203,19 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
 
             {showVerifiedButton && (
               <VerifiedButton auctionId={auction.auction_id} />
+            )}
+            {showPublishButton && (
+              <div>
+                <AuctionDialog
+                  operation="publish"
+                  bid_increment={auction.bid_increment}
+                  buynow_price={auction.buynow_price}
+                  auction_id={auction.auction_id}
+                  token={token}
+                  koiId={auction.item}
+                  button
+                />
+              </div>
             )}
           </CardContent>
         </Card>
