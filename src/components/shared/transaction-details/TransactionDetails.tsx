@@ -49,7 +49,6 @@ const TransactionDetails = ({
         Error loading transaction or transaction not found.
       </div>
     );
-
   return (
     <>
       <BackButton />
@@ -66,7 +65,10 @@ const TransactionDetails = ({
                     label: "Transaction ID",
                     value: transaction.transaction_id,
                   },
-                  { label: "User ID", value: transaction.wallet.user.username },
+                  {
+                    label: "User ID",
+                    value: transaction.wallet?.user.username ?? "N/A",
+                  },
                   {
                     label: "Amount",
                     value: formatCurrency(transaction.amount),

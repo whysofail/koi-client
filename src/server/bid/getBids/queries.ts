@@ -4,6 +4,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import {
   PaginatedBidsResponse,
   LoggedInUserBidsResponse,
+  BidOrderBy,
 } from "@/types/bidTypes";
 
 const dateNow = new Date();
@@ -18,7 +19,7 @@ interface FetchBidsParams {
   bidAmountMax?: number;
   bidTimeFrom?: Date;
   bidTimeTo?: Date;
-  orderBy?: string;
+  orderBy?: BidOrderBy;
   order?: "ASC" | "DESC";
 }
 
@@ -31,7 +32,7 @@ const fetchBids = async ({
   bidAmountMax,
   bidTimeFrom,
   bidTimeTo = nextWeek,
-  orderBy = "createdAt",
+  orderBy = BidOrderBy.BID_TIME,
   order = "DESC",
 }: FetchBidsParams) => {
   if (!isAdmin) {

@@ -6,12 +6,7 @@ import {
   ColumnFiltersState,
   VisibilityState,
 } from "@tanstack/react-table";
-
-export enum BidOrderBy {
-  BID_AMOUNT = "bidAmount",
-  BID_TIME = "bidTime",
-  CREATED_AT = "createdAt",
-}
+import { BidOrderBy } from "@/types/bidTypes";
 
 const BidsTableViewModel = (token: string, isAdmin: boolean) => {
   const router = useRouter();
