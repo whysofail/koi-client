@@ -22,6 +22,7 @@ import useGetLoggedInUser from "@/server/user/getLoggedInUser/queries";
 import Link from "next/link";
 import AuctionNotStarted from "./AuctionNotStarted";
 import { formatCurrency } from "@/lib/formatCurrency";
+import Countdown from "../countdown/countdown";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -39,6 +40,7 @@ interface UserContentProps {
   title: string;
   images?: GalleryImage[];
   userID?: string;
+  isBanned?: boolean;
 }
 
 const UserContent: React.FC<UserContentProps> = ({
@@ -47,6 +49,7 @@ const UserContent: React.FC<UserContentProps> = ({
   auctionID,
   bids,
   title,
+  isBanned,
 }) => {
   const currentBid = Number(auction.current_highest_bid);
   const reservePrice = Number(auction.buynow_price);
@@ -117,6 +120,11 @@ const UserContent: React.FC<UserContentProps> = ({
             <Clock className="h-4 w-4 text-muted-foreground" />
             <p className="text-md text-muted">End date : {endDate}</p>
           </div>
+          <Countdown
+            startDate={auction.start_datetime}
+            endDate={auction.end_datetime}
+            status={auction.status}
+          />
         </div>
       </div>
       <div className="space-y-6">
@@ -146,6 +154,11 @@ const UserContent: React.FC<UserContentProps> = ({
               <p className="text-md text-muted">End date : {endDate}</p>
             </div>
           </div>
+          <Countdown
+            startDate={auction.start_datetime}
+            endDate={auction.end_datetime}
+            status={auction.status}
+          />
         </div>
 
         {isNotStarted ? (
@@ -261,6 +274,7 @@ const UserContent: React.FC<UserContentProps> = ({
                   participationFee={Number(auction.participation_fee)}
                   userBalance={Number(user.data?.data.wallet.balance)}
                   hasJoined={auction.hasJoined}
+                  isBanned={isBanned}
                 />
               )}
 

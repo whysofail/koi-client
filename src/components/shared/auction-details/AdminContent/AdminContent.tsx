@@ -26,6 +26,7 @@ import Link from "next/link";
 import KoiProductCard from "../koi-product-card";
 import VerifiedButton from "./VerifiedButton";
 import AuctionDialog from "@/components/admin/auctions-dialog/AuctionDialog";
+import Countdown from "../../countdown/countdown";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -66,7 +67,6 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
     koiIsLoading,
     koiMedia,
     lastBidUpdate,
-    countdown,
     showVerifyButton,
     showVerifiedButton,
     showPublishButton,
@@ -171,7 +171,11 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
               <Clock className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Time Remaining</p>
-                <p>{countdown}</p>
+                <Countdown
+                  startDate={auction.start_datetime}
+                  endDate={auction.end_datetime}
+                  status={auction.status as AuctionStatus}
+                />
               </div>
             </div>
             <div className="flex items-center gap-2">

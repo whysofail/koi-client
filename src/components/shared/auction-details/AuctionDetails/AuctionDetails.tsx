@@ -18,6 +18,7 @@ interface AuctionDetailsProps {
   auctionID: string;
   withBack?: boolean;
   userId?: string;
+  isBanned?: boolean;
 }
 
 const AuctionDetails: React.FC<AuctionDetailsProps> = ({
@@ -25,6 +26,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
   token,
   auctionID,
   withBack = true,
+  isBanned,
 }) => {
   const { publicSocket } = useSocket();
   const {
@@ -39,7 +41,6 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
     return isAdmin ? <AdminContentSkeleton /> : <UserContentSkeleton />;
   }
 
-  console.log(auction);
   if (dataError || !auction) {
     return (
       <div className="container mx-auto p-6">
@@ -136,6 +137,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           auction={auction}
           bids={bids}
           title={auction.title}
+          isBanned={isBanned}
         />
       )}
     </div>

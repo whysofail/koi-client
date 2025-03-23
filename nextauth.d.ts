@@ -13,6 +13,7 @@ declare module "next-auth" {
     name: string;
     role: Role;
     accessToken: string;
+    is_banned: boolean;
   }
 
   interface Session extends DefaultSession {

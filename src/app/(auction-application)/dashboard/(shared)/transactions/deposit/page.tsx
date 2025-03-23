@@ -1,10 +1,12 @@
 import BackButton from "@/components/dashboard/BackButton";
 import DepositForm from "@/components/user/wallet/deposit-form/DepositForm";
 import { getServerSession } from "@/lib/serverSession";
+import IsBannedInfo from "@/components/dashboard/IsBanned/IsBannedInfo";
 
 const page = async () => {
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";
+  const isBanned = session?.user.is_banned;
   return (
     <>
       <div className="flex items-center justify-between space-y-2">
@@ -16,7 +18,7 @@ const page = async () => {
         </div>
       </div>
       <div className="mt-8 pl-5 pr-5">
-        <DepositForm token={token} />
+        {isBanned ? <IsBannedInfo /> : <DepositForm token={token} />}
       </div>
     </>
   );

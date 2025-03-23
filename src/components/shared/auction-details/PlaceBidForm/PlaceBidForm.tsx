@@ -28,6 +28,7 @@ interface PlaceBidFormProps {
   participationFee: number;
   userBalance: number;
   bidStartingPrice: number;
+  isBanned?: boolean;
 }
 
 const PlaceBidForm = ({
@@ -41,6 +42,7 @@ const PlaceBidForm = ({
   participationFee,
   userBalance,
   bidStartingPrice,
+  isBanned,
 }: PlaceBidFormProps) => {
   const { form, isSubmitting, minBid, onSubmit } = usePlaceBidForm(
     token,
@@ -70,6 +72,13 @@ const PlaceBidForm = ({
     form.setValue("amount", quickBidAmount);
     form.trigger("amount");
   };
+  if (isBanned) {
+    return (
+      <Button className="w-full" disabled>
+        Your account is banned and cannot participate in auctions.
+      </Button>
+    );
+  }
 
   if (isEnded) {
     return (
