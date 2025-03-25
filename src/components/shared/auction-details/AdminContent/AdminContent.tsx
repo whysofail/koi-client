@@ -195,7 +195,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
             <div className="flex items-center gap-2">
               <BanknoteIcon className="h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium">Participation Fee</p>
+                <p className="text-sm font-medium">Starting Bid Price</p>
                 <p>{formatCurrency(startingBidPrice)}</p>
               </div>
             </div>
