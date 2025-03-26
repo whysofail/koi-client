@@ -4,6 +4,8 @@ import { Auction } from "@/types/auctionTypes";
 import { DetailedBid } from "@/types/bidTypes";
 import { Socket } from "socket.io-client";
 import { useAuctionSocket } from "@/hooks/useAuctionSocket";
+import { AuctionBuyNow } from "@/types/auctionBuyNowTypes";
+import useGetBuyNowByAuctionId from "@/server/auction/getAuctionBuyNowByAuctionID/queries";
 
 export const useAuctionDetailsViewModel = (
   auctionID: string,
@@ -31,14 +33,27 @@ export const useAuctionDetailsViewModel = (
     enabled: true,
   });
 
+  const {
+    data: buyNowData,
+    isLoading: isLoadingBuyNow,
+    error: buyNowError,
+  } = useGetBuyNowByAuctionId({
+    token,
+    auction_id: auctionID,
+  });
+
+  console.log(isLoadingAuction, buyNowError);
+
   const auction: Auction | undefined = auctionData?.data[0];
   const bids: DetailedBid[] = (bidsData?.data as DetailedBid[]) || [];
+  const buyNow: AuctionBuyNow[] = (buyNowData?.data as AuctionBuyNow[]) || [];
 
   return {
     auction,
     bids,
-    isLoading: isLoadingAuction || isLoadingBids,
-    error: auctionError || bidsError,
+    buyNow,
+    isLoading: isLoadingAuction || isLoadingBids || isLoadingBuyNow,
+    error: auctionError || bidsError || buyNowError,
     socketStatus: {
       isConnected,
       isConnecting,

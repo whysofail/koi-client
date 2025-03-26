@@ -43,6 +43,13 @@ const Countdown: React.FC<CountdownProps> = ({
         return;
       }
 
+      if (status === "COMPLETED") {
+        setMessage("Auction completed");
+        setTimeRemaining(null);
+        setCountdownType(null);
+        return;
+      }
+
       if (isPast(endTime)) {
         setMessage("Auction ended");
         setTimeRemaining(null);

@@ -27,6 +27,9 @@ import KoiProductCard from "../koi-product-card";
 import VerifiedButton from "./VerifiedButton";
 import AuctionDialog from "@/components/admin/auctions-dialog/AuctionDialog";
 import Countdown from "../../countdown/countdown";
+import useGetUserByID from "@/server/user/getUserByID/queries";
+import { AuctionBuyNow } from "@/types/auctionBuyNowTypes";
+import { BuyNowHistory } from "../buy-now-request";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -39,6 +42,7 @@ interface GalleryImage {
 interface AdminContentProps {
   auction: Auction;
   bids: DetailedBid[];
+  buyNow: AuctionBuyNow[];
   title: string;
   currentBid: string;
   buynow_price: string;
@@ -53,6 +57,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
   const {
     auction,
     bids,
+    buyNow,
     title,
     currentBid,
     buynow_price,
@@ -72,9 +77,15 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
     showPublishButton,
   } = useAdminContentViewModel(props);
 
-  const winnerParticipant = auction.participants.filter(
-    (participant) => participant.user.user_id === auction.winner_id,
-  )[0];
+  const winnerParticipant = auction?.participants?.find(
+    (participant) => participant.user.user_id === auction?.winner_id,
+  );
+
+  // Only fetch winner details if not found in participants
+  const { data: winnerUser } = useGetUserByID(
+    winnerParticipant ? "" : auction?.winner_id || "",
+    token,
+  );
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -127,6 +138,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
           <TabsList>
             <TabsTrigger value="bids">Bid History</TabsTrigger>
             <TabsTrigger value="participants">Participants</TabsTrigger>
+            <TabsTrigger value="buynow">Buy Now Request</TabsTrigger>
           </TabsList>
           <TabsContent value="bids">
             <Card className="hover:bg-inherit">
@@ -139,6 +151,18 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
             <Card className="hover:bg-inherit">
               <CardContent className="px-0 py-2">
                 <ParticipantHistory participants={auction.participants} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="buynow">
+            <Card className="hover:bg-inherit">
+              <CardContent className="px-0 py-2">
+                <BuyNowHistory
+                  buyNowRequests={buyNow}
+                  token={token}
+                  auctionId={auction.auction_id}
+                  showActionButton={winnerUser === undefined}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -203,14 +227,15 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
               <Trophy className="h-4 w-4 text-yellow-500" />
               <div>
                 <p className="text-sm font-medium">Winner</p>
-                {winnerParticipant ? (
+
+                {winnerParticipant?.user || winnerUser?.data ? (
                   <Link
-                    href={`/dashboard/users/${winnerParticipant.user.user_id}`}
+                    href={`/dashboard/users/${winnerParticipant?.user.user_id || winnerUser?.data.user_id}`}
+                    className="flex items-center gap-2"
                   >
-                    <div className="flex items-center gap-2">
-                      <ExternalLink className="h-4 w-4" />
-                      {winnerParticipant.user.username}
-                    </div>
+                    <ExternalLink className="h-4 w-4" />
+                    {winnerParticipant?.user.username ||
+                      winnerUser?.data.username}
                   </Link>
                 ) : (
                   <p>No winner yet</p>

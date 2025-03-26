@@ -32,6 +32,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
   const {
     auction,
     bids,
+    buyNow,
     isLoading,
     error: dataError,
     socketStatus,
@@ -123,6 +124,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           token={token}
           auction={auction}
           bids={bids}
+          buyNow={buyNow}
           title={auction.title}
           currentBid={auction.current_highest_bid}
           buynow_price={auction.buynow_price}
