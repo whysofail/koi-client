@@ -93,6 +93,7 @@ export interface Auction {
   deleted_at: string | null;
   highest_bid_id: string;
   winner_id: string | null;
+  winner: User | null;
   final_price: string | null;
   user: User;
   bids: Bid[];

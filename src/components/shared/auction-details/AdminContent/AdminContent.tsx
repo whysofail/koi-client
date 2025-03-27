@@ -82,8 +82,6 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
     enabled: !!auction.winner_id,
   });
 
-  console.log(winnerUser);
-
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
@@ -135,7 +133,14 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
           <TabsList>
             <TabsTrigger value="bids">Bid History</TabsTrigger>
             <TabsTrigger value="participants">Participants</TabsTrigger>
-            <TabsTrigger value="buynow">Buy Now Request</TabsTrigger>
+            <TabsTrigger value="buynow">
+              Buy Now Request{" "}
+              {buyNow.length > 0 && (
+                <span className="ml-2 rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">
+                  {buyNow.length}
+                </span>
+              )}
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="bids">
             <Card className="hover:bg-inherit">

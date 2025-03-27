@@ -207,41 +207,24 @@ const UserContent: React.FC<UserContentProps> = ({
                 </p>
               </div>
             ) : auction.status === AuctionStatus.COMPLETED &&
-              auction.winner_id ? (
+              auction.winner_id &&
+              auction.winner ? (
               <div className="space-y-3 py-2">
                 <p className="text-lg font-medium">Auction completed</p>
-                {(() => {
-                  // Find the winning bid using highest_bid_id
-                  const winningBid = bids?.find(
-                    (bid) => bid.bid_id === auction.highest_bid_id,
-                  );
-                  // Find the winner in the bids array
-                  const winner = bids?.find(
-                    (bid) => bid.user.user_id === auction.winner_id,
-                  );
-
-                  if (winningBid && winner) {
-                    return (
-                      <div className="rounded-md bg-muted p-3">
-                        <div className="mb-1 flex items-center gap-2">
-                          <User className="h-5 w-5 text-primary" />
-                          <p className="font-semibold">
-                            Winner: {winner.user.username}
-                          </p>
-                        </div>
-                        <p className="text-muted-foreground">
-                          Winning bid: {formatCurrency(winningBid.bid_amount)}
-                        </p>
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <p className="text-muted-foreground">
-                        Winner information not available
-                      </p>
-                    );
-                  }
-                })()}
+                <div className="rounded-md bg-muted p-3">
+                  <div className="mb-1 flex items-center gap-2">
+                    <User className="h-5 w-5 text-primary" />
+                    <p className="font-semibold">
+                      Winner: {auction.winner.username}
+                    </p>
+                  </div>
+                  <p className="text-muted-foreground">
+                    Winning bid:{" "}
+                    {formatCurrency(
+                      auction.final_price ?? auction.current_highest_bid,
+                    )}
+                  </p>
+                </div>
               </div>
             ) : auction.status === AuctionStatus.CANCELLED ||
               auction.status === AuctionStatus.FAILED ? (

@@ -15,7 +15,7 @@ const updateKoi = async (
       koiId,
       status: koiStatus,
       buyer_name: buyerName,
-      sell_date,
+      sell_date: sell_date,
     },
   );
 
