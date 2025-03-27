@@ -77,15 +77,12 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
     showPublishButton,
   } = useAdminContentViewModel(props);
 
-  const winnerParticipant = auction?.participants?.find(
-    (participant) => participant.user.user_id === auction?.winner_id,
-  );
-
   // Only fetch winner details if not found in participants
-  const { data: winnerUser } = useGetUserByID(
-    winnerParticipant ? "" : auction?.winner_id || "",
-    token,
-  );
+  const { data: winnerUser } = useGetUserByID(auction?.winner_id ?? "", token, {
+    enabled: !!auction.winner_id,
+  });
+
+  console.log(winnerUser);
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -160,6 +157,7 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
                 <BuyNowHistory
                   buyNowRequests={buyNow}
                   token={token}
+                  koiId={auction.item}
                   auctionId={auction.auction_id}
                   showActionButton={winnerUser === undefined}
                 />
@@ -228,14 +226,13 @@ const AdminContent: React.FC<AdminContentProps> = (props) => {
               <div>
                 <p className="text-sm font-medium">Winner</p>
 
-                {winnerParticipant?.user || winnerUser?.data ? (
+                {winnerUser?.data !== undefined ? (
                   <Link
-                    href={`/dashboard/users/${winnerParticipant?.user.user_id || winnerUser?.data.user_id}`}
+                    href={`/dashboard/users/${winnerUser?.data?.user_id}`}
                     className="flex items-center gap-2"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    {winnerParticipant?.user.username ||
-                      winnerUser?.data.username}
+                    {winnerUser?.data?.username}
                   </Link>
                 ) : (
                   <p>No winner yet</p>

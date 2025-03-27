@@ -7,6 +7,7 @@ const updateKoi = async (
   koiId: string,
   koiStatus: KoiStatus,
   buyerName?: string,
+  sell_date?: string,
 ) => {
   const { data } = await axios.put(
     `${process.env.NEXT_PUBLIC_APPLICATION_URL}/api/koi`,
@@ -14,6 +15,7 @@ const updateKoi = async (
       koiId,
       status: koiStatus,
       buyer_name: buyerName,
+      sell_date,
     },
   );
 
@@ -26,13 +28,15 @@ const useUpdateKoi = (queryClient: QueryClient) =>
       koiId,
       koiStatus,
       buyerName,
+      sell_date,
     }: {
       koiId: string;
       koiStatus: KoiStatus;
       buyerName?: string;
+      sell_date?: string;
     }) => {
       try {
-        return await updateKoi(koiId, koiStatus, buyerName);
+        return await updateKoi(koiId, koiStatus, buyerName, sell_date);
       } catch (error) {
         throw new Error(getErrorMessage(error));
       }

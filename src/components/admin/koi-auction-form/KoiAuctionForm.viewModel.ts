@@ -20,9 +20,9 @@ const formSchema = z.object({
   description: z.string().min(1, "Description is required"),
   rich_description: z
     .string({
-      required_error: "Description is required",
+      description: "Rich description must be a string",
     })
-    .min(1, "Description is required"),
+    .optional(),
   item: z.string().min(1, "Item is required"),
   buynow_price: z.number().min(1, "Buy now price must be greater than 0"),
   participation_fee: z

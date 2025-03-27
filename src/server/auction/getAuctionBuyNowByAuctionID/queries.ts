@@ -5,6 +5,7 @@ import { AuctionBuyNow } from "@/types/auctionBuyNowTypes";
 interface FetchBuyNowRequestsParams {
   token: string;
   auction_id?: string; // Marked as optional to handle undefined cases
+  options?: { enabled?: boolean };
 }
 
 interface BuyNowResponse {
@@ -30,14 +31,15 @@ const fetchBuyNowRequests = async ({
 const useGetBuyNowByAuctionId = ({
   token,
   auction_id,
+  options,
 }: FetchBuyNowRequestsParams) =>
   useQuery({
     queryKey: ["buyNowRequests", auction_id],
     queryFn: () => fetchBuyNowRequests({ token, auction_id }),
-    enabled: !!auction_id, // Ensures the query runs only when auction_id is available
     placeholderData: (previousData) => previousData,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: options?.enabled,
   });
 
 export default useGetBuyNowByAuctionId;

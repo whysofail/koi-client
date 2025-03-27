@@ -36,7 +36,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
     isLoading,
     error: dataError,
     socketStatus,
-  } = useAuctionDetailsViewModel(auctionID, token, publicSocket);
+  } = useAuctionDetailsViewModel(auctionID, token, publicSocket, isAdmin);
 
   if (isLoading) {
     return isAdmin ? <AdminContentSkeleton /> : <UserContentSkeleton />;

@@ -11,6 +11,7 @@ export const useAuctionDetailsViewModel = (
   auctionID: string,
   token: string,
   socket?: Socket | null,
+  isAdmin: boolean = false,
 ) => {
   const { isConnected, isConnecting, lastReceivedAt } = useAuctionSocket({
     socket: socket ?? null,
@@ -40,9 +41,8 @@ export const useAuctionDetailsViewModel = (
   } = useGetBuyNowByAuctionId({
     token,
     auction_id: auctionID,
+    options: { enabled: isAdmin },
   });
-
-  console.log(isLoadingAuction, buyNowError);
 
   const auction: Auction | undefined = auctionData?.data[0];
   const bids: DetailedBid[] = (bidsData?.data as DetailedBid[]) || [];

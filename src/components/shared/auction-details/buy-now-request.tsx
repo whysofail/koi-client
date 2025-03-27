@@ -27,6 +27,7 @@ interface BuyNowHistoryProps {
   buyNowRequests?: AuctionBuyNow[];
   token: string;
   auctionId: string;
+  koiId: string;
   showActionButton?: boolean;
 }
 
@@ -34,6 +35,7 @@ export function BuyNowHistory({
   buyNowRequests,
   token,
   auctionId,
+  koiId,
   showActionButton = true,
 }: BuyNowHistoryProps) {
   if (!buyNowRequests || buyNowRequests.length === 0) {
@@ -88,6 +90,7 @@ export function BuyNowHistory({
                 buyNowId={request.auction_buynow_id}
                 token={token}
                 auctionId={auctionId}
+                koiId={koiId}
                 buyerName={request.buyer?.username ?? "Unknown User"}
               />
             )}
@@ -102,24 +105,34 @@ interface BuyNowActionsProps {
   buyNowId: string;
   token: string;
   auctionId: string;
+  koiId: string;
   buyerName: string;
 }
 
-function BuyNowActions({ buyNowId, token, buyerName }: BuyNowActionsProps) {
+function BuyNowActions({
+  buyNowId,
+  token,
+  koiId,
+  buyerName,
+}: BuyNowActionsProps) {
   const { completeBuyNow, isCompleting } = useBuyNowViewModel(token);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleConfirm = async () => {
-    await completeBuyNow(buyNowId);
-    setDialogOpen(false);
+    try {
+      await completeBuyNow(buyNowId, koiId, buyerName);
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to accept Buy Now:", error);
+    }
   };
 
   return (
     <div className="flex space-x-2">
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="default" size="sm">
-            Accept
+          <Button variant="default" size="sm" disabled={isCompleting}>
+            {isCompleting ? "Processing..." : "Accept"}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
@@ -141,7 +154,11 @@ function BuyNowActions({ buyNowId, token, buyerName }: BuyNowActionsProps) {
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDialogOpen(false)}
+              disabled={isCompleting}
+            >
               Cancel
             </Button>
             <Button onClick={handleConfirm} disabled={isCompleting}>
