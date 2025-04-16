@@ -13,7 +13,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Koi Auction",
+  title: {
+    template: "FS Koi | %s",
+    default: "FS Koi", // a default is required when creating a template
+  },
   description: "Koi Auction web client",
 };
 

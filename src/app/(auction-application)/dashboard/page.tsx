@@ -4,6 +4,10 @@ import ActiveAuctionsTable from "@/components/dashboard/ActiveAuctionsTable/Acti
 import { getServerSession } from "@/lib/serverSession";
 import LatestAuctions from "@/components/dashboard/LatestAuctions/LatestAuctions";
 
+export const metadata = {
+  title: "Dashboard",
+};
+
 const Home = async () => {
   const session = await getServerSession();
   const isAdmin = session?.user?.role === "admin";

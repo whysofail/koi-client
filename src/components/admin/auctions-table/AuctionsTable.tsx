@@ -382,16 +382,19 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
             row.original.status === "CANCELLED" ? (
               <>
                 <AuctionDialog
-                  operation="publish"
+                  operation="republish"
+                  koiId={row.original.item}
                   bid_increment={row.original.bid_increment}
                   buynow_price={row.original.buynow_price}
                   auction_id={row.original.auction_id}
                   token={token}
+                  button={false}
                 >
                   <div className="flex w-full items-center">
                     <Upload className="mr-2 h-4 w-4" />
                     <span>
-                      {row.original.status === "FAILED"
+                      {row.original.status === "FAILED" ||
+                      row.original.status === "CANCELLED"
                         ? "Republish Auction"
                         : "Publish Auction"}
                     </span>

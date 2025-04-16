@@ -50,6 +50,13 @@ const Countdown: React.FC<CountdownProps> = ({
         return;
       }
 
+      if (status === "FAILED") {
+        setMessage("Auction failed");
+        setTimeRemaining(null);
+        setCountdownType(null);
+        return;
+      }
+
       if (isPast(endTime)) {
         setMessage("Auction ended");
         setTimeRemaining(null);

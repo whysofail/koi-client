@@ -3,6 +3,11 @@ import IsBannedInfo from "@/components/dashboard/IsBanned/IsBannedInfo";
 import WalletCard from "@/components/user/wallet/wallet-card/WalletCard";
 import { getServerSession } from "@/lib/serverSession";
 
+export const metadata = {
+  title: "Transactions",
+  description: "Transactions",
+};
+
 const TransactionsPage = async () => {
   const session = await getServerSession();
 

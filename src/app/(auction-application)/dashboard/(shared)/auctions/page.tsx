@@ -3,6 +3,11 @@ import { getServerSession } from "@/lib/serverSession";
 import AuctionsTable from "@/components/admin/auctions-table/AuctionsTable";
 import AuctionList from "@/components/user/auctions/AuctionList";
 
+export const metadata = {
+  title: "Auctions",
+  description: "Explore and bid on various auctions.",
+};
+
 const AuctionsPage = async () => {
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";

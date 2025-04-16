@@ -1,5 +1,10 @@
 import KoiTable from "@/components/admin/koi-table/KoiTable";
 
+export const metadata = {
+  title: "Koi Inventory",
+  description: "Koi Inventory",
+};
+
 const KoiInventoryPage = () => (
   <>
     <div className="flex items-center justify-between space-y-2">

@@ -1,6 +1,11 @@
 import { getServerSession } from "@/lib/serverSession";
 import NotificationList from "@/components/shared/notification-list/NotificationList";
 
+export const metadata = {
+  title: "Notifications",
+  description: "Notifications",
+};
+
 const NotificationPage = async () => {
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";

@@ -3,6 +3,10 @@ import DepositForm from "@/components/user/wallet/deposit-form/DepositForm";
 import { getServerSession } from "@/lib/serverSession";
 import IsBannedInfo from "@/components/dashboard/IsBanned/IsBannedInfo";
 
+export const metadata = {
+  title: "Deposit",
+};
+
 const page = async () => {
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";

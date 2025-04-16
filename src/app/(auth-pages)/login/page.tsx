@@ -2,6 +2,11 @@ import React, { Suspense } from "react";
 import LoginForm from "@/components/auth/LoginForm";
 import { Skeleton } from "@/components/ui/skeleton";
 
+export const metadata = {
+  title: "Login",
+  description: "Login to your account",
+};
+
 const LoginFormSkeleton = () => (
   <div className="w-full p-8 md:w-1/2">
     <div className="space-y-6">

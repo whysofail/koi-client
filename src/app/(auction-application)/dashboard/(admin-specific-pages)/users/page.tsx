@@ -5,6 +5,11 @@ import AdminUserDialog from "@/components/admin/admin-user-registration/AdminUse
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+export const metadata = {
+  title: "User Management",
+  description: "User Management",
+};
+
 const UserManagement: FC = async () => {
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";
