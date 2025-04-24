@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: ["selector"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -60,16 +60,28 @@ const config: Config = {
         },
         keyframes: {
           "accordion-down": {
-            from: { height: "0" },
-            to: { height: "var(--radix-accordion-content-height)" },
+            from: {
+              height: "0",
+            },
+            to: {
+              height: "var(--radix-accordion-content-height)",
+            },
           },
           "accordion-up": {
-            from: { height: "var(--radix-accordion-content-height)" },
-            to: { height: "0" },
+            from: {
+              height: "var(--radix-accordion-content-height)",
+            },
+            to: {
+              height: "0",
+            },
           },
           pulse: {
-            "0%, 100%": { opacity: "1" },
-            "50%": { opacity: "0.85" },
+            "0%, 100%": {
+              opacity: "1",
+            },
+            "50%": {
+              opacity: "0.85",
+            },
           },
         },
         animation: {
@@ -90,12 +102,34 @@ const config: Config = {
       },
       keyframes: {
         bgFadeOut: {
-          "0%": { backgroundColor: "white" }, // Start with white
-          "100%": { backgroundColor: "transparent" }, // End with transparent
+          "0%": {
+            backgroundColor: "white",
+          },
+          "100%": {
+            backgroundColor: "transparent",
+          },
+        },
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
       },
       animation: {
-        bgFadeOut: "bgFadeOut 300ms linear 300ms forwards", // Wait 300ms before changing bg
+        bgFadeOut: "bgFadeOut 300ms linear 300ms forwards",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },

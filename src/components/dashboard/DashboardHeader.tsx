@@ -1,7 +1,7 @@
 import { FC } from "react";
 import ProfileButton from "./ProfileButton";
 import NotificationsDropdown from "./NotificationsDropdown";
-import ThemeToggle from "./ThemeToggle";
+// import ThemeToggle from "./ThemeToggle";
 import { User } from "next-auth";
 interface HeaderProps {
   isAdmin?: boolean;
@@ -13,7 +13,7 @@ const DashboardHeader: FC<HeaderProps> = ({ user }) => {
     <header>
       <div className="flex items-center px-4">
         <div className="ml-auto flex items-center space-x-4">
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
           <NotificationsDropdown user={user} />
           <ProfileButton />
         </div>

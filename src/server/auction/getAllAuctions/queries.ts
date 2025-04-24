@@ -7,15 +7,15 @@ import {
 } from "@/types/auctionTypes";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
-const dateNow = new Date();
-const nextWeek = new Date(dateNow.getTime() + 7 * 24 * 60 * 60 * 1000);
+// const dateNow = new Date();
+// const nextWeek = new Date(dateNow.getTime() + 7 * 24 * 60 * 60 * 1000);
 
 const fetchAllAuctions = async ({
   page = 1,
   limit = 10,
   status,
   startDateFrom,
-  startDateTo = nextWeek,
+  // startDateTo,
   orderBy = AuctionOrderBy.CREATED_AT,
   order = "DESC",
   token,
@@ -25,7 +25,7 @@ const fetchAllAuctions = async ({
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
-    startDateTo: formatDate(startDateTo),
+    // startDateTo: formatDate(startDateTo),
     orderBy,
     order,
   });

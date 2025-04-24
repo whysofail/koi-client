@@ -185,3 +185,22 @@ export const transformAuctionToTableData = (
     bid_starting_price: auction.bid_starting_price ?? "0",
   };
 };
+
+export interface ValidationError {
+  row: number; // The row number where the error occurred
+  issues: string[]; // List of validation issues encountered
+}
+
+// src/types/auctionTypes.ts
+
+export interface AuctionRow {
+  title: string;
+  description: string;
+  rich_description: string;
+  item: string;
+  buynow_price: number;
+  participation_fee: number | undefined | null;
+  bid_increment: number;
+  start_datetime: string;
+  end_datetime: string;
+}
