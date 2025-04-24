@@ -7,6 +7,7 @@ import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { format } from "date-fns";
 import Link from "next/link";
 import AuctionBanner from "@/components/home/auction-banner";
+import NewsSection from "@/components/home/news/news-section";
 
 const LandingPage: FC = () => {
   // Fetch auctions
@@ -77,7 +78,10 @@ const LandingPage: FC = () => {
 
             return (
               <div key={status} className="relative mt-6">
-                <div className="absolute -top-5 left-1/2 z-10 -translate-x-1/2 transform rounded-full bg-[#E8D5B0] px-8 py-2 text-lg font-bold dark:bg-[#6a5c41] dark:text-gray-100 sm:text-xl">
+                <div
+                  className="absolute -top-5 left-1/2 z-10 -translate-x-1/2 transform whitespace-nowrap rounded-full bg-[#E8D5B0] px-8 py-2 text-lg font-bold
+ dark:bg-[#6a5c41] dark:text-gray-100 sm:text-xl"
+                >
                   {title}
                 </div>
                 <div className="flex flex-col rounded-xl bg-red-800 p-4 dark:bg-red-900 sm:flex-row sm:p-6">
@@ -140,53 +144,7 @@ const LandingPage: FC = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="rounded-xl bg-[#E8D5B0] p-4 dark:bg-[#6a5c41] sm:p-8">
-          <h2 className="mb-6 text-center text-2xl font-bold dark:text-gray-100 sm:mb-8 sm:text-3xl">
-            News
-          </h2>
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className="flex flex-col rounded-lg bg-white p-4 dark:bg-gray-800 sm:flex-row"
-              >
-                <div className="mb-2 w-full font-bold text-red-800 dark:text-red-300 sm:mb-0 sm:w-32">
-                  2024 12 31
-                </div>
-                <div className="flex-1 dark:text-gray-200">
-                  <h3 className="mb-2 font-bold">
-                    {item === 1 ? "Auction winner" : "Lorem Ipsum"}
-                  </h3>
-                  <p className="text-xs sm:text-sm">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Quis ipsum suspendisse ultrices gravida. Risus
-                    commodo viverra maecenas accumsan lacus vel facilisis.
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 flex justify-center space-x-2 dark:text-gray-200">
-            <Link href="#" className="px-2">
-              1
-            </Link>
-            <Link href="#" className="px-2">
-              2
-            </Link>
-            <Link href="#" className="px-2">
-              3
-            </Link>
-            <Link href="#" className="px-2">
-              4
-            </Link>
-            <Link href="#" className="px-2">
-              »
-            </Link>
-          </div>
-        </div>
-      </div>
+      <NewsSection />
       <div className="container mx-auto px-4 py-8 sm:py-12">
         <div className="flex flex-col items-center justify-between gap-8 md:flex-row md:items-start">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-8">
