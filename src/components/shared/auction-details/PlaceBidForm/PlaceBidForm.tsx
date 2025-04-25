@@ -16,13 +16,13 @@ import { usePlaceBidForm } from "./PlaceBidForm.viewModel";
 import { AuctionStatus } from "@/types/auctionTypes";
 import { JoinAuctionDialog } from "../JoinAuctionDialog/join-auction-dialog";
 import { cn } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogFooter,
+//   DialogHeader,
+//   DialogTitle,
+// } from "@/components/ui/dialog";
 
 interface PlaceBidFormProps {
   token: string;
@@ -120,6 +120,8 @@ const PlaceBidForm = ({
         <Button className="w-full" disabled>
           Auction not started
         </Button>
+
+        {/*
         <Button
           className="mt-2 w-full"
           variant="secondary"
@@ -163,6 +165,7 @@ const PlaceBidForm = ({
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        */}
       </>
     );
   }
@@ -180,6 +183,7 @@ const PlaceBidForm = ({
           participationFee={participationFee}
           walletBalance={userBalance}
         />
+        {/*
         {buyNowPrice && (
           <Button
             className="w-full"
@@ -190,7 +194,6 @@ const PlaceBidForm = ({
           </Button>
         )}
 
-        {/* Buy Now Dialog */}
         {buyNowPrice && (
           <Dialog
             open={isBuyNowDialogOpen}
@@ -231,11 +234,11 @@ const PlaceBidForm = ({
             </DialogContent>
           </Dialog>
         )}
+        */}
       </>
     );
   }
 
-  // Regular auction bidding form
   return (
     <>
       <Form {...form}>
@@ -352,7 +355,7 @@ const PlaceBidForm = ({
         </form>
       </Form>
 
-      {/* Buy Now Button (Always Visible) */}
+      {/*
       {buyNowPrice && (
         <>
           <Button
@@ -403,6 +406,7 @@ const PlaceBidForm = ({
           </Dialog>
         </>
       )}
+      */}
     </>
   );
 };
