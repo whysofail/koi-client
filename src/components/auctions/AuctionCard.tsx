@@ -218,7 +218,7 @@ export default function AuctionCard({
         )}
       </div>
 
-      <div className="mb-2 flex items-center gap-2">
+      {/* <div className="mb-2 flex items-center gap-2">
         <Link
           className="flex-1 text-lg font-medium leading-tight hover:underline"
           href={`/auctions/${auction.auction_id}`}
@@ -238,29 +238,34 @@ export default function AuctionCard({
           )}
           {koiData.size && <div>{koiData.size} cm</div>}
         </div>
-      )}
+      )} */}
 
       <div className="mb-3 grid grid-cols-1 gap-2 text-sm">
-        <div className="flex items-center">
-          {auction.status === "STARTED" && (
-            <>
-              <Gavel className="mr-1 h-4 w-4 text-amber-600 dark:text-amber-400" />
-              <span>{auction.bids.length || 0} Bids</span>
-            </>
-          )}
-        </div>
         <div className="flex items-center">
           {timeInfo.icon}
           <span>
             {timeInfo.label}: {formatDate(timeInfo.date)}
           </span>
         </div>
+        <div className="flex items-center">
+          <>
+            <Gavel className="mr-1 h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <span>{auction.bids.length || 0} Bids</span>
+          </>
+        </div>
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center text-lg font-bold">
-          <Tag className="mr-1 h-5 w-5 text-green-600 dark:text-green-400" />
-          {formatCurrency(auction.buynow_price)}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="flex gap-2">
+                <Tag className="mr-1 h-5 w-5 text-green-600 dark:text-green-400" />
+                {formatCurrency(auction.bid_starting_price)}
+              </TooltipTrigger>
+              <TooltipContent>Starting Price</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <Link
           href={`/auctions/${auction.auction_id}`}

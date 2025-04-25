@@ -112,13 +112,14 @@ const UserContent: React.FC<UserContentProps> = ({
           <StatusBadge status={auction.status} />
         </div>
         <div className="flex flex-col justify-between">
+          Auction Period
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <p className="text-md text-muted">Start date : {startDate}</p>
+            {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+            <p className="text-md text-muted">Start : {startDate}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <p className="text-md text-muted">End date : {endDate}</p>
+            {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+            <p className="text-md text-muted">End : {endDate}</p>
           </div>
           <Countdown
             startDate={auction.start_datetime}
@@ -144,14 +145,15 @@ const UserContent: React.FC<UserContentProps> = ({
             </h2>
             <StatusBadge status={auction.status} />
           </div>
+          <strong>Auction Period</strong>
           <div className="flex justify-between">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <p className="text-md text-muted">Start date : {startDate}</p>
+              {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+              <p className="text-md text-muted">Start : {startDate}</p>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <p className="text-md text-muted">End date : {endDate}</p>
+              {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+              <p className="text-md text-muted">End : {endDate}</p>
             </div>
           </div>
           <Countdown
@@ -171,25 +173,13 @@ const UserContent: React.FC<UserContentProps> = ({
                     : "No bids yet"}
                 </p>
               </div>
-              <TooltipProvider>
-                <Tooltip defaultOpen>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div className="p-4">
-                      <h3>Bidding Information</h3>
-                      <p>Buy Now Price : {formatCurrency(reservePrice)}</p>
-                      <p>Increment : {formatCurrency(bidIncrement)}</p>
-                      <p>
-                        Starting Bid Price : {formatCurrency(startingBidPrice)}
-                      </p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+
+              <div className="rounded-2xl border p-2 shadow-md">
+                <h3 className="font-bold">Bidding Information</h3>
+                <p>Buy Now Price : {formatCurrency(reservePrice)}</p>
+                <p>Increment : {formatCurrency(bidIncrement)}</p>
+                <p>Starting Bid Price : {formatCurrency(startingBidPrice)}</p>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
