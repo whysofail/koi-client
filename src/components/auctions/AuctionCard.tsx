@@ -87,7 +87,7 @@ export default function AuctionCard({
             className="border-green-300 bg-green-100 text-green-700 dark:border-green-700 dark:bg-green-900 dark:text-green-200"
           >
             <Timer className="mr-1 h-3 w-3" />
-            Started
+            Ongoing
           </Badge>
         );
       case "COMPLETED":
