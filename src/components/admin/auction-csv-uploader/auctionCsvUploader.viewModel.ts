@@ -5,10 +5,11 @@ import useValidateAuctionCsv from "@/server/auction/validateAuctionCsv/mutation"
 import useGetKoiData from "@/server/koi/getAllKois/queries";
 import Papa from "papaparse";
 import { z } from "zod";
-import zonedTimeToUtc from "@/lib/parseToUTC";
+// import zonedTimeToUtc from "@/lib/parseToUTC";
 import { utils, read } from "xlsx";
 import useUpdateKoi from "@/server/koi/updateKoi/mutations";
 import { Koi, KoiStatus } from "@/types/koiTypes";
+import { toast } from "sonner";
 
 // Define schema
 const AuctionRowSchema = z.object({
@@ -57,7 +58,7 @@ export type ValidationError = {
 
 export function useAuctionCsvUploader(
   token: string,
-  timezone = "Asia/Jakarta",
+  // timezone = "Asia/Jakarta",
 ) {
   const queryClient = useQueryClient();
   const updateKoiMutation = useUpdateKoi(queryClient);
@@ -168,14 +169,14 @@ export function useAuctionCsvUploader(
       return {
         validRow: {
           ...result.data,
-          start_datetime: zonedTimeToUtc(
-            result.data.start_datetime,
-            timezone,
-          ).toISOString(),
-          end_datetime: zonedTimeToUtc(
-            result.data.end_datetime,
-            timezone,
-          ).toISOString(),
+          // start_datetime: zonedTimeToUtc(
+          //   result.data.start_datetime,
+          //   timezone,
+          // ).toISOString(),
+          // end_datetime: zonedTimeToUtc(
+          //   result.data.end_datetime,
+          //   timezone,
+          // ).toISOString(),
         },
       };
     } else {
@@ -381,6 +382,7 @@ export function useAuctionCsvUploader(
             console.error("Some koi status updates failed", error);
           }
         }
+        toast.success("Auctions uploaded successfully!"); // 🎯
 
         reset();
       }

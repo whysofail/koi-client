@@ -1,14 +1,14 @@
 import type React from "react";
 import ImageGallery, { type GalleryMediaItem } from "./GalleryMedia";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipProvider,
+//   TooltipTrigger,
+// } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Clock, Info, User } from "lucide-react";
+import { User } from "lucide-react";
 import { BidHistory } from "./BidHistory";
 import { type Auction, AuctionStatus } from "@/types/auctionTypes";
 import type { DetailedBid } from "@/types/bidTypes";

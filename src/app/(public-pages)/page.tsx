@@ -80,11 +80,11 @@ const LandingPage: FC = () => {
               <div key={status} className="relative mt-6">
                 <div
                   className="absolute -top-5 left-1/2 z-10 -translate-x-1/2 transform whitespace-nowrap rounded-full bg-[#E8D5B0] px-8 py-2 text-lg font-bold
- dark:bg-[#6a5c41] dark:text-gray-100 sm:text-xl"
+ sm:text-xl dark:bg-[#6a5c41] dark:text-gray-100"
                 >
                   {title}
                 </div>
-                <div className="flex flex-col rounded-xl bg-red-800 p-4 dark:bg-red-900 sm:flex-row sm:p-6">
+                <div className="flex flex-col rounded-xl bg-red-800 p-4 sm:flex-row sm:p-6 dark:bg-red-900">
                   {hasAuctions ? (
                     <>
                       <Link href={`/auctions/${data?.data?.[0]?.auction_id}`}>
@@ -101,31 +101,35 @@ const LandingPage: FC = () => {
                         </div>
                       </Link>
                       <Link href={`/auctions/${data?.data?.[0]?.auction_id}`}>
-                        <div className="w-full text-white sm:w-2/3 sm:pl-6">
+                        <div className="w-full text-white  sm:pl-6">
                           <h3 className="mb-2 text-xl font-bold sm:text-2xl">
                             {data?.data?.[0]?.title || "Auction Event"}
                           </h3>
-                          <p className="mb-2 text-xs text-yellow-200 sm:text-sm">
-                            Period of the event
-                            <br />
-                            {data?.data?.[0]?.start_datetime
-                              ? format(
-                                  new Date(data.data[0].start_datetime),
-                                  "dd MMMM yyyy HH:mm O",
-                                )
-                              : "Unknown Start Date"}{" "}
-                            -{" "}
-                            {data?.data?.[0]?.end_datetime
-                              ? format(
-                                  new Date(data.data[0].end_datetime),
-                                  "dd MMMM yyyy HH:mm O",
-                                )
-                              : "Unknown End Date"}
-                          </p>
                           <p className="text-xs sm:text-sm">
                             {data?.data?.[0]?.description ||
                               "No description available."}
                           </p>
+                          <div className="text-md mt-4 ">
+                            <p className="sm:text-md text-xs font-bold text-white">
+                              Auction Period
+                            </p>
+                            <p className="text-sm font-light">
+                              {data?.data?.[0]?.start_datetime
+                                ? format(
+                                    new Date(data.data[0].start_datetime),
+                                    "E, dd MMMM yyyy | HH:mm O",
+                                  )
+                                : "Unknown Start Date"}{" "}
+                            </p>
+                            <p className="text-sm font-light">
+                              {data?.data?.[0]?.end_datetime
+                                ? format(
+                                    new Date(data.data[0].end_datetime),
+                                    "E, dd MMMM yyyy | HH:mm O",
+                                  )
+                                : "Unknown End Date"}
+                            </p>
+                          </div>
                         </div>
                       </Link>
                     </>
@@ -155,7 +159,7 @@ const LandingPage: FC = () => {
               height={100}
               className="object-contain"
             />
-            <div className="text-center dark:text-gray-200 sm:text-left">
+            <div className="text-center sm:text-left dark:text-gray-200">
               <div className="mb-2">
                 <span className="font-bold">Location</span> | Lorem Ipsum
               </div>

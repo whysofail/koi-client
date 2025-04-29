@@ -112,6 +112,16 @@ export default function AuctionCsvUploaderDialog({ token }: { token: string }) {
     }
   };
 
+  const hasResetRef = useRef(false);
+
+  useEffect(() => {
+    if (isSuccess && !isUploading && !hasResetRef.current) {
+      hasResetRef.current = true; // Prevent multiple resets
+      setOpen(false);
+      reset();
+    }
+  }, [isSuccess, isUploading, reset]);
+
   return (
     <>
       <Button onClick={() => setOpen(true)} className="flex items-center gap-2">
@@ -119,7 +129,16 @@ export default function AuctionCsvUploaderDialog({ token }: { token: string }) {
         Bulk Upload Auction
       </Button>
 
-      <Dialog open={open} onOpenChange={handleClose}>
+      <Dialog
+        open={open}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            handleClose(); // Only close/reset if user closes
+          } else {
+            setOpen(true); // Open manually if needed
+          }
+        }}
+      >
         <DialogContent className="my-4 max-h-screen max-w-7xl overflow-y-scroll">
           <DialogHeader>
             <DialogTitle className="text-xl">Bulk Upload Auction</DialogTitle>

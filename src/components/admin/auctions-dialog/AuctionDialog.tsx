@@ -38,6 +38,8 @@ type AuctionAlertDialogProps = {
   koiId?: string;
   children?: ReactNode;
   button?: boolean; // Changed from button: boolean to button?: boolean with default value
+  start_datetime?: string;
+  end_datetime?: string;
 };
 
 const AuctionDialog: FC<AuctionAlertDialogProps> = ({
@@ -49,6 +51,8 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
   koiId,
   children,
   button = false,
+  start_datetime = "",
+  end_datetime = "",
 }) => {
   const [open, setOpen] = useState(false);
   const {
@@ -60,7 +64,9 @@ const AuctionDialog: FC<AuctionAlertDialogProps> = ({
     pendingCancel,
     pendingDelete,
     pendingUpdate,
-  } = useAuctionDialog(token, () => setOpen(false));
+  } = useAuctionDialog({ token, start_datetime, end_datetime }, () =>
+    setOpen(false),
+  );
 
   const [step, setStep] = useState<1 | 2>(1);
 

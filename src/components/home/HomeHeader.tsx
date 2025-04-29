@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "../dashboard/ThemeToggle";
+// import ThemeToggle from "../dashboard/ThemeToggle";
 import type { Session } from "next-auth";
 import HeaderControl from "../dashboard/HeaderControl";
 import type { User } from "next-auth";
@@ -87,14 +87,14 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
       >
         <div className="container mx-auto ml-auto flex items-center justify-between px-2 py-2 sm:px-4 md:py-0">
           <button
-            className="z-20 rounded-md p-2 hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-700 md:hidden"
+            className="z-20 rounded-md p-2 hover:bg-gray-100 focus:outline-none md:hidden dark:hover:bg-gray-700"
             onClick={toggleMobileMenu}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? (
-              <X className="h-5 w-5 dark:text-gray-200 sm:h-6 sm:w-6" />
+              <X className="h-5 w-5 sm:h-6 sm:w-6 dark:text-gray-200" />
             ) : (
-              <Menu className="h-5 w-5 dark:text-gray-200 sm:h-6 sm:w-6" />
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6 dark:text-gray-200" />
             )}
           </button>
 
@@ -171,11 +171,12 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
               <div className="flex items-center space-x-1 sm:space-x-2">
                 <Button
                   asChild
-                  className="rounded-md bg-black px-2 py-1 text-xs text-white dark:bg-white dark:text-black sm:px-3 sm:text-sm"
+                  variant="default"
+                  // className="rounded-md bg-black px-2 py-1 text-xs text-white sm:px-3 sm:text-sm dark:bg-white dark:text-black"
                 >
                   <Link href="/login">Log In</Link>
                 </Button>
-                <ThemeToggle />
+                {/* <ThemeToggle /> */}
               </div>
             )}
           </div>
@@ -187,18 +188,18 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
               <div className="flex items-center space-x-1">
                 <Button
                   asChild
-                  className="rounded-md bg-black px-2 py-1 text-xs text-white dark:bg-white dark:text-black sm:px-3 sm:text-sm"
+                  className="rounded-md bg-black px-2 py-1 text-xs text-white sm:px-3 sm:text-sm dark:bg-white dark:text-black"
                 >
                   <Link href="/login">Log In</Link>
                 </Button>
-                <ThemeToggle />
+                {/* <ThemeToggle /> */}
               </div>
             )}
 
             {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
               <div
-                className="mobile-menu-overlay fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity duration-300 dark:bg-black dark:bg-opacity-70 md:hidden"
+                className="mobile-menu-overlay fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity duration-300 md:hidden dark:bg-black dark:bg-opacity-70"
                 onClick={closeMobileMenu}
               />
             )}
@@ -218,7 +219,7 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
                 onClick={closeMobileMenu}
                 aria-label="Close menu"
               >
-                <X className="h-5 w-5 dark:text-gray-200 sm:h-6 sm:w-6" />
+                <X className="h-5 w-5 sm:h-6 sm:w-6 dark:text-gray-200" />
               </button>
 
               <div className="flex h-full flex-col px-4 pb-6 pt-16">

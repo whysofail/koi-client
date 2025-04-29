@@ -75,11 +75,11 @@ export function ErrorDisplay({
   }
 
   // Calculate the actual row index for jumping (accounting for header row)
-  const getActualRowIndex = (csvRow: number) => {
-    // For CSV files, the first row is usually a header, so we subtract 2
-    // (1 for the header row, and 1 because rows are 1-indexed in the error object but 0-indexed in the array)
-    return fileType === "csv" ? csvRow - 2 : csvRow - 1;
-  };
+  // const getActualRowIndex = (csvRow: number) => {
+  //   // For CSV files, the first row is usually a header, so we subtract 2
+  //   // (1 for the header row, and 1 because rows are 1-indexed in the error object but 0-indexed in the array)
+  //   return fileType === "csv" ? csvRow - 2 : csvRow - 1;
+  // };
 
   return (
     <div className="space-y-4">

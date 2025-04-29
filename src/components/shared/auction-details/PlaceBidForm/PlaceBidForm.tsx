@@ -58,8 +58,8 @@ const PlaceBidForm = ({
     isSubmitting,
     minBid,
     onSubmit,
-    handleBuyNow,
-    isBuyNowLoading,
+    // handleBuyNow,
+    // isBuyNowLoading,
   } = usePlaceBidForm(
     token,
     auctionID,
@@ -69,7 +69,7 @@ const PlaceBidForm = ({
   );
 
   const [isFocused, setIsFocused] = useState(false);
-  const [isBuyNowDialogOpen, setIsBuyNowDialogOpen] = useState(false);
+  // const [isBuyNowDialogOpen, setIsBuyNowDialogOpen] = useState(false);
 
   const currentAmount = form.watch("amount") || 0;
   const isValidBid = currentAmount >= minBid;
