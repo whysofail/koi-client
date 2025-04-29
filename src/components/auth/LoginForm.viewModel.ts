@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "rememberedUser";
+const LAST_AUTH_ATTEMPT_KEY = "lastAuthAttempt";
 
 const LoginFormSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -32,6 +33,12 @@ const LoginFormViewModel = () => {
   });
 
   useEffect(() => {
+    // Debug logging for search params
+    console.log("Search Params:", {
+      callbackUrl: searchParams.get("callbackUrl"),
+      redirect: searchParams.get("redirect"),
+    });
+
     // Get redirect URL from query parameters
     const callbackUrl =
       searchParams.get("callbackUrl") || searchParams.get("redirect");
@@ -54,12 +61,29 @@ const LoginFormViewModel = () => {
       localStorage.removeItem(STORAGE_KEY);
       console.error("Error loading remembered user:", error);
     }
+
+    // Check for recent authentication attempts to prevent rapid re-attempts
+    const lastAttempt = localStorage.getItem(LAST_AUTH_ATTEMPT_KEY);
+    if (lastAttempt) {
+      const timeSinceLastAttempt = Date.now() - parseInt(lastAttempt, 10);
+      if (timeSinceLastAttempt < 5000) {
+        // 5 seconds cooldown
+        console.warn("Preventing rapid authentication attempts");
+      }
+    }
   }, [form, searchParams]);
 
   const onSubmit: SubmitHandler<z.infer<typeof LoginFormSchema>> = async (
     data,
   ) => {
+    // Prevent multiple submissions
+    if (isLoading) return;
+
     setLoading(true);
+
+    // Record authentication attempt timestamp
+    localStorage.setItem(LAST_AUTH_ATTEMPT_KEY, Date.now().toString());
+
     try {
       const { email, password, rememberMe } = data;
 
@@ -75,6 +99,13 @@ const LoginFormViewModel = () => {
         localStorage.removeItem(STORAGE_KEY);
       }
 
+      // Enhanced debugging: Log authentication attempt details
+      console.log("Authentication Attempt:", {
+        email,
+        redirectUrl,
+        rememberMe,
+      });
+
       const res = await signIn("credentials", {
         redirect: false,
         email,
@@ -82,15 +113,20 @@ const LoginFormViewModel = () => {
         callbackUrl: redirectUrl,
       });
 
-      if (!res?.error) {
+      // Additional session verification
+      const session = await getSession();
+      console.log("Session after login:", session);
+
+      if (session && !res?.error) {
         toast.success("Login successful");
         // Force a hard reload to ensure session is updated
-        window.location.href = redirectUrl;
+        window.location.href = redirectUrl || "/dashboard";
       } else {
-        if (res.error === "CredentialsSignin") {
+        if (res?.error === "CredentialsSignin") {
           toast.error("Invalid email or password");
         } else {
           toast.error("Failed to sign in");
+          console.error("Login failed:", res?.error);
         }
 
         if (!data.rememberMe) {

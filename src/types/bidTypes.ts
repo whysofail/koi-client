@@ -18,6 +18,22 @@ export interface Bid {
   };
 }
 
+export enum BidOrderBy {
+  BID_AMOUNT = "bid_amount",
+  BID_TIME = "bid_time",
+}
+
+export type FetchAllBidParams = {
+  page?: number;
+  limit?: number;
+  bidAmountMin?: number;
+  bidAmountMax?: number;
+  bidTimeFrom?: Date;
+  bidTimeTo?: Date;
+  orderBy?: BidOrderBy;
+  order?: "ASC" | "DESC";
+};
+
 export interface BidWithUserAndAuction {
   bid_id: string;
   bid_amount: string;

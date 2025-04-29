@@ -44,7 +44,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import TableSkeleton from "@/components/skeletons/TableSkeleton";
 import { BidWithUserAndAuction } from "@/types/bidTypes";
-import BidsTableViewModel, { BidOrderBy } from "./BidsTable.viewModel";
+import BidsTableViewModel from "./BidsTable.viewModel";
+import { BidOrderBy } from "@/types/bidTypes";
 import { formatCurrency } from "@/lib/formatCurrency";
 
 interface BidsTableProps {

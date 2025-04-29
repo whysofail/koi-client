@@ -32,12 +32,11 @@ const AuctionContent: FC<AuctionContentProps> = ({ token }) => {
   } = useAuctionContentViewModel({
     token,
   });
-
   // Extract Filter and Sort UI to a separate function component for reuse
   const FilterAndSortUI = () => (
     <div className="mb-6 flex flex-col items-start justify-between sm:flex-row sm:items-center">
-      <h2 className="mb-3 text-xl font-semibold dark:text-white sm:mb-0">
-        Auctions
+      <h2 className="mb-3 text-xl font-semibold sm:mb-0 dark:text-white">
+        Auction List
       </h2>
       <div className="flex flex-wrap gap-3">
         {/* Status Filter */}

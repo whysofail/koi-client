@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Auction, AuctionStatus } from "@/types/auctionTypes";
 import { DetailedBid } from "@/types/bidTypes";
-import { formatDuration, intervalToDuration, isPast } from "date-fns";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { GalleryMediaItem } from "../GalleryMedia";
 export interface AdminContentViewModelProps {
@@ -16,7 +15,6 @@ export function useAdminContentViewModel({
   title,
 }: AdminContentViewModelProps) {
   const [lastBidUpdate, setLastBidUpdate] = useState<Date>(new Date());
-  const [countdown, setCountdown] = useState<string>("");
 
   const {
     data: koiData,
@@ -54,39 +52,6 @@ export function useAdminContentViewModel({
   ];
 
   useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date();
-      const endTime = new Date(auction.end_datetime);
-
-      if (auction.status === AuctionStatus.PENDING) {
-        setCountdown("Auction ended. Pending for payment verification");
-        return;
-      }
-      if (auction.status !== AuctionStatus.STARTED) {
-        setCountdown("Auction has not started yet");
-        return;
-      }
-
-      if (isPast(endTime)) {
-        setCountdown("Auction has ended");
-        return;
-      }
-
-      const duration = intervalToDuration({
-        start: now,
-        end: endTime,
-      });
-
-      setCountdown(formatDuration(duration, { delimiter: ", " }));
-    };
-
-    updateCountdown(); // Initial update
-    const intervalId = setInterval(updateCountdown, 1000); // Update every second
-
-    return () => clearInterval(intervalId);
-  }, [auction.end_datetime, auction.status]);
-
-  useEffect(() => {
     if (bids?.length) {
       setLastBidUpdate(new Date());
     }
@@ -98,7 +63,6 @@ export function useAdminContentViewModel({
     koiIsError,
     koiMedia,
     lastBidUpdate,
-    countdown,
     showVerifyButton: auction.status === AuctionStatus.PENDING,
     showVerifiedButton: auction.status === AuctionStatus.COMPLETED,
     showPublishButton: auction.status === AuctionStatus.DRAFT,

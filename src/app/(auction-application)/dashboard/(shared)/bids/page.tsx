@@ -2,6 +2,11 @@ import React, { FC } from "react";
 import { getServerSession } from "@/lib/serverSession";
 import BidsTable from "@/components/shared/bids-table/BidsTable";
 
+export const metadata = {
+  title: "Bids",
+  description: "View and manage your bids",
+};
+
 const BidsPage: FC = async () => {
   const session = await getServerSession();
   const token = session?.user.accessToken ?? "";

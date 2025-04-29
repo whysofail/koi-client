@@ -174,7 +174,7 @@ const MediaGallery = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxOpen]);
+  }, [goToNext, goToPrev, lightboxOpen]);
 
   // Empty state
   if (validMedia.length === 0) {

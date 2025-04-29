@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import AdminControlsViewModel from "./AdminControls.viewModel";
 import { AuctionStatus } from "@/types/auctionTypes";
 import { useRouter } from "next/navigation";
+import AuctionDialog from "@/components/admin/auctions-dialog/AuctionDialog";
 
 type AdminControlsProps = {
   auctionId: string;
@@ -97,6 +98,18 @@ const AdminControls: FC<AdminControlsProps> = ({
           </AlertDialogContent>
         </AlertDialog>
       </div>
+      {(auctionStatus === AuctionStatus.FAILED ||
+        auctionStatus === AuctionStatus.EXPIRED) && (
+        <AuctionDialog
+          auction_id={auctionId}
+          bid_increment={bid_increment}
+          buynow_price={buynow_price}
+          koiId={koiId}
+          token={token}
+          operation="republish"
+          button={true}
+        />
+      )}
     </div>
   );
 };

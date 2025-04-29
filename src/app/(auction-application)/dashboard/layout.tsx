@@ -15,6 +15,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
 
+export const metadata = {
+  title: {
+    template: "FS Koi Dashboard | %s ",
+    default: "FS Koi Dashboard", // a default is required when creating a template
+  },
+};
+
 const DashboardLayout: FC<{ children: React.ReactNode }> = async ({
   children,
 }) => {

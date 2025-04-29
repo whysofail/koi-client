@@ -21,7 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 type KoiAuctionFormProps = {
   token: string;
   id: string;
-  operation: "create" | "update";
+  operation: "create" | "update" | "republish";
 };
 
 const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
@@ -343,8 +343,10 @@ const KoiAuctionForm: FC<KoiAuctionFormProps> = ({ token, id, operation }) => {
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Adding to Auction...
             </>
-          ) : (
+          ) : operation === "create" ? (
             "Add to Auction"
+          ) : (
+            "Update Auction"
           )}
         </Button>
       </form>

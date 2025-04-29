@@ -2,6 +2,12 @@ import React from "react";
 import { getServerSession } from "@/lib/serverSession";
 import AuctionsTable from "@/components/admin/auctions-table/AuctionsTable";
 import AuctionList from "@/components/user/auctions/AuctionList";
+import AuctionCsvUploaderDialog from "@/components/admin/auction-csv-uploader/auction-csv-uploader";
+
+export const metadata = {
+  title: "Auctions",
+  description: "Explore and bid on various auctions.",
+};
 
 const AuctionsPage = async () => {
   const session = await getServerSession();
@@ -26,7 +32,12 @@ const AuctionsPage = async () => {
       </div>
       <div className="mt-8 pb-8 pl-5 pr-5">
         {isAdmin ? (
-          <AuctionsTable token={token} />
+          <>
+            <div className="mb-4">
+              <AuctionCsvUploaderDialog token={token} />
+            </div>
+            <AuctionsTable token={token} />
+          </>
         ) : (
           <AuctionList token={token} currentUserId={userId} />
         )}

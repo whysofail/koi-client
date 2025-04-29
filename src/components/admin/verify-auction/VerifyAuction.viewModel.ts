@@ -72,6 +72,7 @@ export const useVerifyAuctionViewModel = (auctionId: string, token: string) => {
           koiId,
           koiStatus: KoiStatus.SOLD,
           buyerName: bidToConfirm.user.username,
+          sell_date: new Date().toISOString().split("T")[0],
         },
         {
           onSuccess: () => resolve(true),

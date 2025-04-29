@@ -5,6 +5,7 @@ import * as z from "zod";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import usePlaceBid from "@/server/bid/placeBidOnAuction/mutations";
+import { useCreateBuyNow } from "@/server/auction/createBuyNow/mutation";
 
 const formSchema = z.object({
   amount: z.number().min(1, "Bid amount is required"),
@@ -28,6 +29,11 @@ export function usePlaceBidForm(
     token,
     queryClient,
   );
+  const {
+    mutateAsync: buyNowMutation,
+    isPending: isBuyNowLoading,
+    isError: isBuyNowError,
+  } = useCreateBuyNow(token, queryClient);
 
   const form = useForm<PlaceBidFormData>({
     resolver: zodResolver(formSchema),
@@ -58,11 +64,29 @@ export function usePlaceBidForm(
     );
   };
 
+  const handleBuyNow = async () => {
+    setIsSubmitting(true);
+    try {
+      await buyNowMutation({ auctionId: auctionID });
+      toast.success("Buy now request placed!");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      toast.error(errorMessage);
+      console.error("Failed to buy now:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return {
     form,
     isSubmitting,
     minBid,
     onSubmit,
     isError,
+    handleBuyNow,
+    isBuyNowLoading,
+    isBuyNowError,
   };
 }

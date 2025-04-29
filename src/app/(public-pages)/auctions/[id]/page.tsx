@@ -8,6 +8,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const token = session?.user.accessToken ?? "";
   const userId = session?.user.id;
   const isAdmin = session?.user.role === "admin";
+  const isBanned = session?.user.is_banned;
   const auctionId = (await params).id;
   return (
     <div className="min-h-screen">
@@ -19,6 +20,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
           isAdmin={isAdmin}
           withBack={false}
           userId={userId}
+          isBanned={isBanned}
         />
       </div>
     </div>

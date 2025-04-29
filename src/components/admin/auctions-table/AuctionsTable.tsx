@@ -170,7 +170,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       ),
       cell: ({ row }) => {
         if (
-          ["DRAFT", "CANCELLED", "PENDING", "COMPLETED", "FAILED"].includes(
+          ["CANCELLED", "PENDING", "COMPLETED", "FAILED"].includes(
             row.original.status,
           )
         ) {
@@ -199,7 +199,7 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
       ),
       cell: ({ row }) => {
         if (
-          ["DRAFT", "CANCELLED", "PENDING", "COMPLETED", "FAILED"].includes(
+          ["CANCELLED", "PENDING", "COMPLETED", "FAILED"].includes(
             row.original.status,
           )
         ) {
@@ -328,6 +328,8 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                   buynow_price={row.original.buynow_price}
                   auction_id={row.original.auction_id}
                   token={token}
+                  start_datetime={row.original.start_datetime}
+                  end_datetime={row.original.end_datetime}
                 >
                   <div className="flex w-full items-center">
                     <Upload className="mr-2 h-4 w-4" />
@@ -341,6 +343,8 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
                   buynow_price={row.original.buynow_price}
                   token={token}
                   koiId={row.original.item}
+                  start_datetime={row.original.start_datetime}
+                  end_datetime={row.original.end_datetime}
                 >
                   <div className="flex w-full items-center">
                     <Trash className="mr-2 h-4 w-4" />
@@ -382,16 +386,19 @@ const AuctionsTable: React.FC<{ token: string }> = ({ token }) => {
             row.original.status === "CANCELLED" ? (
               <>
                 <AuctionDialog
-                  operation="publish"
+                  operation="republish"
+                  koiId={row.original.item}
                   bid_increment={row.original.bid_increment}
                   buynow_price={row.original.buynow_price}
                   auction_id={row.original.auction_id}
                   token={token}
+                  button={false}
                 >
                   <div className="flex w-full items-center">
                     <Upload className="mr-2 h-4 w-4" />
                     <span>
-                      {row.original.status === "FAILED"
+                      {row.original.status === "FAILED" ||
+                      row.original.status === "CANCELLED"
                         ? "Republish Auction"
                         : "Publish Auction"}
                     </span>

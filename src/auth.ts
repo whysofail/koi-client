@@ -16,6 +16,7 @@ type LoginResponse = {
     name: string;
     email: string;
     role: Role;
+    is_banned: boolean;
   };
 };
 
@@ -57,6 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: data.user.email,
             name: data.user.name,
             role: data.user.role,
+            is_banned: data.user.is_banned,
           };
         } catch (error) {
           throw error;
@@ -85,6 +87,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           role: user.role,
           name: user.name,
           email: user.email,
+          is_banned: user.is_banned,
         };
       }
 
@@ -114,6 +117,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             role: token.role as Role,
             accessToken: token.accessToken as string,
             accessTokenExpires: token.accessTokenExpires as number,
+            is_banned: token.is_banned as boolean,
           },
         };
       }
@@ -126,6 +130,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           role: token.role as Role,
           accessToken: token.accessToken as string,
           accessTokenExpires: token.accessTokenExpires as number,
+          is_banned: token.is_banned as boolean,
         },
       };
     },

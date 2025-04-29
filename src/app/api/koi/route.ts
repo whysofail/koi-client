@@ -43,7 +43,12 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { koiId, status, buyer_name } = await request.json();
+    const { koiId, status, buyer_name, sell_date } = await request.json();
+
+    // Ensure sell_date is sent only when status is "Sold"
+    const payload: Record<string, any> = { status };
+    if (buyer_name) payload.buyer_name = buyer_name;
+    if (status === "Sold" && sell_date) payload.sell_date = sell_date;
 
     const response = await fetch(`${BASE_URL}/api/kois/${koiId}`, {
       method: "PUT",
@@ -51,10 +56,7 @@ export async function PUT(request: NextRequest) {
         "x-api-key": API_KEY!,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        status,
-        ...(buyer_name && { buyer_name }),
-      }),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();

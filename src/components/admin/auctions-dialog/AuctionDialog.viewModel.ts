@@ -66,13 +66,22 @@ const auctionFormSchema = z
 
 type AuctionFormData = z.infer<typeof auctionFormSchema>;
 
-export const useAuctionDialog = (token: string, onSuccess?: () => void) => {
+type AuctionDialogProps = {
+  token: string;
+  start_datetime?: string;
+  end_datetime?: string;
+};
+
+export const useAuctionDialog = (
+  { token, start_datetime, end_datetime }: AuctionDialogProps,
+  onSuccess?: () => void,
+) => {
   const queryClient = useQueryClient();
   const form = useForm<AuctionFormData>({
     resolver: zodResolver(auctionFormSchema),
     defaultValues: {
-      startDateTime: new Date(),
-      endDateTime: new Date(),
+      startDateTime: start_datetime ? new Date(start_datetime) : new Date(),
+      endDateTime: end_datetime ? new Date(end_datetime) : new Date(),
     },
   });
 

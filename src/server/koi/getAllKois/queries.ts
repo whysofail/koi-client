@@ -5,6 +5,7 @@ import axios from "axios";
 interface FetchKoiParams {
   page?: number;
   per_page?: number;
+  enabled?: boolean;
 }
 
 const fetchKoiData = async ({
@@ -22,6 +23,7 @@ const useGetKoiData = (params: FetchKoiParams = {}) =>
   useQuery({
     queryKey: ["koiData", params],
     queryFn: () => fetchKoiData(params),
+    enabled: params.enabled,
   });
 
 export default useGetKoiData;

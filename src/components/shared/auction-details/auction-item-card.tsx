@@ -22,16 +22,25 @@ export function AuctionItemCard({
 
         <div className="space-y-4">
           <div>
-            <h3 className="mb-2 text-lg font-bold text-muted-foreground">
-              Description
-            </h3>
-            <p className="whitespace-pre-wrap text-sm">{auction.description}</p>
-            <div
-              className="mt-2 text-sm"
-              dangerouslySetInnerHTML={{
-                __html: auction.rich_description ?? "",
-              }}
-            />
+            {auction.escription ?? (
+              <>
+                <h3 className="mb-2 text-lg font-bold text-muted-foreground">
+                  Description
+                </h3>
+                <p className="whitespace-pre-wrap text-sm">
+                  {auction.description}
+                </p>
+              </>
+            )}
+
+            {auction.rich_description && (
+              <div
+                className="mt-2 text-sm"
+                dangerouslySetInnerHTML={{
+                  __html: auction.rich_description ?? "",
+                }}
+              />
+            )}
           </div>
 
           <Separator className="my-4" />

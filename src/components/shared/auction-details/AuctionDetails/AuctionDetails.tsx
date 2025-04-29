@@ -18,6 +18,7 @@ interface AuctionDetailsProps {
   auctionID: string;
   withBack?: boolean;
   userId?: string;
+  isBanned?: boolean;
 }
 
 const AuctionDetails: React.FC<AuctionDetailsProps> = ({
@@ -25,21 +26,22 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
   token,
   auctionID,
   withBack = true,
+  isBanned,
 }) => {
   const { publicSocket } = useSocket();
   const {
     auction,
     bids,
+    buyNow,
     isLoading,
     error: dataError,
     socketStatus,
-  } = useAuctionDetailsViewModel(auctionID, token, publicSocket);
+  } = useAuctionDetailsViewModel(auctionID, token, publicSocket, isAdmin);
 
   if (isLoading) {
     return isAdmin ? <AdminContentSkeleton /> : <UserContentSkeleton />;
   }
 
-  console.log(auction);
   if (dataError || !auction) {
     return (
       <div className="container mx-auto p-6">
@@ -122,6 +124,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           token={token}
           auction={auction}
           bids={bids}
+          buyNow={buyNow}
           title={auction.title}
           currentBid={auction.current_highest_bid}
           buynow_price={auction.buynow_price}
@@ -136,6 +139,7 @@ const AuctionDetails: React.FC<AuctionDetailsProps> = ({
           auction={auction}
           bids={bids}
           title={auction.title}
+          isBanned={isBanned}
         />
       )}
     </div>

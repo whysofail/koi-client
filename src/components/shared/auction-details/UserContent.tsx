@@ -1,14 +1,14 @@
 import type React from "react";
 import ImageGallery, { type GalleryMediaItem } from "./GalleryMedia";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipProvider,
+//   TooltipTrigger,
+// } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Clock, Info, User } from "lucide-react";
+import { User } from "lucide-react";
 import { BidHistory } from "./BidHistory";
 import { type Auction, AuctionStatus } from "@/types/auctionTypes";
 import type { DetailedBid } from "@/types/bidTypes";
@@ -20,8 +20,9 @@ import { format, isAfter } from "date-fns";
 import StatusBadge from "@/components/admin/auctions-table/StatusBadge";
 import useGetLoggedInUser from "@/server/user/getLoggedInUser/queries";
 import Link from "next/link";
-import AuctionNotStarted from "./AuctionNotStarted";
+// import AuctionNotStarted from "./AuctionNotStarted";
 import { formatCurrency } from "@/lib/formatCurrency";
+import Countdown from "../countdown/countdown";
 
 interface GalleryImage {
   thumbnailURL: string;
@@ -39,6 +40,7 @@ interface UserContentProps {
   title: string;
   images?: GalleryImage[];
   userID?: string;
+  isBanned?: boolean;
 }
 
 const UserContent: React.FC<UserContentProps> = ({
@@ -47,6 +49,7 @@ const UserContent: React.FC<UserContentProps> = ({
   auctionID,
   bids,
   title,
+  isBanned,
 }) => {
   const currentBid = Number(auction.current_highest_bid);
   const reservePrice = Number(auction.buynow_price);
@@ -109,14 +112,20 @@ const UserContent: React.FC<UserContentProps> = ({
           <StatusBadge status={auction.status} />
         </div>
         <div className="flex flex-col justify-between">
+          Auction Period
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <p className="text-md text-muted">Start date : {startDate}</p>
+            {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+            <p className="text-md text-muted">Start : {startDate}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <p className="text-md text-muted">End date : {endDate}</p>
+            {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+            <p className="text-md text-muted">End : {endDate}</p>
           </div>
+          <Countdown
+            startDate={auction.start_datetime}
+            endDate={auction.end_datetime}
+            status={auction.status}
+          />
         </div>
       </div>
       <div className="space-y-6">
@@ -136,139 +145,106 @@ const UserContent: React.FC<UserContentProps> = ({
             </h2>
             <StatusBadge status={auction.status} />
           </div>
+          <strong>Auction Period</strong>
           <div className="flex justify-between">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <p className="text-md text-muted">Start date : {startDate}</p>
+              {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+              <p className="text-md text-muted">Start : {startDate}</p>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <p className="text-md text-muted">End date : {endDate}</p>
+              {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+              <p className="text-md text-muted">End : {endDate}</p>
             </div>
           </div>
-        </div>
-
-        {isNotStarted ? (
-          // Show "Not Started" UI state
-          <AuctionNotStarted
-            startDateTime={auction.start_datetime}
-            isLoggedIn={!!token}
+          <Countdown
+            startDate={auction.start_datetime}
+            endDate={auction.end_datetime}
+            status={auction.status}
           />
-        ) : (
-          // Show normal bidding UI
-          <Card>
-            <CardContent className="grid gap-4 p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Current Bid</p>
-                  <p className="text-3xl font-bold">
-                    {currentBid > 0
-                      ? `Rp. ${currentBid.toLocaleString()}`
-                      : "No bids yet"}
-                  </p>
-                </div>
-                <TooltipProvider>
-                  <Tooltip defaultOpen>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon">
-                        <Info className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="p-4">
-                        <h3>Bidding Information</h3>
-                        <p>Buy Now Price : {formatCurrency(reservePrice)}</p>
-                        <p>Increment : {formatCurrency(bidIncrement)}</p>
-                        <p>
-                          Starting Bid Price :{" "}
-                          {formatCurrency(startingBidPrice)}
-                        </p>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+        </div>
+        <Card>
+          <CardContent className="grid gap-4 p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Current Bid</p>
+                <p className="text-3xl font-bold">
+                  {currentBid > 0
+                    ? `Rp. ${currentBid.toLocaleString()}`
+                    : "No bids yet"}
+                </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span>{auction.participants.length} users participated</span>
-                </div>
+              <div className="rounded-2xl border p-2 shadow-md">
+                <h3 className="font-bold">Bidding Information</h3>
+                <p>Buy Now Price : {formatCurrency(reservePrice)}</p>
+                <p>Increment : {formatCurrency(bidIncrement)}</p>
+                <p>Starting Bid Price : {formatCurrency(startingBidPrice)}</p>
               </div>
+            </div>
 
-              <Separator />
-              {auction.status === AuctionStatus.PENDING ? (
-                <div className="py-4 text-center">
-                  <p className="text-lg font-medium">
-                    Auction ended, verifying winner
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span>{auction.participants.length} users participated</span>
+              </div>
+            </div>
+
+            <Separator />
+            {auction.status === AuctionStatus.PENDING ? (
+              <div className="py-4 text-center">
+                <p className="text-lg font-medium">
+                  Auction ended, verifying winner
+                </p>
+              </div>
+            ) : auction.status === AuctionStatus.COMPLETED &&
+              auction.winner_id &&
+              auction.winner ? (
+              <div className="space-y-3 py-2">
+                <p className="text-lg font-medium">Auction completed</p>
+                <div className="rounded-md bg-muted p-3">
+                  <div className="mb-1 flex items-center gap-2">
+                    <User className="h-5 w-5 text-primary" />
+                    <p className="font-semibold">
+                      Winner: {auction.winner.username}
+                    </p>
+                  </div>
+                  <p className="text-muted-foreground">
+                    Winning bid:{" "}
+                    {formatCurrency(
+                      auction.final_price ?? auction.current_highest_bid,
+                    )}
                   </p>
                 </div>
-              ) : auction.status === AuctionStatus.COMPLETED &&
-                auction.winner_id ? (
-                <div className="space-y-3 py-2">
-                  <p className="text-lg font-medium">Auction completed</p>
-                  {(() => {
-                    // Find the winning bid using highest_bid_id
-                    const winningBid = bids?.find(
-                      (bid) => bid.bid_id === auction.highest_bid_id,
-                    );
-                    // Find the winner in the bids array
-                    const winner = bids?.find(
-                      (bid) => bid.user.user_id === auction.winner_id,
-                    );
+              </div>
+            ) : auction.status === AuctionStatus.CANCELLED ||
+              auction.status === AuctionStatus.FAILED ? (
+              <Button className="w-full" disabled>
+                Auction Ended
+              </Button>
+            ) : !token ? (
+              <Button asChild>
+                <Link href="/login">Login to place a bid</Link>
+              </Button>
+            ) : (
+              <PlaceBidForm
+                token={token}
+                auctionID={auctionID}
+                currentBid={currentBid}
+                bidStartingPrice={Number(auction.bid_starting_price)}
+                minIncrement={bidIncrement}
+                isEnded={isAfter(new Date(), new Date(auction.end_datetime))}
+                status={auction.status}
+                participationFee={Number(auction.participation_fee)}
+                userBalance={Number(user.data?.data.wallet.balance)}
+                buyNowPrice={Number(auction.buynow_price)}
+                hasJoined={auction.hasJoined}
+                isBanned={isBanned}
+              />
+            )}
 
-                    if (winningBid && winner) {
-                      return (
-                        <div className="rounded-md bg-muted p-3">
-                          <div className="mb-1 flex items-center gap-2">
-                            <User className="h-5 w-5 text-primary" />
-                            <p className="font-semibold">
-                              Winner: {winner.user.username}
-                            </p>
-                          </div>
-                          <p className="text-muted-foreground">
-                            Winning bid: {formatCurrency(winningBid.bid_amount)}
-                          </p>
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <p className="text-muted-foreground">
-                          Winner information not available
-                        </p>
-                      );
-                    }
-                  })()}
-                </div>
-              ) : auction.status === AuctionStatus.CANCELLED ||
-                auction.status === AuctionStatus.FAILED ? (
-                <Button className="w-full" disabled>
-                  Auction Ended
-                </Button>
-              ) : !token ? (
-                <Button asChild>
-                  <Link href="/login">Login to place a bid</Link>
-                </Button>
-              ) : (
-                <PlaceBidForm
-                  token={token}
-                  auctionID={auctionID}
-                  currentBid={currentBid}
-                  bidStartingPrice={Number(auction.bid_starting_price)}
-                  minIncrement={bidIncrement}
-                  isEnded={isAfter(new Date(), new Date(auction.end_datetime))}
-                  status={auction.status}
-                  participationFee={Number(auction.participation_fee)}
-                  userBalance={Number(user.data?.data.wallet.balance)}
-                  hasJoined={auction.hasJoined}
-                />
-              )}
-
-              <Separator />
-            </CardContent>
-          </Card>
-        )}
-
+            <Separator />
+          </CardContent>
+        </Card>
         {!isNotStarted && (
           <Card>
             <CardContent className="p-6">
