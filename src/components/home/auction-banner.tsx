@@ -101,7 +101,7 @@ const AuctionBanner = () => {
           {/* Content */}
           <div className="relative z-20 max-w-2xl p-4 text-white sm:p-8 md:p-12">
             <h1 className="mb-2 text-3xl font-bold sm:text-4xl md:mb-4 md:text-5xl">
-              Current Event
+              Ongoing Event
             </h1>
             {currentAuction ? (
               <>
