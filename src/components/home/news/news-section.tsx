@@ -83,8 +83,8 @@ export default function NewsSection() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="rounded-xl bg-[#E8D5B0] p-4 dark:bg-[#6a5c41] sm:p-8">
-        <h2 className="mb-6 mt-0 text-center text-2xl font-bold dark:text-gray-100 sm:mb-8 sm:text-3xl">
+      <div className="rounded-xl bg-[#E8D5B0] p-4 sm:p-8 dark:bg-[#6a5c41]">
+        <h2 className="mb-6 mt-0 text-center text-2xl font-bold sm:mb-8 sm:text-3xl dark:text-gray-100">
           News
         </h2>
 

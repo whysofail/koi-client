@@ -77,7 +77,7 @@ export function WishlistItemList({
               className="h-8 w-8"
               onClick={handleRemoveFromWishlist}
             >
-              <Heart className="h-4 w-4 fill-primary text-primary dark:fill-white dark:text-white sm:h-5 sm:w-5" />
+              <Heart className="h-4 w-4 fill-primary text-primary sm:h-5 sm:w-5 dark:fill-white dark:text-white" />
               <span className="sr-only">Remove from wishlist</span>
             </Button>
           </div>

@@ -31,7 +31,7 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, isLoading }) => {
   if (isLoading || query.isLoading) {
     return (
       <div className="flex h-full flex-col space-y-4">
-        <div className="rounded-xl border p-3 dark:border-neutral-700 md:p-4">
+        <div className="rounded-xl border p-3 md:p-4 dark:border-neutral-700">
           <Skeleton className="h-7 w-24 md:h-8" />
           <div className="mt-3 space-y-2 md:mt-4">
             {[...Array(6)].map((_, i) => (
@@ -86,7 +86,7 @@ const KoiDetails: FC<KoiDetailsProps> = ({ koiID, isLoading }) => {
 
   return (
     <div className="flex h-full flex-col space-y-4">
-      <div className="rounded-xl border p-3 dark:border-neutral-700 md:p-4">
+      <div className="rounded-xl border p-3 md:p-4 dark:border-neutral-700">
         <h2 className="text-lg font-semibold md:text-xl">Koi Details</h2>
         {query.isError ? (
           <p className="mt-3 flex min-h-[192px] items-center justify-center gap-2 text-sm text-red-500 md:mt-4">
