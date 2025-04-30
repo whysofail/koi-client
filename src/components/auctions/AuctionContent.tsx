@@ -40,40 +40,42 @@ const AuctionContent: FC<AuctionContentProps> = ({ token }) => {
       </h2>
       <div className="flex flex-wrap gap-3">
         {/* Status Filter */}
-        <div className="flex items-center space-x-2 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
+        <div className="flex items-center space-x-2 rounded-lg  p-1 dark:bg-gray-800">
           <button
             onClick={() => toggleFilter("published")}
-            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
               activeFilters.published
-                ? "bg-[#E8D5B0] text-red-800 dark:bg-[#6a5c41] dark:text-red-300"
-                : "bg-transparent text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+                ? "border-1  border border-[#E8D5B0] bg-transparent text-red-800 dark:bg-[#6a5c41] dark:text-red-300"
+                : "bg-[#E8D5B0] text-red-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
             }`}
           >
-            Published
+            Upcoming
           </button>
           <button
             onClick={() => toggleFilter("started")}
-            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
               activeFilters.started
-                ? "bg-[#E8D5B0] text-red-800 dark:bg-[#6a5c41] dark:text-red-300"
-                : "bg-transparent text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+                ? "border-1  border border-[#E8D5B0] bg-transparent text-red-800 dark:bg-[#6a5c41] dark:text-red-300"
+                : "bg-[#E8D5B0] text-red-800 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
             }`}
           >
-            Started
+            Ongoing
           </button>
         </div>
 
         {/* Sort Order Toggle */}
         <button
           onClick={toggleSortOrder}
-          className="flex items-center space-x-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="flex items-center space-x-2 rounded-lg bg-[#E8D5B0] px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
         >
-          <span>Sort</span>
-          {sortOrder === "DESC" ? (
-            <ArrowDown className="h-4 w-4" />
-          ) : (
-            <ArrowUp className="h-4 w-4" />
-          )}
+          <div className="flex items-center space-x-2 text-red-800">
+            {sortOrder === "DESC" ? (
+              <ArrowDown className="h-4 w-4" />
+            ) : (
+              <ArrowUp className="h-4 w-4" />
+            )}
+            <span>Newest</span>
+          </div>
         </button>
       </div>
     </div>
@@ -109,7 +111,7 @@ const AuctionContent: FC<AuctionContentProps> = ({ token }) => {
         {/* Filter and Sort UI */}
         <FilterAndSortUI />
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-24 sm:grid-cols-2 lg:grid-cols-3">
           {auctionData.data.map((item) => (
             <AuctionCard
               key={item.auction_id}

@@ -11,12 +11,12 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import type { Slide } from "yet-another-react-lightbox";
 import Image from "next/image";
 import {
-  ChevronRightCircle,
-  ChevronLeftCircle,
   Play,
   Maximize,
   ImageIcon,
   Film,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -194,7 +194,7 @@ const MediaGallery = ({
   return (
     <div className={cn("space-y-6", className)}>
       {/* Main Media with Navigation Buttons */}
-      <div className="relative mx-auto aspect-[4/3] w-full max-w-[500px] overflow-hidden  border bg-muted/30 sm:max-w-[600px] lg:max-w-[700px]">
+      <div className="relative mx-auto aspect-[4/3] w-full max-w-[500px] overflow-hidden rounded-2xl border bg-muted/30 sm:max-w-[600px] lg:max-w-[700px]">
         {/* Loading overlay */}
         {isLoading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80">
@@ -205,18 +205,18 @@ const MediaGallery = ({
         {validMedia.length > 1 && (
           <>
             <button
-              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-background/80 p-2 text-foreground shadow-md transition-all hover:scale-105 hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full  p-2 text-foreground shadow-md transition-all hover:scale-105 hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
               onClick={goToPrev}
               aria-label="Previous image"
             >
-              <ChevronLeftCircle className="h-6 w-6 sm:h-8 sm:w-8" />
+              <ChevronLeft className="h-6 w-6 sm:h-8 sm:w-8" />
             </button>
             <button
-              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-background/80 p-2 text-foreground shadow-md transition-all hover:scale-105 hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full  p-2 text-foreground shadow-md transition-all hover:scale-105 hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
               onClick={goToNext}
               aria-label="Next image"
             >
-              <ChevronRightCircle className="h-6 w-6 sm:h-8 sm:w-8" />
+              <ChevronRight className="h-6 w-6 sm:h-8 sm:w-8" />
             </button>
           </>
         )}

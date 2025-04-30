@@ -165,7 +165,7 @@ export default function AuctionCard({
   };
 
   return (
-    <div className="rounded-xl border-2 border-[#B1062C] bg-none p-4 shadow-md transition-all hover:shadow-lg dark:bg-[#6a5c41] dark:text-gray-100">
+    <div className="flex aspect-[3/4] flex-col justify-between rounded-xl border-2 border-[#B1062C] bg-none p-4 shadow-md transition-all hover:shadow-lg dark:bg-[#6a5c41] dark:text-gray-100">
       <div className="relative mb-3 aspect-square overflow-hidden rounded-lg">
         {isLoading ? (
           <Skeleton className="h-full w-full rounded-lg" />
@@ -175,7 +175,7 @@ export default function AuctionCard({
             alt={auction.title || "Koi fish"}
             width={400}
             height={400}
-            className="h-full w-full rounded-lg object-cover transition-transform duration-300 hover:scale-105"
+            className="h-full w-full rounded-lg object-contain transition-transform duration-300 hover:scale-105"
             priority
           />
         ) : (
@@ -184,8 +184,8 @@ export default function AuctionCard({
               src={imageUrl || "/placeholder.svg"}
               alt={auction.title || "Koi fish"}
               width={400}
-              height={400}
-              className="h-full w-full rounded-lg object-cover transition-transform duration-300 hover:scale-105"
+              height={800}
+              className="h-full w-full rounded-lg object-contain transition-transform duration-300 hover:scale-105"
               onError={handleImageError}
               priority={imageError}
             />
@@ -260,28 +260,27 @@ export default function AuctionCard({
             <span className="font-bold">{auction.bids.length || 0} Bids</span>
           </>
         </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center text-lg font-bold">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger className="flex ">
-                <Tag className="mr-1 h-6 w-6 rounded-full bg-black p-1 text-white" />
-                <span className="self-start text-sm">
-                  {formatCurrency(auction.bid_starting_price)}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>Starting Price</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center text-lg font-bold">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="flex ">
+                  <Tag className="mr-1 h-6 w-6 rounded-full bg-black p-1 text-white" />
+                  <span className="self-start text-sm">
+                    {formatCurrency(auction.bid_starting_price)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Starting Price</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <Link
+            href={`/auctions/${auction.auction_id}`}
+            className="flex items-center text-sm font-medium text-primary hover:underline dark:text-blue-400"
+          >
+            View Details <ArrowRight className="ml-1 h-4 w-4" />
+          </Link>
         </div>
-        <Link
-          href={`/auctions/${auction.auction_id}`}
-          className="flex items-center text-sm font-medium text-primary hover:underline dark:text-blue-400"
-        >
-          View Details <ArrowRight className="ml-1 h-4 w-4" />
-        </Link>
       </div>
     </div>
   );

@@ -172,13 +172,23 @@ export function JoinAuctionDialog({
                 <h4 className="mb-2 font-medium">Auction Rules:</h4>
                 <ul className="list-disc space-y-1 pl-5">
                   <li>
-                    You must place bids equal to or higher than the minimum
-                    increment
+                    Each new bid must be equal to or higher than the minimum bid
+                    increment.
                   </li>
-                  <li>All bids are final and cannot be retracted</li>
-                  <li>The highest bidder at the end of the auction wins</li>
                   <li>
-                    Payment must be completed within 24 hours of auction end
+                    All bids are final and cannot be changed or withdrawn.
+                  </li>
+                  <li>
+                    You are allowed to place a higher bid even if you are
+                    already the highest bidder
+                  </li>
+                  <li>
+                    The highest bidder at the end of the auction will be
+                    declared the winner
+                  </li>
+                  <li>
+                    The winning bidder must complete the payment within 24 hours
+                    after the auction ends.{" "}
                   </li>
                 </ul>
               </div>
@@ -200,7 +210,11 @@ export function JoinAuctionDialog({
                   </Button>
                 </Link>
               ) : (
-                <Button onClick={handleConfirm} className="mt-2 sm:mt-0">
+                <Button
+                  onClick={handleConfirm}
+                  className="mt-2 sm:mt-0"
+                  variant="default"
+                >
                   Continue
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -226,17 +240,18 @@ export function JoinAuctionDialog({
                   <span className="font-medium">{auctionTitle}</span>
                 </div>
                 <div className="flex items-center justify-between">
+                  <span>Your Wallet Balance:</span>
+                  <span className="font-medium">
+                    Rp. {walletBalance.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
                   <span>Participation Fee:</span>
                   <span className="font-medium">
                     Rp. {participationFee.toLocaleString()}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span>Current Balance:</span>
-                  <span className="font-medium">
-                    Rp. {walletBalance.toLocaleString()}
-                  </span>
-                </div>
+
                 <Separator />
                 <div className="flex items-center justify-between">
                   <span>Balance After Deduction:</span>

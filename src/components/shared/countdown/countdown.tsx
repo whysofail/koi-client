@@ -182,7 +182,7 @@ const Countdown: React.FC<CountdownProps> = ({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-full border shadow-sm transition-all duration-300",
+        "align-center flex items-center justify-center gap-2 rounded-full border shadow-sm transition-all duration-300",
         stateInfo.bgColor,
         stateInfo.borderColor,
         stateInfo.animation,

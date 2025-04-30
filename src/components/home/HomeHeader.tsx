@@ -188,7 +188,8 @@ const HomeHeader: React.FC<{ session: Session | null }> = ({ session }) => {
               <div className="flex items-center space-x-1">
                 <Button
                   asChild
-                  className="rounded-md bg-black px-2 py-1 text-xs text-white sm:px-3 sm:text-sm dark:bg-white dark:text-black"
+                  variant="default"
+                  // className="rounded-md bg-black px-2 py-1 text-xs text-white sm:px-3 sm:text-sm dark:bg-white dark:text-black"
                 >
                   <Link href="/login">Log In</Link>
                 </Button>
