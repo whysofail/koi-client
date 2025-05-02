@@ -41,16 +41,6 @@ const AuctionBanner = () => {
       : "/placeholder.svg";
   };
 
-  const formatBannerDate = (dateString: string | number | Date): string => {
-    if (!dateString) return "";
-    try {
-      return format(new Date(dateString), "yyyy.MM.dd HH:mm");
-    } catch (error) {
-      console.error(error);
-      return String(dateString);
-    }
-  };
-
   // Navigation handlers
   const goToPrevious = () => {
     if (!currentAuctions?.data?.length) return;
@@ -99,20 +89,39 @@ const AuctionBanner = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
 
           {/* Content */}
-          <div className="relative z-20 max-w-2xl p-4 text-white sm:p-8 md:p-12">
+          <div className="relative z-20 max-w-2xl p-4 text-white sm:p-8 md:p-24">
             <h1 className="mb-2 text-3xl font-bold sm:text-4xl md:mb-4 md:text-5xl">
               Ongoing Event
             </h1>
             {currentAuction ? (
               <>
-                <p className="mb-2 text-xs text-yellow-200 sm:text-sm md:mb-4">
-                  Period of the event |{" "}
-                  {formatBannerDate(currentAuction.start_datetime)} -{" "}
-                  {formatBannerDate(currentAuction.end_datetime)}
+                <p className="hidden text-2xl font-bold text-gray-200 sm:block">
+                  {currentAuction.title || ""}
                 </p>
                 <p className="hidden text-xs text-gray-200 sm:block sm:text-sm md:text-base">
-                  {currentAuction.description || "No description available."}
+                  {currentAuction.description || ""}
                 </p>
+                <div className="text-md mt-4 ">
+                  <p className="sm:text-md text-md font-bold text-white">
+                    Auction Period
+                  </p>
+                  <p className="text-sm font-light">
+                    {currentAuction.start_datetime
+                      ? format(
+                          new Date(currentAuction.start_datetime),
+                          "E, dd MMMM yyyy | HH:mm O",
+                        )
+                      : "Unknown Start Date"}{" "}
+                  </p>
+                  <p className="text-sm font-light">
+                    {currentAuction.end_datetime
+                      ? format(
+                          new Date(currentAuction.end_datetime),
+                          "E, dd MMMM yyyy | HH:mm O",
+                        )
+                      : "Unknown End Date"}
+                  </p>
+                </div>
               </>
             ) : (
               <p className="mb-2 text-xs text-yellow-200 sm:text-sm md:mb-4">
