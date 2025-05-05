@@ -20,6 +20,7 @@ const Countdown: React.FC<CountdownProps> = ({
   size = "default",
 }) => {
   const [timeRemaining, setTimeRemaining] = useState<{
+    days: number;
     hours: number;
     minutes: number;
     seconds: number;
@@ -34,6 +35,13 @@ const Countdown: React.FC<CountdownProps> = ({
       const now = new Date();
       const startTime = parseISO(startDate);
       const endTime = parseISO(endDate);
+
+      if (status === "STARTED" && isPast(endTime)) {
+        setMessage("Auction ended");
+        setTimeRemaining(null);
+        setCountdownType(null);
+        return;
+      }
 
       // Handle different auction states
       if (status === "PENDING") {
@@ -64,27 +72,24 @@ const Countdown: React.FC<CountdownProps> = ({
         return;
       }
 
-      // If auction hasn't started yet, countdown to start
-      if (!isPast(startTime)) {
-        const totalSeconds = differenceInSeconds(startTime, now);
-        const hours = Math.floor(totalSeconds / 3600);
+      const calculateTimeRemaining = (target: Date) => {
+        const totalSeconds = differenceInSeconds(target, now);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
+        return { days, hours, minutes, seconds };
+      };
 
-        setTimeRemaining({ hours, minutes, seconds });
+      if (!isPast(startTime)) {
+        setTimeRemaining(calculateTimeRemaining(startTime));
         setCountdownType("toStart");
         setMessage(null);
         return;
       }
 
-      // If auction has started but not ended, countdown to end
       if (isPast(startTime) && !isPast(endTime)) {
-        const totalSeconds = differenceInSeconds(endTime, now);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        setTimeRemaining({ hours, minutes, seconds });
+        setTimeRemaining(calculateTimeRemaining(endTime));
         setCountdownType("toEnd");
         setMessage(null);
         return;
@@ -107,6 +112,12 @@ const Countdown: React.FC<CountdownProps> = ({
         iconColor: "text-gray-500 dark:text-gray-400",
       };
 
+    const totalSeconds =
+      timeRemaining.days * 86400 +
+      timeRemaining.hours * 3600 +
+      timeRemaining.minutes * 60 +
+      timeRemaining.seconds;
+
     if (countdownType === "toStart")
       return {
         textColor: "text-blue-700 dark:text-blue-300",
@@ -115,11 +126,6 @@ const Countdown: React.FC<CountdownProps> = ({
         animation: "animate-gradient-blue",
         iconColor: "text-blue-600 dark:text-blue-400",
       };
-
-    const totalSeconds =
-      timeRemaining.hours * 3600 +
-      timeRemaining.minutes * 60 +
-      timeRemaining.seconds;
 
     if (totalSeconds <= 300)
       return {
@@ -151,8 +157,15 @@ const Countdown: React.FC<CountdownProps> = ({
   const formatTime = () => {
     if (!timeRemaining) return "";
 
-    const { hours, minutes, seconds } = timeRemaining;
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    const { days, hours, minutes, seconds } = timeRemaining;
+    const padded = (n: number) => n.toString().padStart(2, "0");
+
+    return [
+      days > 0 ? `${days}d` : null,
+      `${padded(hours)}:${padded(minutes)}:${padded(seconds)}`,
+    ]
+      .filter(Boolean)
+      .join(" ");
   };
 
   const sizeClasses = {
@@ -198,21 +211,10 @@ const Countdown: React.FC<CountdownProps> = ({
         </span>
       ) : timeRemaining ? (
         <div className={cn("flex items-center gap-1.5", stateInfo.textColor)}>
-          {countdownType === "toStart" ? (
-            <>
-              <span className={sizeInfo.text}>Starting in</span>
-              <span className={cn("font-mono", sizeInfo.time)}>
-                {formatTime()}
-              </span>
-            </>
-          ) : (
-            <>
-              <span className={sizeInfo.text}>Ending in</span>
-              <span className={cn("font-mono", sizeInfo.time)}>
-                {formatTime()}
-              </span>
-            </>
-          )}
+          <span className={sizeInfo.text}>
+            {countdownType === "toStart" ? "Starting in" : "Ending in"}
+          </span>
+          <span className={cn("font-mono", sizeInfo.time)}>{formatTime()}</span>
         </div>
       ) : null}
     </div>

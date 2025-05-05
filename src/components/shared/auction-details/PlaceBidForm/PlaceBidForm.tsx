@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 
 interface PlaceBidFormProps {
   token: string;
+  title: string;
   auctionID: string;
   currentBid: number;
   minIncrement: number;
@@ -41,6 +42,7 @@ interface PlaceBidFormProps {
 
 const PlaceBidForm = ({
   token,
+  title,
   auctionID,
   currentBid,
   minIncrement,
@@ -178,6 +180,7 @@ const PlaceBidForm = ({
     return (
       <>
         <JoinAuctionDialog
+          auctionTitle={title}
           token={token}
           auctionID={auctionID}
           participationFee={participationFee}

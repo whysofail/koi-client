@@ -3,7 +3,6 @@
 import Image from "next/image";
 import useGetKoiByID from "@/server/koi/getKoiByID/queries";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format, isValid, parseISO } from "date-fns";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,6 +14,7 @@ import {
   CheckCircle2,
   Timer,
   AlertCircle,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Auction } from "@/types/auctionTypes";
@@ -26,6 +26,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatCurrency } from "@/lib/formatCurrency";
+import Countdown from "../shared/countdown/countdown";
+import { isPast } from "date-fns";
 
 interface AuctionCardProps {
   auction: Auction;
@@ -54,17 +56,17 @@ export default function AuctionCard({
       ? `${imageBaseUrl}${imageArray[0]}`
       : "/placeholder.webp";
 
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return "N/A";
-    try {
-      const date = parseISO(dateString);
-      return isValid(date)
-        ? format(date, "dd MMM yyyy, HH:mm O")
-        : "Invalid date";
-    } catch {
-      return "Invalid date";
-    }
-  };
+  // const formatDate = (dateString: string | null | undefined) => {
+  //   if (!dateString) return "N/A";
+  //   try {
+  //     const date = parseISO(dateString);
+  //     return isValid(date)
+  //       ? format(date, "dd MMM yyyy, HH:mm O")
+  //       : "Invalid date";
+  //   } catch {
+  //     return "Invalid date";
+  //   }
+  // };
 
   const getStatusBadge = () => {
     switch (auction.status) {
@@ -85,7 +87,7 @@ export default function AuctionCard({
             className="items-center justify-center rounded-xl border-green-300 bg-green-100 py-2 text-green-700 dark:border-green-700 dark:bg-green-900 dark:text-green-200"
           >
             <Timer className="mr-1 h-4 w-4" />
-            Ongoing
+            {isPast(new Date(auction.end_datetime)) ? "Ended" : "Ongoing"}
           </Badge>
         );
       case "COMPLETED":
@@ -121,52 +123,52 @@ export default function AuctionCard({
     }
   };
 
-  const getTimeBadge = () => {
-    switch (auction.status) {
-      case "PUBLISHED":
-        return (
-          <Badge
-            variant="outline"
-            className="rounded-xl border-blue-300 bg-blue-100 py-2 text-blue-700 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-200"
-          >
-            Starts on {formatDate(auction.start_datetime)}
-          </Badge>
-        );
-      case "STARTED":
-        return (
-          <Badge
-            variant="outline"
-            className="items-center justify-center rounded-xl border-green-300 bg-green-100 py-2 text-green-700 dark:border-green-700 dark:bg-green-900 dark:text-green-200"
-          >
-            Ends on {formatDate(auction.end_datetime)}
-          </Badge>
-        );
-      case "COMPLETED":
-        return (
-          <Badge
-            variant="outline"
-            className="rounded-xl border-gray-300 bg-gray-100 py-2 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
-          >
-            <CheckCircle2 className="mr-1 h-4 w-4" />
-            ENDED
-          </Badge>
-        );
-      default:
-        return (
-          <Badge
-            variant="outline"
-            className="border-yellow-300 bg-yellow-100 py-2 text-yellow-700 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
-          >
-            <AlertCircle className="mr-1 h-3 w-3" />
-            {auction.status}
-          </Badge>
-        );
-    }
-  };
+  // const getTimeBadge = () => {
+  //   switch (auction.status) {
+  //     case "PUBLISHED":
+  //       return (
+  //         <Badge
+  //           variant="outline"
+  //           className="rounded-xl border-blue-300 bg-blue-100 py-2 text-blue-700 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-200"
+  //         >
+  //           Starts on {formatDate(auction.start_datetime)}
+  //         </Badge>
+  //       );
+  //     case "STARTED":
+  //       return (
+  //         <Badge
+  //           variant="outline"
+  //           className="items-center justify-center rounded-xl border-green-300 bg-green-100 py-2 text-green-700 dark:border-green-700 dark:bg-green-900 dark:text-green-200"
+  //         >
+  //           Ends on {formatDate(auction.end_datetime)}
+  //         </Badge>
+  //       );
+  //     case "COMPLETED":
+  //       return (
+  //         <Badge
+  //           variant="outline"
+  //           className="rounded-xl border-gray-300 bg-gray-100 py-2 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+  //         >
+  //           <CheckCircle2 className="mr-1 h-4 w-4" />
+  //           ENDED
+  //         </Badge>
+  //       );
+  //     default:
+  //       return (
+  //         <Badge
+  //           variant="outline"
+  //           className="border-yellow-300 bg-yellow-100 py-2 text-yellow-700 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
+  //         >
+  //           <AlertCircle className="mr-1 h-3 w-3" />
+  //           {auction.status}
+  //         </Badge>
+  //       );
+  //   }
+  // };
 
   return (
-    <div className="flex aspect-[3/4] flex-col justify-between rounded-xl border-2 border-[#B1062C] bg-none p-4 shadow-md transition-all hover:shadow-lg dark:bg-[#6a5c41] dark:text-gray-100">
-      <div className="relative mb-3 aspect-square overflow-hidden rounded-lg">
+    <div className="flex aspect-[3.5/4] flex-col rounded-xl border-2 border-[#B1062C] bg-none p-4 pb-0 shadow-md transition-all hover:shadow-lg dark:bg-[#6a5c41] dark:text-gray-100">
+      <div className="relative mb-4 aspect-square overflow-hidden rounded-lg">
         {isLoading ? (
           <Skeleton className="h-full w-full rounded-lg" />
         ) : error ? (
@@ -175,7 +177,7 @@ export default function AuctionCard({
             alt={auction.title || "Koi fish"}
             width={400}
             height={400}
-            className="h-full w-full rounded-lg object-contain transition-transform duration-300 hover:scale-105"
+            className="h-full w-full rounded-lg object-cover transition-transform duration-300 hover:scale-105"
             priority
           />
         ) : (
@@ -184,7 +186,7 @@ export default function AuctionCard({
               src={imageUrl || "/placeholder.svg"}
               alt={auction.title || "Koi fish"}
               width={400}
-              height={800}
+              height={400}
               className="h-full w-full rounded-lg object-contain transition-transform duration-300 hover:scale-105"
               onError={handleImageError}
               priority={imageError}
@@ -253,7 +255,14 @@ export default function AuctionCard({
 
       <div className="mb-3 grid grid-cols-1 gap-2 text-sm">
         <div>{getStatusBadge()}</div>
-        <div className="flex items-center">{getTimeBadge()}</div>
+        <div className="flex items-center">
+          <Countdown
+            startDate={auction.start_datetime}
+            endDate={auction.end_datetime}
+            status={auction.status}
+            className="rounded-xl"
+          />
+        </div>
         <div className="flex items-center">
           <>
             <Gavel className="mr-1 h-6 w-6 rounded-full bg-black p-1 text-white" />
@@ -264,16 +273,27 @@ export default function AuctionCard({
           <div className="flex items-center text-lg font-bold">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger className="flex ">
-                  <Tag className="mr-1 h-6 w-6 rounded-full bg-black p-1 text-white" />
-                  <span className="self-start text-sm">
-                    {formatCurrency(auction.bid_starting_price)}
-                  </span>
+                <Tag className="mr-1 h-6 w-6 rounded-full bg-black p-1 text-white" />
+
+                <span className="self-start text-sm">
+                  {formatCurrency(
+                    auction.current_highest_bid ?? auction.bid_starting_price,
+                  )}
+                </span>
+
+                <TooltipTrigger className="flex">
+                  <Info className="ml-1 h-4 w-4 text-gray-500" />
                 </TooltipTrigger>
-                <TooltipContent>Starting Price</TooltipContent>
+
+                <TooltipContent>
+                  {auction.current_highest_bid
+                    ? `Highest bid: ${formatCurrency(auction.current_highest_bid)}`
+                    : `Starting price: ${formatCurrency(auction.bid_starting_price)}`}
+                </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
+
           <Link
             href={`/auctions/${auction.auction_id}`}
             className="flex items-center text-sm font-medium text-primary hover:underline dark:text-blue-400"

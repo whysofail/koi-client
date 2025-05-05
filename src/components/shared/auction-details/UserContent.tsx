@@ -286,6 +286,7 @@ const UserContent: React.FC<UserContentProps> = ({
               </Button>
             ) : (
               <PlaceBidForm
+                title={auction.title}
                 token={token}
                 auctionID={auctionID}
                 currentBid={currentBid}

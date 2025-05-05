@@ -39,7 +39,7 @@ interface JoinAuctionDialogProps {
 export function JoinAuctionDialog({
   token,
   auctionID,
-  auctionTitle = "this auction",
+  auctionTitle,
   participationFee = 50000, // Default participation fee in Rp
   walletBalance = 500000, // Default wallet balance in Rp
   trigger,
@@ -123,7 +123,7 @@ export function JoinAuctionDialog({
             </DialogHeader>
 
             <div className="space-y-4 py-2">
-              <div className="rounded-lg border p-4">
+              <div className="rounded-2xl border p-4">
                 <h4 className="mb-3 flex items-center font-medium">
                   <Wallet className="mr-2 h-4 w-4" />
                   Participation Fee
@@ -147,7 +147,7 @@ export function JoinAuctionDialog({
                   <Separator />
 
                   <div className="flex items-center justify-between">
-                    <span>Final Balance:</span>
+                    <span>Balance after deduction:</span>
                     <span
                       className={`font-bold ${hasInsufficientFunds ? "text-red-500" : "text-green-600"}`}
                     >
@@ -168,9 +168,9 @@ export function JoinAuctionDialog({
                 )}
               </div>
 
-              <div className="rounded-lg border p-4 text-sm">
+              <div className="rounded-2xl border p-4 text-sm">
                 <h4 className="mb-2 font-medium">Auction Rules:</h4>
-                <ul className="list-disc space-y-1 pl-5">
+                <ul className="list-disc pl-5">
                   <li>
                     Each new bid must be equal to or higher than the minimum bid
                     increment.
@@ -233,11 +233,10 @@ export function JoinAuctionDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="rounded-lg border bg-muted/50 p-4">
+            <div className="rounded-2xl border bg-muted/50 p-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span>Auction:</span>
-                  <span className="font-medium">{auctionTitle}</span>
+                  <span className="font-bold">{auctionTitle}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Your Wallet Balance:</span>
