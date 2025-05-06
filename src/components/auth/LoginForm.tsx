@@ -161,7 +161,9 @@ const LoginForm = () => {
                 </Button>
               </div>
               <Button
-                className="w-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-100"
+                variant="default"
+                className="w-full"
+                // className="w-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-100"
                 type="submit"
                 disabled={isLoading}
               >

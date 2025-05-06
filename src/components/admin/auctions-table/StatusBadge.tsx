@@ -45,14 +45,22 @@ const StatusBadge = ({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-full px-2.5 py-2 text-sm font-normal",
         variant ||
           (selected ? selectedStatusStyles[status] : statusStyles[status]),
         className,
       )}
       onClick={onClick}
     >
-      {capitalize(status)}
+      {capitalize(
+        status === AuctionStatus.STARTED
+          ? "ongoing"
+          : status === AuctionStatus.PUBLISHED
+            ? "upcoming"
+            : status === AuctionStatus.COMPLETED
+              ? "ended"
+              : status.toLowerCase(),
+      )}
     </span>
   );
 };

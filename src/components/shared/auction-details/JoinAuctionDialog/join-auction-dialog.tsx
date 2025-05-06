@@ -39,7 +39,7 @@ interface JoinAuctionDialogProps {
 export function JoinAuctionDialog({
   token,
   auctionID,
-  auctionTitle = "this auction",
+  auctionTitle,
   participationFee = 50000, // Default participation fee in Rp
   walletBalance = 500000, // Default wallet balance in Rp
   trigger,
@@ -123,7 +123,7 @@ export function JoinAuctionDialog({
             </DialogHeader>
 
             <div className="space-y-4 py-2">
-              <div className="rounded-lg border p-4">
+              <div className="rounded-2xl border p-4">
                 <h4 className="mb-3 flex items-center font-medium">
                   <Wallet className="mr-2 h-4 w-4" />
                   Participation Fee
@@ -147,7 +147,7 @@ export function JoinAuctionDialog({
                   <Separator />
 
                   <div className="flex items-center justify-between">
-                    <span>Final Balance:</span>
+                    <span>Balance after deduction:</span>
                     <span
                       className={`font-bold ${hasInsufficientFunds ? "text-red-500" : "text-green-600"}`}
                     >
@@ -168,17 +168,27 @@ export function JoinAuctionDialog({
                 )}
               </div>
 
-              <div className="rounded-lg border p-4 text-sm">
+              <div className="rounded-2xl border p-4 text-sm">
                 <h4 className="mb-2 font-medium">Auction Rules:</h4>
-                <ul className="list-disc space-y-1 pl-5">
+                <ul className="list-disc pl-5">
                   <li>
-                    You must place bids equal to or higher than the minimum
-                    increment
+                    Each new bid must be equal to or higher than the minimum bid
+                    increment.
                   </li>
-                  <li>All bids are final and cannot be retracted</li>
-                  <li>The highest bidder at the end of the auction wins</li>
                   <li>
-                    Payment must be completed within 24 hours of auction end
+                    All bids are final and cannot be changed or withdrawn.
+                  </li>
+                  <li>
+                    You are allowed to place a higher bid even if you are
+                    already the highest bidder
+                  </li>
+                  <li>
+                    The highest bidder at the end of the auction will be
+                    declared the winner
+                  </li>
+                  <li>
+                    The winning bidder must complete the payment within 24 hours
+                    after the auction ends.{" "}
                   </li>
                 </ul>
               </div>
@@ -200,7 +210,11 @@ export function JoinAuctionDialog({
                   </Button>
                 </Link>
               ) : (
-                <Button onClick={handleConfirm} className="mt-2 sm:mt-0">
+                <Button
+                  onClick={handleConfirm}
+                  className="mt-2 sm:mt-0"
+                  variant="default"
+                >
                   Continue
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -219,11 +233,16 @@ export function JoinAuctionDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="rounded-lg border bg-muted/50 p-4">
+            <div className="rounded-2xl border bg-muted/50 p-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span>Auction:</span>
-                  <span className="font-medium">{auctionTitle}</span>
+                  <span className="font-bold">{auctionTitle}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Your Wallet Balance:</span>
+                  <span className="font-medium">
+                    Rp. {walletBalance.toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Participation Fee:</span>
@@ -231,12 +250,7 @@ export function JoinAuctionDialog({
                     Rp. {participationFee.toLocaleString()}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span>Current Balance:</span>
-                  <span className="font-medium">
-                    Rp. {walletBalance.toLocaleString()}
-                  </span>
-                </div>
+
                 <Separator />
                 <div className="flex items-center justify-between">
                   <span>Balance After Deduction:</span>
