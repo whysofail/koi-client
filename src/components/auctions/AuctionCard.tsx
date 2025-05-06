@@ -177,7 +177,7 @@ export default function AuctionCard({
             alt={auction.title || "Koi fish"}
             width={400}
             height={400}
-            className="h-full w-full rounded-lg object-cover transition-transform duration-300 hover:scale-105"
+            className="h-full w-full rounded-lg object-contain transition-transform duration-300 hover:scale-105"
             priority
           />
         ) : (
