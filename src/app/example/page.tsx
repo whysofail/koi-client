@@ -1,12 +1,7 @@
 import React from "react";
-import AuctionDialogTwoStepExample from "@/components/AuctionDialogExample";
 
 const page = () => {
-  return (
-    <div>
-      <AuctionDialogTwoStepExample />
-    </div>
-  );
+  return <div></div>;
 };
 
 export default page;
