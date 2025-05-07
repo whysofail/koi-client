@@ -37,7 +37,7 @@ export const useUpdateAuction = (token: string, queryClient: QueryClient) => {
       }
     },
     onMutate: async ({ auctionId, data }) => {
-      await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
+      // await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
 
       const previousAuctions = queryClient.getQueryData(["allAuctions"]);
 
@@ -55,7 +55,7 @@ export const useUpdateAuction = (token: string, queryClient: QueryClient) => {
       }
     },
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
+      // await queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
     },
   });
 };
