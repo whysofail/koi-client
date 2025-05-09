@@ -111,7 +111,7 @@ const AuctionContent: FC<AuctionContentProps> = ({ token }) => {
         {/* Filter and Sort UI */}
         <FilterAndSortUI />
 
-        <div className="grid grid-cols-1 gap-24 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
           {auctionData.data.map((item) => (
             <AuctionCard
               key={item.auction_id}

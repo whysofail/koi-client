@@ -151,20 +151,20 @@ const UserContent: React.FC<UserContentProps> = ({
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="lg:hidden">
         <div className="mb-4 flex items-center space-x-2">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+          <h2 className="mb-0 mt-0 text-2xl font-bold tracking-tight sm:text-3xl">
             {title}
           </h2>
           {getStatusBadge()}
         </div>
-        <div className="flex flex-col justify-between">
-          Auction Period
+        <div className="mb-4 flex flex-col justify-between">
+          <p className="mb-2">Auction Period </p>
           <div className="flex items-center gap-2">
             {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
-            <p className="text-md text-muted">Start : {startDate}</p>
+            <p className="text-md mb-2 text-muted">Start : {startDate}</p>
           </div>
           <div className="flex items-center gap-2">
             {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
-            <p className="text-md text-muted">End : {endDate}</p>
+            <p className="text-md mb-4 text-muted">End : {endDate}</p>
           </div>
           <Countdown
             className="rounded-xl"
@@ -185,7 +185,7 @@ const UserContent: React.FC<UserContentProps> = ({
       </div>
       <div className="space-y-6">
         <div className="hidden lg:block">
-          <div className="mb-4 flex items-center space-x-2">
+          <div className="mb-2 flex items-center space-x-2">
             <h2 className="m-0 text-2xl font-bold tracking-tight md:text-3xl">
               {title}
             </h2>
