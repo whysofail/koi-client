@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: "aliezan/koi-client"
+  IMAGE_NAME: "whysofail/koi-client"
 
 jobs:
   amd64:
