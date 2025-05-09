@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import Link from "next/link";
 import AuctionBanner from "@/components/home/auction-banner";
 import NewsSection from "@/components/home/news/news-section";
+import ContactInfo from "@/components/home/contact-info";
 
 const LandingPage: FC = () => {
   // Fetch auctions
@@ -149,44 +150,7 @@ const LandingPage: FC = () => {
       </div>
 
       <NewsSection />
-      <div className="container mx-auto px-4 py-8 sm:py-12">
-        <div className="flex flex-col items-center justify-between gap-8 md:flex-row md:items-start">
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-8">
-            <Image
-              src="/placeholder.svg?height=120&width=120"
-              alt="FS KOI Logo"
-              width={100}
-              height={100}
-              className="object-contain"
-            />
-            <div className="text-center sm:text-left dark:text-gray-200">
-              <div className="mb-2">
-                <span className="font-bold">Location</span> | Lorem Ipsum
-              </div>
-              <div className="mb-2">
-                <span className="font-bold">Tel</span> | 021 123456
-              </div>
-              <div className="mb-2">
-                <span className="font-bold">Mail</span> | LoremIpsum@mail.com
-              </div>
-              <div className="mt-4 text-center sm:text-left">
-                <h2 className="text-2xl font-bold text-red-800 dark:text-red-400">
-                  FS KOI
-                </h2>
-              </div>
-            </div>
-          </div>
-          <div className="w-full md:w-1/2">
-            <Image
-              src="/placeholder.svg?height=300&width=600"
-              alt="Location Map"
-              width={600}
-              height={300}
-              className="w-full rounded-lg"
-            />
-          </div>
-        </div>
-      </div>
+      <ContactInfo />
     </main>
   );
 };
