@@ -88,7 +88,7 @@ const LandingPage: FC = () => {
                   {hasAuctions ? (
                     <>
                       <Link href={`/auctions/${data?.data?.[0]?.auction_id}`}>
-                        <div className="relative mb-4 flex w-full justify-center sm:mb-0 sm:block sm:w-1/3">
+                        <div className="relative mb-4 mt-6 flex w-full justify-center sm:mb-0 sm:block sm:w-1/3">
                           <div className="relative h-[150px] w-[150px] overflow-hidden rounded-lg bg-blue-500">
                             <Image
                               src={getImageUrl(koi?.photo)}

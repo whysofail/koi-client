@@ -101,9 +101,9 @@ export const useAuctionDialog = (
     auctionId: string,
     bid_increment: string,
     buynow_price: string,
+    startDateTime: Date,
+    endDateTime: Date,
   ) => {
-    const { startDateTime, endDateTime } = form.getValues();
-
     const data: UpdateAuctionBody = {
       status: AuctionStatus.PUBLISHED,
       start_datetime: startDateTime.toISOString().replace(/\.\d{3}Z$/, "Z"),
@@ -112,17 +112,50 @@ export const useAuctionDialog = (
       buynow_price,
     };
 
+    // Perform optimistic update for instant UI feedback
+    const previousAllAuctions = queryClient.getQueryData(["allAuctions"]);
+
+    // Optimistically update the UI
+    queryClient.setQueryData(["allAuctions"], (old: any[]) => {
+      return (old || []).map((auction) =>
+        auction.id === auctionId
+          ? {
+              ...auction,
+              status: AuctionStatus.PUBLISHED,
+              start_datetime: data.start_datetime,
+              end_datetime: data.end_datetime,
+              bid_increment,
+              buynow_price,
+            }
+          : auction,
+      );
+    });
+
     updateMutate(
       { auctionId, data },
       {
         onSuccess: async () => {
           toast.success("Auction published");
-          await queryClient.cancelQueries({ queryKey: ["auction"] });
+
+          // Invalidate and refetch ALL relevant queries
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ["allAuctions"] }),
+            queryClient.invalidateQueries({ queryKey: ["auction"] }),
+            queryClient.invalidateQueries({ queryKey: ["auction", auctionId] }),
+          ]);
 
           onSuccess?.();
         },
-        onError: () => {
-          toast.error("Failed to publish auction");
+        onError: (error) => {
+          // Revert the optimistic update on error
+          queryClient.setQueryData(["allAuctions"], previousAllAuctions);
+          toast.error(
+            `Failed to publish auction: ${error.message || "Unknown error"}`,
+          );
+        },
+        // Always refetch after mutation completes
+        onSettled: () => {
+          queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
         },
       },
     );
@@ -131,12 +164,10 @@ export const useAuctionDialog = (
   const handleUnpublishAuction = async (
     auctionId: string,
     bid_increment: string,
-    buynow_price: string,
   ) => {
     const data: UpdateAuctionBody = {
       status: AuctionStatus.DRAFT,
       bid_increment,
-      buynow_price,
     };
 
     updateMutate(
