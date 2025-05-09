@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import useCreateAuctionDraft from "@/server/auction/createAuctionToDraft/mutations";
 import { toast } from "sonner";
@@ -8,11 +10,11 @@ import { useRouter } from "next/navigation";
 import { useUpdateAuction } from "@/server/auction/updateAuction/mutations";
 import { useQueryClient } from "@tanstack/react-query";
 import useUpdateKoi from "@/server/koi/updateKoi/mutations";
-import { KoiStatus, Koi } from "@/types/koiTypes";
+import { KoiStatus, type Koi } from "@/types/koiTypes";
 import { getErrorMessage } from "@/lib/handleApiError";
 import useGetAuctionByID from "@/server/auction/getAuctionByID/queries";
 import { AuctionStatus } from "@/types/auctionTypes";
-import { PaginatedResponse } from "@/types/koiTypes";
+import type { PaginatedResponse } from "@/types/koiTypes";
 import { format } from "date-fns";
 
 const formSchema = z.object({
@@ -51,6 +53,7 @@ const KoiAuctionFormViewModel = (
   token: string,
   id: string,
   operation: "create" | "update" | "republish",
+  onSubmitSuccess?: () => void,
 ) => {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -93,12 +96,12 @@ const KoiAuctionFormViewModel = (
         title: auctionData.title,
         description: auctionData.description,
         rich_description: auctionData.rich_description || "", // Ensure a default value if null
-        participation_fee: parseFloat(auctionData.participation_fee),
-        buynow_price: parseFloat(auctionData.buynow_price),
-        bid_increment: parseFloat(auctionData.bid_increment),
+        participation_fee: Number.parseFloat(auctionData.participation_fee),
+        buynow_price: Number.parseFloat(auctionData.buynow_price),
+        bid_increment: Number.parseFloat(auctionData.bid_increment),
         item: auctionData.item,
         status: auctionData.status as AuctionStatus,
-        bid_starting_price: parseFloat(auctionData.bid_starting_price),
+        bid_starting_price: Number.parseFloat(auctionData.bid_starting_price),
       });
     }
   }, [auctionData, operation, form]);
@@ -224,80 +227,50 @@ const KoiAuctionFormViewModel = (
       );
     } else if (operation === "republish") {
       try {
-        await queryClient.cancelQueries({ queryKey: ["koiData"] });
-        await queryClient.cancelQueries({ queryKey: ["allAuctions"] });
+        console.log("Republish operation with data:", data);
 
-        const previousKoiData = queryClient.getQueryData<
-          PaginatedResponse<Koi>
-        >(["koiData"]);
+        // Only update the auction details, don't change the status
+        return new Promise<void>((resolve, reject) => {
+          updateAuction(
+            {
+              auctionId: id,
+              data: {
+                title: data.title,
+                description: data.description,
+                rich_description: data.rich_description ?? "",
+                item: data.item,
+                buynow_price: data.buynow_price.toString(),
+                participation_fee: data.participation_fee.toString(),
+                bid_increment: data.bid_increment.toString(),
+                bid_starting_price: data.bid_starting_price.toString(),
+                // Do NOT change the status here
+              },
+            },
+            {
+              onSuccess: () => {
+                // Only show a toast for the update, not publishing
+                toast.success("Auction details updated");
+                if (onSubmitSuccess) {
+                  onSubmitSuccess();
+                }
 
-        // Perform optimistic updates for koi data
-        if (previousKoiData?.data) {
-          queryClient.setQueryData<PaginatedResponse<Koi>>(
-            ["koiData"],
-            (old) => {
-              if (!old?.data) return old ?? previousKoiData;
-              return {
-                ...old,
-                data: old.data.map((koi) =>
-                  koi.id === id
-                    ? { ...koi, status: KoiStatus.IN_AUCTION }
-                    : koi,
-                ),
-              };
+                // Make sure to invalidate all relevant queries
+                queryClient.invalidateQueries({ queryKey: ["allAuctions"] });
+                queryClient.invalidateQueries({ queryKey: ["auction"] });
+                queryClient.invalidateQueries({ queryKey: ["auction", id] });
+
+                resolve();
+              },
+              onError: (error) => {
+                toast.error(error.message);
+                reject(error);
+              },
             },
           );
-        }
-
-        try {
-          await new Promise<void>((resolve, reject) => {
-            // Here, we set the auction time and other necessary details
-            updateAuction(
-              {
-                auctionId: id,
-                data: {
-                  title: data.title,
-                  description: data.description,
-                  rich_description: data.rich_description ?? "",
-                  item: data.item,
-                  buynow_price: data.buynow_price.toString(),
-                  participation_fee: data.participation_fee.toString(),
-                  bid_increment: data.bid_increment.toString(),
-                  status: data.status,
-                  bid_starting_price: data.bid_starting_price.toString(),
-                },
-              },
-              {
-                onSuccess: resolve,
-                onError: async (error) => {
-                  // If auction republish fails, revert koi status first
-                  await updateKoiStatus(
-                    {
-                      koiId: id,
-                      koiStatus: KoiStatus.AUCTION,
-                    },
-                    {
-                      onSettled: () => reject(error),
-                    },
-                  );
-                },
-              },
-            );
-          });
-
-          toast.success("Auction updated successfully");
-        } catch (error) {
-          queryClient.setQueryData(["koiData"], previousKoiData);
-          throw error;
-        }
+        });
       } catch (error) {
         toast.error(getErrorMessage(error));
-        console.error("Republish failed:", error);
-      } finally {
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["koiData"] }),
-          queryClient.invalidateQueries({ queryKey: ["allAuctions"] }),
-        ]);
+        throw error; // Re-throw to ensure the promise is rejected
       }
     }
   };

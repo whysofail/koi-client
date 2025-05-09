@@ -37,7 +37,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
             <SessionProvider session={session}>
               <AuthRedirectProvider>
                 <PathChecker session={session}>{children}</PathChecker>
-                <Toaster richColors position="bottom-right" />
+                <Toaster richColors position="bottom-right" closeButton />
               </AuthRedirectProvider>
             </SessionProvider>
           </TooltipProvider>
